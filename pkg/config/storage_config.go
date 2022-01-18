@@ -35,7 +35,7 @@ type InfluxConfig struct {
 }
 
 type MongoDBConfig struct {
-	Host   string `json:"host"`
+	URL    string `json:"url"`
 	DBName string `json:"db_name"`
 }
 
@@ -51,7 +51,7 @@ type RedisConfig struct {
 	Password string   `json:"password"`
 }
 type KafkaConfig struct {
-	Addr     string `json:"addr"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	AddrList []string `json:"addr_list"`
+	Username string   `json:"username"`
+	Password string   `json:"password"`
 }

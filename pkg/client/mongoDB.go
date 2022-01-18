@@ -12,7 +12,7 @@ import (
 // InitMongoDB ...
 func InitMongoDB(config cfg.MongoDBConfig) {
 	// 设置客户端连接配置
-	clientOptions := options.Client().ApplyURI(config.Host)
+	clientOptions := options.Client().ApplyURI(config.URL)
 	// 连接到MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
