@@ -10,6 +10,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.6.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/tealeg/xlsx v1.0.5
 	go.mongodb.org/mongo-driver v1.8.1
 	gorm.io/driver/mysql v1.2.2
 	gorm.io/gorm v1.22.4

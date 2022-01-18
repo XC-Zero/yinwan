@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// InitMysqlGormV2 GormV2 returns a MySQL DB engine from config
+// InitMysqlGormV2 GormV2 returns a MySQL DB engine from configs
 func InitMysqlGormV2(config config2.MysqlConfig) {
 	url := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local&multiStatements=True",
 		config.UserName,
