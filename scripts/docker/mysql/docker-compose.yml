@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysql:
+    restart: always
+    image: mysql:8.0
+    container_name: mysql
+    #    volumes:
+    #      - ./mydir:/mydir # 文件挂载
+    #      - ./datadir:/var/lib/mysql # 挂载目录
+    #      - ./conf/my.cnf:/etc/mysql/my.cnf # 挂载 my.cnf 配置文件
+    #      - ./docker/mysql/source:/docker-entrypoint-initdb.d
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"  # 设置密码
+      - "TZ=Asia/Shanghai"
+    #      - "MYSQL_DATABASE=mydb"  # 设置默认数据库
+    ports:
+      - 3306:3306

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source_path=./cmd/management
+source_path=./cmd
 go_file=main.go
 image_name=qx_service
 build_output=management_server
