@@ -1,0 +1,5 @@
+package staff
+
+func InitRouter() {
+
+}

@@ -1,18 +1,46 @@
 package model
 
+import (
+	"strconv"
+	"strings"
+)
+
+const SPLIT_SYMBOL = "|"
+
 // Staff 职工表
 type Staff struct {
-	staffID     *int    `gorm:"primaryKey;type:int;autoIncrement;"json:"id"`
-	StaffName   string  `gorm:"type:varchar(50);not null;"`
-	StaffAlias  *string `gorm:"type:varchar(50)"` // 职工别名
-	StaffRoleID int     `gorm:"type:varchar(50)"`
+	StaffID       *int    `gorm:"primaryKey;type:int;autoIncrement" json:"id"`
+	StaffName     string  `gorm:"type:varchar(50);not null;"`
+	StaffAlias    *string `gorm:"type:varchar(50)"` // 职工别名
+	StaffEmail    *string `gorm:"type:varchar(50)"`
+	StaffPhone    *string `gorm:"type:varchar(50)"`
+	StaffPassword string  `gorm:"type:varchar(20)"`
+	StaffRoleID   int     `gorm:"type:int"`
 }
 
-func (s *Staff) GetStaffID() int {
-	return *s.staffID
+// Role 职工角色表
+type Role struct {
+	RoleID      *int   `gorm:"primaryKey;type:int;autoIncrement"`
+	RoleName    string `gorm:"type:varchar(50)"`
+	RoleContent string `gorm:"type:varchar(500)"`
 }
 
-// StaffRole 职工角色表
-type StaffRole struct {
-	staffRoleID *int `gorm:"primaryKey;type:int;autoIncrement"json:"id"`
+func (r *Role) SetRoleContent(controlList []AccessControl) {
+	content := ""
+	for i := 0; i < len(controlList)-1; i++ {
+		ac := controlList[i]
+		if ac.AccessControlID != nil {
+			content += strconv.Itoa(*controlList[i].AccessControlID) + SPLIT_SYMBOL
+		}
+	}
+	r.RoleContent = content
+}
+
+func (r Role) GetRoleAccessControlList() (controlList []AccessControl, err error) {
+	arr := strings.Split(r.RoleContent, SPLIT_SYMBOL)
+	if len(arr) == 0 {
+		return nil, nil
+	}
+	// todo  根据ID从数据库找
+	return nil, nil
 }

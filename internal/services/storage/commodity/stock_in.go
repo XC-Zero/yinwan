@@ -1,0 +1,5 @@
+package commodity
+
+func a() {
+
+}
