@@ -6,8 +6,8 @@ import (
 )
 
 func InitRouter() {
-	router.Router.POST("", stackOut)
-	router.Router.POST("", stackIn)
+	router.Router.POST("/storage/stack_out", stackOut)
+	router.Router.POST("/storage/stack_in", stackIn)
 }
 
 func stackOut(ctx *gin.Context) {
