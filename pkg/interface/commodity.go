@@ -6,7 +6,10 @@ type Commodity interface {
 	StockIn() error
 	// StockOut 出库
 	StockOut() error
-
 	// FractionalPrice 价格以形式分数
-	FractionalPrice()
+	FractionalPrice(price float64)
+	// GetBatch 获取批次信息
+	GetBatch() Batch
+	// SetBatch 设置批次信息
+	SetBatch(batch Batch)
 }
