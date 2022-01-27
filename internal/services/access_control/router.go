@@ -1,5 +1,7 @@
 package access_control
 
-func InitRouter() {
+import "github.com/gin-gonic/gin"
+
+func InitRouter(router *gin.Engine) {
 
 }

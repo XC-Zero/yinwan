@@ -1,19 +1,18 @@
 package staff
 
 import (
-	"github.com/XC-Zero/yinwan/internal/gateway/router"
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter() {
-	router.Router.POST("/staff/create_staff", createStaff)
-	router.Router.POST("/staff/update_staff", updateStaff)
-	router.Router.POST("/staff/delete_staff", deleteStaff)
-	router.Router.POST("/staff/select_staff", selectStaff)
-	router.Router.POST("/staff/select_department", selectDepartment)
-	router.Router.POST("/staff/create_department", createDepartment)
-	router.Router.POST("/staff/update_department", updateDepartment)
-	router.Router.POST("/staff/delete_department", deleteDepartment)
+func InitRouter(services *gin.RouterGroup) {
+	services.POST("/staff/create_staff", createStaff)
+	services.POST("/staff/update_staff", updateStaff)
+	services.POST("/staff/delete_staff", deleteStaff)
+	services.POST("/staff/select_staff", selectStaff)
+	services.POST("/staff/select_department", selectDepartment)
+	services.POST("/staff/create_department", createDepartment)
+	services.POST("/staff/update_department", updateDepartment)
+	services.POST("/staff/delete_department", deleteDepartment)
 
 }
 

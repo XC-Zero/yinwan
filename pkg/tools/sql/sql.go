@@ -1,4 +1,4 @@
-package tools
+package sql
 
 var contrastTable map[string]string
 

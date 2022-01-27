@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 )
 
@@ -47,7 +46,8 @@ type Transaction struct {
 }
 
 func (t *Transaction) SetTransactionContent(m map[string]interface{}) {
-	t.TransactionContent = fmt.Sprintf("%+v", m)
+	marshal, _ := json.Marshal(m)
+	t.TransactionContent = string(marshal)
 }
 
 func (t Transaction) TransactionContentMap() (map[string]interface{}, error) {

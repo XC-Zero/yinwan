@@ -1,12 +1,11 @@
 package finance
 
 import (
-	"github.com/XC-Zero/yinwan/internal/gateway/router"
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter() {
-	router.Router.POST("", v)
+func InitRouter(services *gin.RouterGroup) {
+	services.POST("", v)
 }
 
 // todo  凭证相关

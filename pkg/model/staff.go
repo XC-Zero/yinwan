@@ -9,7 +9,7 @@ const SPLIT_SYMBOL = "|"
 
 // Staff 职工表
 type Staff struct {
-	StaffID       *int    `gorm:"primaryKey;type:int;autoIncrement" json:"id"`
+	BasicModel
 	StaffName     string  `gorm:"type:varchar(50);not null;"`
 	StaffAlias    *string `gorm:"type:varchar(50)"` // 职工别名
 	StaffEmail    *string `gorm:"type:varchar(50)"`
@@ -20,7 +20,7 @@ type Staff struct {
 
 // Role 职工角色表
 type Role struct {
-	RoleID      *int   `gorm:"primaryKey;type:int;autoIncrement"`
+	BasicModel
 	RoleName    string `gorm:"type:varchar(50)"`
 	RoleContent string `gorm:"type:varchar(500)"`
 }

@@ -71,7 +71,7 @@ var (
 // CreateQRCode 创建二维码
 // 注意RGBA的A 不是百分制 而是 0-255
 func CreateQRCode(content string, bkColor, picColor color.RGBA, size int) ([]byte, error) {
-	qr, err := qrcode.New(content, qrcode.Highest)
+	qr, err := qrcode.New(content, qrcode.Medium)
 	if err != nil {
 		return nil, err
 	}

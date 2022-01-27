@@ -54,7 +54,7 @@ func (ac AccessControl) SplitCapabilities() (caps []ModuleCapability) {
 }
 func (ac *AccessControl) SetModuleCapabilities(caps []ModuleCapability) {
 	val := ""
-	// 多一个 | 没所谓
+	// 多一个 | ,没所谓
 	for _, capability := range caps {
 		val += strconv.Itoa(int(capability)) + SPLIT_SYMBOL
 	}

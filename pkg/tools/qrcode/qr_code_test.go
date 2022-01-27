@@ -2,6 +2,7 @@ package qrcode
 
 import (
 	"encoding/json"
+	"github.com/XC-Zero/yinwan/pkg/model"
 	"os"
 	"strconv"
 	"testing"
@@ -9,25 +10,32 @@ import (
 )
 
 func TestName(t *testing.T) {
+	now := time.Now()
 	s := struct {
 		Hello string
 		name  string
+		model.BasicModel
 	}{
 		"FUCK YOU !",
 		"♂ 哲学 ♂!",
+		model.BasicModel{
+			RecID:     nil,
+			CreatedAt: now,
+			UpdatedAt: &now,
+		},
 	}
 	marshal, err := json.Marshal(s)
 	if err != nil {
 		panic(err)
 
 	}
-	code, err := CreateQRCode(string(marshal), Orange, LightPurple, 256)
+	code, err := CreateQRCode(string(marshal), Black, LightPurple, 1024)
 	if err != nil {
 		panic(err)
 
 	}
 
-	create, err := os.Create(strconv.Itoa(time.Now().Local().Nanosecond()) + ".png")
+	create, err := os.Create(strconv.Itoa(now.Local().Nanosecond()) + ".png")
 	if err != nil {
 		panic(err)
 	}
