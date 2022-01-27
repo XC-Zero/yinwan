@@ -34,7 +34,7 @@ func (p PayType) DisPlay() string {
 }
 
 type Transaction struct {
-	TransactionID      *int      `gorm:"primaryKey;type:int;autoIncrement" json:"id"`
+	BasicModel
 	TransactionContent string    `gorm:"type:varchar(500)"`
 	TransactionAmount  float64   `gorm:"type:decimal(20,4);not null;"`
 	PayType            *PayType  `gorm:"type:int"`

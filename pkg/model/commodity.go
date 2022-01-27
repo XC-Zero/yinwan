@@ -1,12 +1,13 @@
 package model
 
-// CommodityLot 批次
-type CommodityLot struct {
+// CommodityBatch 批次
+type CommodityBatch struct {
+	BasicModel
 }
 
 // Commodity 货品
 type Commodity struct {
-	CommodityID        *int                   `gorm:"primaryKey;type:int;autoIncrement" json:"id"`
+	BasicModel
 	CommodityType      *string                `gorm:"type:varchar(50)"`
 	CommodityStyle     *string                `gorm:"type:varchar(50)"`
 	CommodityPrice     float64                `gorm:"type:decimal(20,4)"`

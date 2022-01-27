@@ -29,8 +29,8 @@ func (r *Role) SetRoleContent(controlList []AccessControl) {
 	content := ""
 	for i := 0; i < len(controlList)-1; i++ {
 		ac := controlList[i]
-		if ac.AccessControlID != nil {
-			content += strconv.Itoa(*controlList[i].AccessControlID) + SPLIT_SYMBOL
+		if ac.RecID != nil {
+			content += strconv.Itoa(*controlList[i].RecID) + SPLIT_SYMBOL
 		}
 	}
 	r.RoleContent = content
