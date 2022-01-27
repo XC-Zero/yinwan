@@ -52,7 +52,7 @@ services:
     environment:
       ZK_HOSTS: zookeeper:2181
       KAFKA_BROKERS: kafka1:9092
-      APPLICATION_SECRET: letmein
+      APPLICATION_SECRET: 4#U7vSa^Ud
       KM_ARGS: -Djava.net.preferIPv4Stack=true
     depends_on:
       - kafka1

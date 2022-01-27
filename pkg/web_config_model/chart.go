@@ -1,6 +1,6 @@
 package web_config_model
 
-type ChartType string
+type ChartType ComponentType
 
 const (
 	LINE_CHART ChartType = ""
@@ -8,5 +8,9 @@ const (
 	BAR_CHART  ChartType = ""
 )
 
-type name struct {
+type LineChart struct {
+}
+
+func (l LineChart) ChartName() {
+
 }

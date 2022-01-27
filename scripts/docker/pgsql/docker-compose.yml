@@ -6,8 +6,8 @@ services:
     restart: always
     environment:
       POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+      POSTGRES_PASSWORD: Rr&05^Qu@l
     ports:
       - 5432:5432
-#    volumes:
-#      - /data/compose/postgresql/data:/var/lib/postgresql/data
+    volumes:
+      - ./data:/var/lib/postgresql/data

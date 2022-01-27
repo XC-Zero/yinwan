@@ -5,12 +5,14 @@ go 1.17
 require (
 	github.com/Shopify/sarama v1.30.1
 	github.com/elastic/go-elasticsearch/v7 v7.16.0
+	github.com/fwhezfwhez/errorx v1.1.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/v7 v7.4.1
 	github.com/influxdata/influxdb-client-go/v2 v2.6.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.3.1
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/tealeg/xlsx v1.0.5
 	go.mongodb.org/mongo-driver v1.8.1
 	gorm.io/driver/mysql v1.2.2
@@ -29,6 +31,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
