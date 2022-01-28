@@ -20,7 +20,7 @@ type Staff struct {
 }
 
 func (s Staff) Login() string {
-	token.GenerateToken(s)
+	return token.GenerateToken(strconv.Itoa(*s.RecID))
 }
 
 func (s Staff) LogOut() {

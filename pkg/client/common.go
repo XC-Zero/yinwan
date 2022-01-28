@@ -11,6 +11,9 @@ import (
 )
 
 var (
+	// BookNameMap 账套Map
+	BookNameMap = make(map[string]BookName, 0)
+
 	RedisClient        *redis.Client
 	RedisClusterClient *redis.ClusterClient
 	ESClient           *elasticsearch.Client

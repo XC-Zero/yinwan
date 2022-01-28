@@ -1,4 +1,4 @@
-package commodity
+package storage
 
 type StockInType int
 

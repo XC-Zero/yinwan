@@ -1,4 +1,4 @@
-package email
+package staff
 
 import (
 	"github.com/XC-Zero/yinwan/internal/config"

@@ -29,7 +29,7 @@ func TestName(t *testing.T) {
 		panic(err)
 
 	}
-	code, err := CreateQRCode(string(marshal), Black, LightPurple, 1024)
+	code, err := CreateQRCode(string(marshal), White, Pink, 1024)
 	if err != nil {
 		panic(err)
 
