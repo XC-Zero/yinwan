@@ -44,7 +44,7 @@ services:
       # - /home/dev/workspace/elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
       - certs:$CERTS_DIR
     ports:
-      - 9200:9200
+      - 9201:9200
       - 9300:9300
     networks:
       - esnet

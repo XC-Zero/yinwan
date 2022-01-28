@@ -1,13 +1,17 @@
 package config
 
+import "github.com/meilisearch/meilisearch-go"
+
 // StorageConfig 存储配置
 type StorageConfig struct {
-	MysqlConfig   MysqlConfig   `json:"mysql_config"`
-	MongoDBConfig MongoDBConfig `json:"mongo_db_config"`
-	RedisConfig   RedisConfig   `json:"redis_config"`
-	MinioConfig   MinioConfig   `json:"minio_config"`
-	KafkaConfig   KafkaConfig   `json:"kafka_config"`
-	InfluxConfig  InfluxConfig  `json:"influx_config"`
+	MysqlConfig       MysqlConfig              `json:"mysql_config"`
+	MongoDBConfig     MongoDBConfig            `json:"mongo_db_config"`
+	RedisConfig       RedisConfig              `json:"redis_config"`
+	MinioConfig       MinioConfig              `json:"minio_config"`
+	KafkaConfig       KafkaConfig              `json:"kafka_config"`
+	InfluxConfig      InfluxConfig             `json:"influx_config"`
+	ESConfig          ESConfig                 `json:"es_config"`
+	MeilisearchConfig meilisearch.ClientConfig `json:"meilisearch_config"`
 }
 
 type MysqlConfig struct {

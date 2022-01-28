@@ -37,7 +37,12 @@ func InitMysqlGormV2(config config2.MysqlConfig) {
 	if err != nil {
 		panic(err)
 	}
+	db.Create(V{})
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetMaxOpenConns(20)
 	MysqlClient = db
+}
+
+type V struct {
+	A string
 }

@@ -10,6 +10,6 @@ services:
 #    volumes:
 #      - redis_persistent:/data
     entrypoint:
-      "redis-server --appendonly yes"
+      - "redis-server --appendonly yes"
 #volumes:
 #  redis_persistent:
