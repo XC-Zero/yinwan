@@ -10,7 +10,7 @@ import (
 )
 
 // InitMysqlGormV2 GormV2 returns a MySQL DB engine from configs
-func InitMysqlGormV2(config config2.MysqlConfig) {
+func InitMysqlGormV2(config config2.MysqlConfig) *gorm.DB {
 	url := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local&multiStatements=True",
 		config.UserName,
 		config.Password,
@@ -40,7 +40,7 @@ func InitMysqlGormV2(config config2.MysqlConfig) {
 	db.Create(V{})
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetMaxOpenConns(20)
-	MysqlClient = db
+	return db
 }
 
 type V struct {

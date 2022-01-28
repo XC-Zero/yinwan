@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/XC-Zero/yinwan/pkg/tools/token"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,14 @@ type Staff struct {
 	StaffPhone    *string `gorm:"type:varchar(50)"`
 	StaffPassword string  `gorm:"type:varchar(20)"`
 	StaffRoleID   int     `gorm:"type:int"`
+}
+
+func (s Staff) Login() string {
+	token.GenerateToken(s)
+}
+
+func (s Staff) LogOut() {
+
 }
 
 // Role 职工角色表

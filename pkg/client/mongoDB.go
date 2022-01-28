@@ -10,7 +10,7 @@ import (
 )
 
 // InitMongoDB ...
-func InitMongoDB(config cfg.MongoDBConfig) {
+func InitMongoDB(config cfg.MongoDBConfig) *mongo.Database {
 	// 设置客户端连接配置
 	clientOptions := options.Client().ApplyURI(config.URL)
 	// 连接到MongoDB
@@ -24,5 +24,5 @@ func InitMongoDB(config cfg.MongoDBConfig) {
 	if err != nil {
 		panic(err)
 	}
-	MongoDBClient = client.Database(config.DBName)
+	return client.Database(config.DBName)
 }

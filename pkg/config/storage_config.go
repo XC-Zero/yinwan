@@ -2,7 +2,7 @@ package config
 
 import "github.com/meilisearch/meilisearch-go"
 
-// StorageConfig 存储配置
+// StorageConfig 系统存储配置
 type StorageConfig struct {
 	MysqlConfig       MysqlConfig              `json:"mysql_config"`
 	MongoDBConfig     MongoDBConfig            `json:"mongo_db_config"`
@@ -12,6 +12,14 @@ type StorageConfig struct {
 	InfluxConfig      InfluxConfig             `json:"influx_config"`
 	ESConfig          ESConfig                 `json:"es_config"`
 	MeilisearchConfig meilisearch.ClientConfig `json:"meilisearch_config"`
+}
+
+// BookConfig 账套存储配置
+type BookConfig struct {
+	BookName      string        `json:"book_name"`
+	MysqlConfig   MysqlConfig   `json:"mysql_config"`
+	MinioConfig   MinioConfig   `json:"minio_config"`
+	MongoDBConfig MongoDBConfig `json:"mongo_db_config"`
 }
 
 type MysqlConfig struct {

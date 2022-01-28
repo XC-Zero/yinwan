@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d37abae2-3d9b-43a8-b281-aaebe0ce7e7c" name="默认变更列表" comment="init project">
+      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/yinwan.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/services/finance/credential/voucher.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/client/book_name.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/client/minio.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/model/credential.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tools/token/main/a.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tools/token/token_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/gateway/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/gateway/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/services/access_control/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/services/access_control/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/services/finance/voucher/voucher.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/client/mongoDB.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/mongoDB.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/client/mysql.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/mysql.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/config/service_config.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/config/service_config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/config/storage_config.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/config/storage_config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/interface/staff.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/interface/staff.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/model/staff.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/model/staff.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/model/voucher.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/tools/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tools/token/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/产品文档.md" beforeDir="false" afterPath="$PROJECT_DIR$/产品文档.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+        <option value="Go Application" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../sdk/go1.17.6" />
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="hzx" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="hzx" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="SWAP_SIDES_IN_COMPARE_BRANCHES" value="true" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/scripts/generate/generate.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../test_common/errs/err_funcs.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../sdk/go1.17.6/src/net/http/request.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/pkg/client/common.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../test_common/errs/errs.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../sdk/go 1.17.5/src/strings/strings.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/pkg/config/storage_config.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/go/pkg/mod/github.com/spf13/viper@v1.9.0/viper.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../../sdk/go1.17.6/src/strings/strings.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/pkg/model/staff.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../sdk/go1.17.6/src/testing/testing.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../test_common/config/config.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../test_common/internal/config/config.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../test_common/error_code/display_error.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/internal/services/access_control/router.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/pkg/tools/token/token.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/internal/config/config.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../sdk/go1.17.6/src/runtime/panic.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/pkg/interface/staff.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/internal/services/staff/email/email.go" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="6pmqbtx0" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="2" />
+  </component>
+  <component name="ProjectId" id="23E6GXBnmN8E4jHtkfOdXiyJqMU" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
+    <property name="go.format.on.save.advertiser.fired" value="true" />
+    <property name="go.formatter.settings.were.checked" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="go.vendoring.notification.had.been.shown" value="true" />
+    <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmd" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="D:\goland\GoLand 2021.1.3\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\go\workspace\yinwan\cmd" />
+      <recent name="D:\go\workspace\yinwan\configs" />
+      <recent name="D:\go\workspace\yinwan\test" />
+      <recent name="D:\go\workspace\yinwan\scripts" />
+      <recent name="D:\go\workspace\yinwan\pkg\utils" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\go\workspace\yinwan\pkg\tools\sql" />
+      <recent name="D:\go\workspace\yinwan\pkg\tools\qrcode" />
+      <recent name="D:\go\workspace\yinwan\pkg\web_config_model" />
+      <recent name="D:\go\workspace\yinwan\cmd\services" />
+      <recent name="D:\go\workspace\yinwan\pkg\tools\math_plus" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go 构建.go build github.com/XC-Zero/yinwan/pkg/tools/token/main">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build github.com/XC-Zero/yinwan/pkg/tools/main" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/XC-Zero/yinwan/pkg/tools/main" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/pkg/tools/main/f.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build github.com/XC-Zero/yinwan/pkg/tools/token/main" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/XC-Zero/yinwan/pkg/tools/token/main" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/pkg/tools/token/main/a.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build github.com/XC-Zero/yinwan/pkg/utils/logger/s" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/XC-Zero/yinwan/pkg/utils/logger/s" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/pkg/utils/logger/s/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="github.com/XC-Zero/yinwan/pkg/tools/qrcode 中的 TestName" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$/pkg/tools/qrcode" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/XC-Zero/yinwan/pkg/tools/qrcode" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestName\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="github.com/XC-Zero/yinwan/pkg/tools/token 中的 TestName" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="yinwan" />
+      <working_directory value="$PROJECT_DIR$/pkg/tools/token" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/XC-Zero/yinwan/pkg/tools/token" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestName\E$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go 构建.go build github.com/XC-Zero/yinwan/pkg/tools/token/main" />
+        <item itemvalue="Go 测试.github.com/XC-Zero/yinwan/pkg/tools/token 中的 TestName" />
+        <item itemvalue="Go 测试.github.com/XC-Zero/yinwan/pkg/tools/qrcode 中的 TestName" />
+        <item itemvalue="Go 构建.go build github.com/XC-Zero/yinwan/pkg/utils/logger/s" />
+        <item itemvalue="Go 构建.go build github.com/XC-Zero/yinwan/pkg/tools/main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/dev" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init project" />
+    <option name="LAST_COMMIT_MESSAGE" value="init project" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$USER_HOME$/go/pkg/mod/github.com/dgrijalva/jwt-go@v3.2.0+incompatible/claims.go</url>
+          <line>105</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$USER_HOME$/go/pkg/mod/github.com/dgrijalva/jwt-go@v3.2.0+incompatible/claims.go</url>
+          <line>107</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
