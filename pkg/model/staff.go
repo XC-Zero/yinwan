@@ -13,7 +13,7 @@ type Staff struct {
 	BasicModel
 	StaffName     string  `gorm:"type:varchar(50);not null;"`
 	StaffAlias    *string `gorm:"type:varchar(50)"` // 职工别名
-	StaffEmail    *string `gorm:"type:varchar(50)"`
+	StaffEmail    string  `gorm:"type:varchar(50);index"`
 	StaffPhone    *string `gorm:"type:varchar(50)"`
 	StaffPassword string  `gorm:"type:varchar(20)"`
 	StaffRoleID   int     `gorm:"type:int"`

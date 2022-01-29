@@ -5,10 +5,16 @@ import (
 )
 
 func InitRouter(services *gin.RouterGroup) {
+	// 增
 	services.POST("/staff/create_staff", createStaff)
-	services.POST("/staff/update_staff", updateStaff)
+	// 删
 	services.POST("/staff/delete_staff", deleteStaff)
+	// 改
+	services.POST("/staff/update_staff", updateStaff)
+	// 查
 	services.POST("/staff/select_staff", selectStaff)
+	// 校验邮箱
+	services.POST("/staff/validate_staff_email", validateStaffEmail)
 	services.POST("/staff/select_department", selectDepartment)
 	services.POST("/staff/create_department", createDepartment)
 	services.POST("/staff/update_department", updateDepartment)
@@ -19,14 +25,17 @@ func InitRouter(services *gin.RouterGroup) {
 func createStaff(ctx *gin.Context) {
 
 }
-
-func updateStaff(ctx *gin.Context) {
-
-}
 func selectStaff(ctx *gin.Context) {
 
 }
+func updateStaff(ctx *gin.Context) {
+
+}
+
 func deleteStaff(ctx *gin.Context) {
+
+}
+func validateStaffEmail(ctx *gin.Context) {
 
 }
 

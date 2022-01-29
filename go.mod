@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.31.0
+	github.com/dollarkillerx/urllib v1.13.16
 	github.com/elastic/go-elasticsearch/v7 v7.16.0
 	github.com/fwhezfwhez/errorx v1.1.0
 	github.com/gin-gonic/gin v1.7.7
@@ -14,6 +15,7 @@ require (
 	github.com/meilisearch/meilisearch-go v0.17.0
 	github.com/minio/minio-go/v7 v7.0.21
 	github.com/pkg/errors v0.9.1
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/shopspring/decimal v1.3.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/viper v1.10.1
@@ -70,6 +72,7 @@ require (
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rs/xid v1.2.1 // indirect
+	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect

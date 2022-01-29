@@ -1,22 +1,25 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
-// BasicModel borrowed from GORM
+// BasicModel 基本模型
 type BasicModel struct {
-	// Currently ID is set to be VARCHAR(100) in order to
-	// support different kind of IDs from various 3rd-party
-	// sources
+	// 记录ID
 	RecID *int `gorm:"primaryKey;type:int;autoIncrement" json:"id"`
-
-	// Every row should at least mark up the create, update
-	// and delete timestamp
-	CreatedAt time.Time  `gorm:"type:timestamp;not null"`
+	//创建时间
+	CreatedAt time.Time `gorm:"type:timestamp;not null"`
+	// 更新时间
 	UpdatedAt *time.Time `gorm:"type:timestamp"`
+	// 删除时间
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-// TimeOnlyModel does not have an ID
+// TimeOnlyModel 不含主键的基本模型
 type TimeOnlyModel struct {
-	CreatedAt time.Time  `gorm:"type:timestamp;not null"`
-	UpdatedAt *time.Time `gorm:"type:timestamp"`
+	CreatedAt time.Time      `gorm:"type:timestamp;not null"`
+	UpdatedAt *time.Time     `gorm:"type:timestamp"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
