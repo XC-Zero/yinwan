@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/tools/token"
+	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"strconv"
 	"strings"
 )

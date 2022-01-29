@@ -7,7 +7,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/services/staff"
 	"github.com/XC-Zero/yinwan/internal/services/storage"
 	"github.com/XC-Zero/yinwan/internal/services/transaction"
-	"github.com/XC-Zero/yinwan/pkg/tools/token"
+	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/gin-gonic/gin"
 )
 
