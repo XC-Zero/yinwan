@@ -1,0 +1,69 @@
+api_config:
+  email_config:
+    email_server_addr: ""
+    sender_email: ""
+    email_secret: ""
+  text_message_config:
+    app_id: ""
+    app_secret: ""
+    api_address: ""
+  currency_rate_config:
+    list_url: "56"
+    rate_url: ""
+    app_key: ""
+    sign: ""
+
+service_config:
+  port: 3776
+
+
+storage_config:
+  mysql_config:
+    host: ""
+    port: ""
+    user_name: ""
+    password: ""
+    db_name: ""
+    log_mode: ""
+
+  mongo_db_config:
+    url: ""
+    db_name: ""
+
+  redis_config:
+    addr_list:
+      - 120.79.130.192:6379
+    password: ""
+
+  minio_config:
+    access_key: ""
+    secret_key: ""
+    end_point: ""
+    bucket: ""
+
+  kafka_config:
+    addr_list:
+      - 120.79.130.192:9200
+    username: ""
+    password: ""
+
+  es_config:
+    host: ""
+    user: ""
+    password: ""
+    response_header_timeout_seconds: 0
+
+  meilisearch_config:
+    host: ""
+    api_key: ""
+    timeout: 2
+
+book_name_config:
+  - book_name: "测试"
+    mysql_config:
+      host: ""
+      port: ""
+      user_name: ""
+      password: ""
+      db_name: ""
+      log_mode: ""

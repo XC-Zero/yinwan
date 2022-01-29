@@ -1,12 +1,12 @@
 package model
 
-// MaterialBatch 批次
-type MaterialBatch struct {
+// CommodityBatch 批次
+type CommodityBatch struct {
 	BasicModel
 }
 
-// Material 材料
-type Material struct {
+// Commodity 材料
+type Commodity struct {
 	BasicModel
 	CommodityType      *string                `gorm:"type:varchar(50)"`
 	CommodityStyle     *string                `gorm:"type:varchar(50)"`

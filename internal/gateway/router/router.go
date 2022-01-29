@@ -21,7 +21,10 @@ func Starter() {
 	staff.InitRouter(services)
 	finance.InitRouter(services)
 	transaction.InitRouter(services)
-	router.Run(":" + config.CONFIG.ServiceConfig.Port)
+	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func auth(ctx *gin.Context) {

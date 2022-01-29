@@ -71,10 +71,10 @@ type CurrencyRate struct {
 	Update string `json:"update"`
 }
 
-// 获取货币列表
+// GetCurrencyList 获取货币列表
 // 下面是以Get请求为例的测试链接
 // GET https://sapi.k780.com/?app=finance.rate_curlist&curType=rateRealtime&appkey=64165&sign=39fa1b9f58cb3fcbaea198b869d9c243
-func getCurrencyList() {
+func GetCurrencyList() {
 	cfg := config.CONFIG.ApiConfig.CurrencyRateConfig
 	listUrl := fmt.Sprintf("%s&appkey=%s&sign=%s", cfg.ListURL, cfg.AppKey, cfg.Sign)
 	err := urllib.Get(listUrl).FromJson(&currencyList)
@@ -84,7 +84,7 @@ func getCurrencyList() {
 		if retry < 1 {
 			return
 		} else {
-			getCurrencyList()
+			GetCurrencyList()
 		}
 	}
 	for _, currency := range currencyList.Result.Lists {
