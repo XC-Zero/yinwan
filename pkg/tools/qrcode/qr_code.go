@@ -5,6 +5,7 @@ import (
 	"image/color"
 )
 
+// 这是一坨定义好的颜色，可以往里面加颜色，看你们喜欢
 var (
 	White = color.RGBA{
 		R: 255,

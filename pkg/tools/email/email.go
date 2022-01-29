@@ -1,4 +1,4 @@
-package staff
+package email
 
 import (
 	"github.com/XC-Zero/yinwan/internal/config"
@@ -7,14 +7,14 @@ import (
 	"net/textproto"
 )
 
-// SendEmail 仅支持SMTP服务
+// SendEmail 发送邮件 ，仅支持SMTP服务
 func SendEmail(to []string, subject, content string) error {
 	emailConfig := config.CONFIG.ApiConfig.EmailConfig
 	e := &email.Email{
 		To:      to,
 		From:    emailConfig.SenderEmail,
 		Subject: subject,
-		Text:    []byte("Text Body is, of course, supported!"),
+		Text:    []byte("Yinwan 来信!"),
 		HTML:    []byte(content),
 		Headers: textproto.MIMEHeader{},
 	}
