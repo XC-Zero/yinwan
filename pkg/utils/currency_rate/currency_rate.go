@@ -39,6 +39,7 @@ var CurrencyNameReverseMap = make(map[string]string)
 // CurrencyRateMap 各货币与人民币汇率表
 var CurrencyRateMap = make(map[string]CurrencyRate)
 
+// 下面俩个都是临时结构体，没什么意义，用来解析接收api返回的参数而已
 type currencyListResponse struct {
 	Success string `json:"success"`
 	Result  struct {
