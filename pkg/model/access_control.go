@@ -1,62 +1,24 @@
 package model
 
-import (
-	"log"
-	"strconv"
-	"strings"
-)
-
-type ModuleCapability int
-
-const (
-	READ ModuleCapability = iota + 620001
-	WRITE
-	DELETE
-	ALL
-)
-
-func (m ModuleCapability) Display() string {
-	switch m {
-	case READ:
-		return "查看"
-	case WRITE:
-		return "修改"
-	case DELETE:
-		return "删除"
-	case ALL:
-		return "所有"
-	default:
-		return "未知"
-	}
-}
-
-// AccessControl 权限控制 --- 按模块
-type AccessControl struct {
+// Module 模块表
+type Module struct {
 	BasicModel
-	ModuleID           int    `gorm:"type:int"`
-	ModuleName         string `gorm:"type:varchar(50)"`
-	ModuleCapabilities string `gorm:"type:varchar(50)"`
+	ModuleName   string  `gorm:"type:varchar(50)"`
+	ModuleRemark *string `gorm:"type:varchar(200)"`
 }
 
-func (ac AccessControl) SplitCapabilities() (caps []ModuleCapability) {
-	cs := ac.ModuleCapabilities
-	if cs != "" {
-		for _, str := range strings.Split(cs, SPLIT_SYMBOL) {
-			val, err := strconv.Atoi(str)
-			if err != nil {
-				log.Println("转换数据库中 访问模块：功能可选项值 -> 结构体定义常量失败，error is " + err.Error())
-				continue
-			}
-			caps = append(caps, ModuleCapability(val))
-		}
-	}
-	return
+// Role 职工角色表
+type Role struct {
+	BasicModel
+	RoleName   string  `gorm:"type:varchar(50)"`
+	RoleRemark *string `gorm:"type:varchar(200)"`
 }
-func (ac *AccessControl) SetModuleCapabilities(caps []ModuleCapability) {
-	val := ""
-	// 多一个 | ,没所谓
-	for _, capability := range caps {
-		val += strconv.Itoa(int(capability)) + SPLIT_SYMBOL
-	}
-	ac.ModuleCapabilities = val
+
+// RoleCapabilities 角色对各模块的权限关系表
+type RoleCapabilities struct {
+	RoelID    int `gorm:"type:int;index"`
+	ModuleID  int `gorm:"type:int;index"`
+	CanRead   bool
+	CanWrite  bool
+	CanDelete bool
 }

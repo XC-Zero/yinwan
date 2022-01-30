@@ -4,14 +4,15 @@ type ChartType ComponentType
 
 //goland:noinspection GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage
 const (
-	LINE_CHART ChartType = ""
-	PIPE_CHART ChartType = ""
-	BAR_CHART  ChartType = ""
+	LINE_CHART ChartType = "line_chart"
+	PIPE_CHART ChartType = "pipe_chart"
+	BAR_CHART  ChartType = "bar_chart"
 )
 
 type LineChart struct {
-	LineChartLabel string
-	XAxisData      []string
+	LineChartLabel string   `json:"line_chart_label"`
+	XAxisData      []string `json:"x_axis_data"`
+	Legend         []string `json:"legend"`
 	LineChartData  []map[string]interface{}
 }
 

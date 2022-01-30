@@ -7,7 +7,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/fwhezfwhez/errorx"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -57,31 +56,4 @@ func (s Staff) LogOut() {
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("redis 删除 key 为 %s 的 token 失败, error is %s", s.StaffEmail, err))
 	}
-}
-
-// Role 职工角色表
-type Role struct {
-	BasicModel
-	RoleName    string `gorm:"type:varchar(50)"`
-	RoleContent string `gorm:"type:varchar(500)"`
-}
-
-func (r *Role) SetRoleContent(controlList []AccessControl) {
-	content := ""
-	for i := 0; i < len(controlList)-1; i++ {
-		ac := controlList[i]
-		if ac.RecID != nil {
-			content += strconv.Itoa(*controlList[i].RecID) + SPLIT_SYMBOL
-		}
-	}
-	r.RoleContent = content
-}
-
-func (r Role) GetRoleAccessControlList() (controlList []AccessControl, err error) {
-	arr := strings.Split(r.RoleContent, SPLIT_SYMBOL)
-	if len(arr) == 0 {
-		return nil, nil
-	}
-	// todo  根据ID从数据库找
-	return nil, nil
 }

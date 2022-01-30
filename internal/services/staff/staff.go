@@ -1,22 +1,20 @@
 package staff
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/pkg/model"
 )
 
-func CreateStaff(ctx *gin.Context) {
+// GetStaff todo 通过条件找员工 先只支持 `或`
+func GetStaff(staff model.Staff) (staffList []model.Staff, err error) {
+	s := client.MysqlClient.Model(&model.Staff{})
 
-}
-func SelectStaff(ctx *gin.Context) {
-
-}
-func UpdateStaff(ctx *gin.Context) {
-
-}
-
-func DeleteStaff(ctx *gin.Context) {
-
-}
-func ValidateStaffEmail(ctx *gin.Context) {
-
+	if staff.RecID != nil {
+		err = s.Find(&staff, "rec_id = ?", *staff.RecID).Error
+		if err != nil {
+			staffList = append(staffList, staff)
+		}
+		return
+	}
+	s.Find()
 }
