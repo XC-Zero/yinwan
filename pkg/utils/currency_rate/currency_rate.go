@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 const MAX_RETRY = 3
 
 var Interval = time.Minute * 3
@@ -53,7 +54,7 @@ type currencyListResponse struct {
 	} `json:"result"`
 }
 
-type currencyRate struct {
+type CurrencyRateResponse struct {
 	Success string `json:"success"`
 	Result  struct {
 		Status string `json:"status"`
@@ -104,8 +105,8 @@ func GetCurrencyList() {
 // GetCurrencyRate 获取某一货币的汇率
 // 下面是以Get请求为例的测试链接
 // GET http://api.k780.com?app=finance.rate&scur=AED&tcur=CNY&appkey=64165&sign=39fa1b9f58cb3fcbaea198b869d9c243
-func GetCurrencyRate(sourceCurrency, targetCurrency string) currencyRate {
-	cfg, currencyRate := config.CONFIG.ApiConfig.CurrencyRateConfig, currencyRate{}
+func GetCurrencyRate(sourceCurrency, targetCurrency string) CurrencyRateResponse {
+	cfg, currencyRate := config.CONFIG.ApiConfig.CurrencyRateConfig, CurrencyRateResponse{}
 	err := urllib.Get(fmt.Sprintf("%s&scur=%s&tcur=%s&appkey=%s&sign=%s",
 		cfg.RateURL, sourceCurrency, targetCurrency, cfg.AppKey, cfg.Sign,
 	)).FromJson(&currencyRate)

@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 const DIV_SYMBOL = "/"
 
+//goland:noinspection GoSnakeCaseUsage
 var (
 	ZERO_DENOMINATOR = errors.New("Denominator is 0 ! ")
 )

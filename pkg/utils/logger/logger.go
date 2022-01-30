@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 const SPLIT_LINE = "\n----------------------------------------------------\n"
+
+//goland:noinspection GoSnakeCaseUsage,GoNameStartsWithPackageName
 const LOGGER_TOPIC = "System-Log"
 
 type LogType string
@@ -22,6 +25,7 @@ const (
 
 type LogHeader string
 
+//goland:noinspection GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage
 const (
 	FATAL_HEADER  LogHeader = "$#8000fa$(致命问题)"
 	ERROR_HEADER  LogHeader = "$#e50c3e$(错误)"

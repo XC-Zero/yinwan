@@ -2,6 +2,7 @@ package web_config_model
 
 type ComponentType string
 
+//goland:noinspection GoSnakeCaseUsage
 const ROOT_COMPONENT ComponentType = "ROOT"
 
 // WebComponent web组件

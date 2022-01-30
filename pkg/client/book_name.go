@@ -15,8 +15,6 @@ type BookName struct {
 	MinioClient   *minio.Client
 }
 
-var ()
-
 func InitBookMap(configs []config.BookConfig) {
 	for _, config := range configs {
 		bk := BookName{

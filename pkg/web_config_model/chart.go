@@ -2,6 +2,7 @@ package web_config_model
 
 type ChartType ComponentType
 
+//goland:noinspection GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage
 const (
 	LINE_CHART ChartType = ""
 	PIPE_CHART ChartType = ""

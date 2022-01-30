@@ -10,3 +10,17 @@ type Currency struct {
 	// 对比人民币的汇率
 	CurrencyExchangeRate float64 `gorm:"type:decimal(20,4)"`
 }
+
+// Payable 应付
+type Payable struct {
+	BasicModel
+	//	关联凭证ID
+	CredentialID int `gorm:"type:int"`
+}
+
+// Receivable 应收
+type Receivable struct {
+	BasicModel
+	//	关联凭证ID
+	CredentialID int `gorm:"type:int"`
+}

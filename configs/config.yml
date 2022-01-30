@@ -19,11 +19,11 @@ service_config:
 
 storage_config:
   mysql_config:
-    host: ""
-    port: ""
-    user_name: ""
-    password: ""
-    db_name: ""
+    host: "120.79.130.192"
+    port: "3306"
+    user_name: "root"
+    password: "123456"
+    db_name: "test"
     log_mode: ""
 
   mongo_db_config:

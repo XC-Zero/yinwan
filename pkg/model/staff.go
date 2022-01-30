@@ -1,30 +1,62 @@
 package model
 
 import (
+	"fmt"
+	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
+	"github.com/fwhezfwhez/errorx"
 	"strconv"
 	"strings"
+	"time"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 const SPLIT_SYMBOL = "|"
+
+//goland:noinspection GoSnakeCaseUsage
+const EXPIRE_TIME = time.Hour * 2
 
 // Staff 职工表
 type Staff struct {
 	BasicModel
-	StaffName     string  `gorm:"type:varchar(50);not null;"`
-	StaffAlias    *string `gorm:"type:varchar(50)"` // 职工别名
-	StaffEmail    string  `gorm:"type:varchar(50);index"`
-	StaffPhone    *string `gorm:"type:varchar(50)"`
-	StaffPassword string  `gorm:"type:varchar(20)"`
-	StaffRoleID   int     `gorm:"type:int"`
+	StaffName     string  `gorm:"type:varchar(50);not null;" json:"staff_name"`
+	StaffAlias    *string `gorm:"type:varchar(50)" json:"staff_alias"` // 职工别名
+	StaffEmail    string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"`
+	StaffPhone    *string `gorm:"type:varchar(50);index;" json:"staff_phone"`
+	StaffPassword string  `gorm:"type:varchar(20)" json:"staff_password"`
+	StaffRoleID   int     `gorm:"type:int" json:"staff_role_id"`
+	StaffRoleName string  `gorm:"type:varchar(50)" json:"staff_role_name"`
 }
 
-func (s Staff) Login() string {
-	return token.GenerateToken(strconv.Itoa(*s.RecID))
+// Login 登录
+// 查mysql ,校验一下，生成个 token 丢 redis ，设置 2 小时过期
+// 返回 token 指针 和 错误信息
+func (s Staff) Login() (tokenPtr *string, errorMessage string) {
+	temp := Staff{}
+	err := client.MysqlClient.Model(&Staff{}).Find(&temp, " StaffName = ? or StaffEmail =? or StaffPhone = ?").Error
+	if err != nil || temp.RecID == nil {
+		logger.Error(errorx.MustWrap(err), fmt.Sprintf("用户登录失败，数据库内找不到此用户, staff is %+v\n ,error is %s", s, err))
+		return nil, "无此用户"
+	}
+	if s.StaffPassword != temp.StaffPassword {
+		return nil, "抱歉，密码不正确"
+	}
+	tokenStr := token.GenerateToken(strconv.Itoa(*temp.RecID))
+	err = client.RedisClient.Set(s.StaffEmail, tokenStr, EXPIRE_TIME).Err()
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), fmt.Sprintf("redis 存储 token 失败, error is %s", err))
+	}
+	tokenPtr = &tokenStr
+	return
 }
 
+// LogOut 退出登录
 func (s Staff) LogOut() {
-
+	err := client.RedisClient.Del(s.StaffEmail).Err()
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), fmt.Sprintf("redis 删除 key 为 %s 的 token 失败, error is %s", s.StaffEmail, err))
+	}
 }
 
 // Role 职工角色表

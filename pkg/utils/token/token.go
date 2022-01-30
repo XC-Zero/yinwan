@@ -7,7 +7,10 @@ import (
 	"time"
 )
 
+//goland:noinspection GoSnakeCaseUsage
 const JWT_SECRETE = "p2F*J7D!A%s68^wS"
+
+//goland:noinspection GoSnakeCaseUsage
 const EXPIRE_TIME = time.Second * 3
 
 func GenerateToken(userID string) string {

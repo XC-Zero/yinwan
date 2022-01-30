@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// ManipulationLog 操作日志
 type ManipulationLog struct {
 	BasicModel
 	ManipulatorID       string `gorm:"type:int"`

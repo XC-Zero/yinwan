@@ -19,6 +19,6 @@ func InitMinio(config config.MinioConfig) *minio.Client {
 	if err != nil {
 		return nil
 	}
-	//client.GetBUcket
+	//client.GetBucket
 	return client
 }

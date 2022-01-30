@@ -15,7 +15,8 @@ func Starter() {
 	c.Start()
 }
 
-// 每天跑一次
+// 定时任务：获取货币汇率
+//  每天跑一次
 func harvestCurrencyRate(c *cron.Cron) {
 	_, err := c.AddFunc(cr.DAILY, func() {
 		currency_rate.GetCurrencyList()

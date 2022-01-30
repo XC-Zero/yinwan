@@ -1,5 +1,0 @@
-package permission
-
-//func ()  {
-//
-//}

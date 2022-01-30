@@ -11,13 +11,15 @@ import (
 	"log"
 )
 
-var configName = flag.String("c", "config", "读入config文件")
-var configPath = flag.String("p", "./configs", "config所在目录")
 var CONFIG *config
 var GlobalViper *viper.Viper
 
+var configName = flag.String("c", "config", "读入config文件")
+var configPath = flag.String("p", "./configs", "config所在目录")
+
 func init() {
 	CONFIG = new(config)
+	// 使用全局 viper 的实例化对象，保证监听和初始化时使用同一个 viper 对象
 	GlobalViper = viper.New()
 }
 
@@ -29,10 +31,13 @@ type config struct {
 	LogConfig      config2.LogConfig     `json:"log_config"`
 }
 
+// 设置 config 对应的结构体的 tag
 func setTagName(d *mapstructure.DecoderConfig) {
 	d.TagName = "json"
 }
 
+// InitConfiguration 初始化配置
+// 使用 viper 读取指定路径的指定文件，将内容映射到结构体里
 func InitConfiguration() {
 	GlobalViper.SetConfigName(*configName)
 	GlobalViper.AutomaticEnv()
@@ -51,6 +56,7 @@ func InitConfiguration() {
 	return
 }
 
+// ViperMonitor 使用 viper 监听指定文件
 func ViperMonitor() {
 	flag.Parse()
 	GlobalViper.WatchConfig()

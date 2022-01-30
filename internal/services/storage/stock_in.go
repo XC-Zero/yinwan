@@ -2,6 +2,7 @@ package storage
 
 type StockInType int
 
+//goland:noinspection GoSnakeCaseUsage
 const (
 	INVENTORY_SURPLUS StockInType = iota + 760001
 	DISMANTLE

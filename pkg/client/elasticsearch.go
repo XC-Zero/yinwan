@@ -11,7 +11,7 @@ import (
 
 // InitElasticsearch ...
 func InitElasticsearch(config cfg.ESConfig) {
-	var cfg = elasticsearch.Config{
+	var c = elasticsearch.Config{
 		Addresses: []string{
 			config.Host,
 		},
@@ -28,7 +28,7 @@ func InitElasticsearch(config cfg.ESConfig) {
 		},
 	}
 
-	esClient, err := elasticsearch.NewClient(cfg)
+	esClient, err := elasticsearch.NewClient(c)
 	if err != nil {
 		panic("Init ES failed ")
 	}

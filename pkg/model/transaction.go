@@ -7,6 +7,7 @@ import (
 
 type PayType int
 
+//goland:noinspection GoSnakeCaseUsage
 const (
 	WX PayType = iota + 35001
 	ZFB

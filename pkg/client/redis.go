@@ -20,6 +20,7 @@ func InitRedis(config cfg.RedisConfig) {
 	RedisClient = redisClient
 }
 
+// InitRedisCluster 初始化Redis集群的连接
 func InitRedisCluster(config cfg.RedisConfig) {
 
 	redisClient := redis.NewClusterClient(&redis.ClusterOptions{

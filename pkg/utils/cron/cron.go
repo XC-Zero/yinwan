@@ -1,5 +1,6 @@
 package cron
 
+//goland:noinspection GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage
 const (
 	DAILY               = "@every 24h"
 	HOURLY              = "@every 1h"
