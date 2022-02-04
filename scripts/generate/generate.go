@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 var DataBase []interface{}
@@ -13,13 +14,15 @@ func init() {
 
 }
 func main() {
-
-	GenerateMysqlLogTables()
+	config.InitConfiguration()
+	go config.ViperMonitor()
+	// todo 初始化配置文件
+	//client.MysqlClient = client.InitMysqlGormV2(config.CONFIG.StorageConfig.MysqlConfig)
+	//GenerateMysqlSchema()
 
 }
 
-func GenerateMysqlSchema(schemaName string) error {
-	client := client.MysqlClient
+func GenerateMysqlSchema(client *gorm.DB, schemaName string) error {
 	if client == nil {
 		return errors.New("Mysql client is not init! ")
 	}
@@ -32,24 +35,23 @@ func GenerateMysqlSchema(schemaName string) error {
 	return nil
 }
 
-func GenerateMysqlTables() error {
-	client := client.MysqlClient
+func GenerateMysqlTables(client *gorm.DB) error {
+
 	if client == nil {
 		return errors.New("Mysql client is not init! ")
 	}
-	err := client.AutoMigrate()
+	err := client.AutoMigrate(DataBase...)
 	if err != nil {
 		return errors.New("Mysql client is not init! ")
 	}
 	return nil
 }
 
-func GenerateMysqlLogTables() error {
-	client := client.MysqlClient
+func GenerateMysqlLogTables(client *gorm.DB) error {
 	if client == nil {
 		return errors.New("Mysql client is not init! ")
 	}
-	err := client.AutoMigrate(DataBase...)
+	err := client.AutoMigrate()
 	if err != nil {
 		return errors.New("Mysql client is not init! ")
 	}

@@ -74,6 +74,7 @@ type CurrencyRate struct {
 
 // GetCurrencyList 获取货币列表
 // 下面是以Get请求为例的测试链接
+// TODO 测一下
 // GET https://sapi.k780.com/?app=finance.rate_curlist&curType=rateRealtime&appkey=64165&sign=39fa1b9f58cb3fcbaea198b869d9c243
 func GetCurrencyList() {
 	cfg := config.CONFIG.ApiConfig.CurrencyRateConfig

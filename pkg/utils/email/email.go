@@ -8,6 +8,7 @@ import (
 )
 
 // SendEmail 发送邮件 ，仅支持SMTP服务
+// todo 测一下
 func SendEmail(to []string, subject, content string) error {
 	emailConfig := config.CONFIG.ApiConfig.EmailConfig
 	e := &email.Email{
