@@ -13,9 +13,6 @@ func init() {
 
 }
 func main() {
-	//client.InitMysqlGormV2()
-	//client.InitElasticsearch()
-	//client.InitInflux()
 
 	GenerateMysqlLogTables()
 
