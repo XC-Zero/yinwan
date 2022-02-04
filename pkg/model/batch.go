@@ -6,6 +6,7 @@ import (
 )
 
 type Batch struct {
+	BasicModel
 	BatchTime  time.Time
 	BatchName  string
 	BatchOwner _interface.Staff

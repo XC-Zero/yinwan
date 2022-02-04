@@ -2,9 +2,16 @@ package main
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/pkg/errors"
 )
 
+var DataBase []interface{}
+
+func init() {
+	DataBase = append(DataBase, model.Staff{})
+
+}
 func main() {
 	//client.InitMysqlGormV2()
 	//client.InitElasticsearch()
@@ -45,7 +52,7 @@ func GenerateMysqlLogTables() error {
 	if client == nil {
 		return errors.New("Mysql client is not init! ")
 	}
-	err := client.AutoMigrate()
+	err := client.AutoMigrate(DataBase...)
 	if err != nil {
 		return errors.New("Mysql client is not init! ")
 	}

@@ -1,28 +1,27 @@
 package staff
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model"
+	"gorm.io/gorm"
 )
 
-// SelectStaff todo 通过条件找员工 先只支持 `或`
-func SelectStaff(staff model.Staff) (staffList []model.Staff, err error) {
-	s := client.MysqlClient.Model(&model.Staff{})
+// SelectStaff 查找员工
+func SelectStaff(db *gorm.DB, staff model.Staff) (staffList []model.Staff, bool2 bool) {
 
-	if staff.RecID != nil {
-		err = s.Find(&staff, "rec_id = ?", *staff.RecID).Error
-		if err != nil {
-			staffList = append(staffList, staff)
-		}
-		return
-	}
-	//s.Find()
-	return nil, nil
+	return nil, false
 }
 
 // UpdateStaff 更新员工信息
-func UpdateStaff(staff model.Staff) bool {
-	//s := client.MysqlClient.Model(&model.Staff{})
-	//s.Update()
+func UpdateStaff(db *gorm.DB, oldStaff, newStaff model.Staff) bool {
+
 	return false
+}
+
+// AddStaff 添加员工
+func AddStaff(db *gorm.DB, staff model.Staff) {
+
+}
+
+func SelectStaffByID() {
+
 }
