@@ -5,7 +5,7 @@ type CommodityBatch struct {
 	BasicModel
 }
 
-// Commodity 材料
+// Commodity 材料/产品
 type Commodity struct {
 	BasicModel
 	CommodityType      *string                `gorm:"type:varchar(50)"`
@@ -16,4 +16,5 @@ type Commodity struct {
 	CommodityOwnerName string                 `gorm:"type:varchar(50)"`
 	CommodityRemark    *string                `gorm:"type:varchar(200)"`
 	CommodityAttribute map[string]interface{} `gorm:"type:varchar(500)"`
+	CommodityQRCode    string                 `gorm:"type:varchar(500)"`
 }

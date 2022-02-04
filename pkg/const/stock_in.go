@@ -1,5 +1,6 @@
-package storage
+package _const
 
+// StockInType 入库类型
 type StockInType int
 
 //goland:noinspection GoSnakeCaseUsage

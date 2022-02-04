@@ -13,7 +13,7 @@ func TestName(t *testing.T) {
 	now := time.Now()
 	s := struct {
 		Hello string
-		name  string
+		Name  string
 		model.BasicModel
 	}{
 		"FUCK YOU !",
@@ -29,7 +29,7 @@ func TestName(t *testing.T) {
 		panic(err)
 
 	}
-	code, err := CreateQRCode(string(marshal), White, Pink, 1024)
+	code, err := CreateQRCode(string(marshal), White, LightPurple, 1024)
 	if err != nil {
 		panic(err)
 

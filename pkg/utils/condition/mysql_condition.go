@@ -12,9 +12,8 @@ const (
 	AND = "and"
 )
 
-// ModelToMysqlCondition 模型转条件
+// ModelToMysqlCondition 模型（结构体）转条件
 // 只能输入一个结构体的实例化对象
-// 含有多个属性时全是 or
 func ModelToMysqlCondition(model interface{}, operatorSymbol OperatorSymbol) (conditions []interface{}, err error) {
 	objType, objVal, conditionStr := reflect.TypeOf(model), reflect.ValueOf(model), ""
 	if objType.Kind() != reflect.Struct {

@@ -5,8 +5,8 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/model"
 )
 
-// GetStaff todo 通过条件找员工 先只支持 `或`
-func GetStaff(staff model.Staff) (staffList []model.Staff, err error) {
+// SelectStaff todo 通过条件找员工 先只支持 `或`
+func SelectStaff(staff model.Staff) (staffList []model.Staff, err error) {
 	s := client.MysqlClient.Model(&model.Staff{})
 
 	if staff.RecID != nil {
@@ -16,5 +16,13 @@ func GetStaff(staff model.Staff) (staffList []model.Staff, err error) {
 		}
 		return
 	}
-	s.Find()
+	//s.Find()
+	return nil, nil
+}
+
+// UpdateStaff 更新员工信息
+func UpdateStaff(staff model.Staff) bool {
+	//s := client.MysqlClient.Model(&model.Staff{})
+	//s.Update()
+	return false
 }

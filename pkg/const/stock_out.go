@@ -1,4 +1,4 @@
-package storage
+package _const
 
 type StockOutType int
 
