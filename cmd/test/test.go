@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/XC-Zero/yinwan/internal/config"
-	"github.com/XC-Zero/yinwan/internal/controller"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller"
 	"github.com/XC-Zero/yinwan/pkg/client"
 )
 
@@ -11,6 +11,6 @@ func main() {
 	go config.ViperMonitor()
 
 	client.MysqlClient = client.InitMysqlGormV2(config.CONFIG.StorageConfig.MysqlConfig)
-	controller.Starter()
+	services_controller.Starter()
 	select {}
 }
