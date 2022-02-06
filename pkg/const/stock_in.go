@@ -8,6 +8,7 @@ const (
 	INVENTORY_SURPLUS StockInType = iota + 760001
 	DISMANTLE
 	PURCHASE
+	DISPATCH
 )
 
 func (s StockInType) Display() string {
@@ -18,7 +19,10 @@ func (s StockInType) Display() string {
 		return "拆解入库"
 	case PURCHASE:
 		return "采购入库"
+	case DISPATCH:
+		return "调拨入库"
+
 	default:
-		return "未知"
+		return "其他"
 	}
 }

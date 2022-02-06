@@ -17,6 +17,6 @@ func (s StockOutType) Display() string {
 	case SALE:
 		return "销售出库"
 	default:
-		return "未知"
+		return "其他"
 	}
 }

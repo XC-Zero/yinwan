@@ -4,3 +4,5 @@ package finance
 func NewCredential() {
 
 }
+
+func DrawCredential() {}
