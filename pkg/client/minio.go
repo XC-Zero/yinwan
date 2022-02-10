@@ -6,7 +6,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func InitMinio(config config.MinioConfig) *minio.Client {
+func InitMinio(config config.MinioConfig) (*minio.Client, error) {
 	client, err := minio.New(config.EndPoint, &minio.Options{
 		Creds:        credentials.NewStaticV4(config.AccessKey, config.SecretKey, ""),
 		Secure:       false,
@@ -16,9 +16,7 @@ func InitMinio(config config.MinioConfig) *minio.Client {
 		CustomMD5:    nil,
 		CustomSHA256: nil,
 	})
-	if err != nil {
-		return nil
-	}
+
 	//client.GetBucket
-	return client
+	return client, err
 }

@@ -17,11 +17,15 @@ type BookName struct {
 
 func InitBookMap(configs []config.BookConfig) {
 	for _, config := range configs {
+		minio, err := InitMinio(config.MinioConfig)
+		if err != nil {
+			//	todo error list
+		}
 		bk := BookName{
 			MysqlClient:   InitMysqlGormV2(config.MysqlConfig),
 			Name:          config.BookName,
 			MongoDBClient: InitMongoDB(config.MongoDBConfig),
-			MinioClient:   InitMinio(config.MinioConfig),
+			MinioClient:   minio,
 		}
 		BookNameMap[config.BookName] = bk
 	}

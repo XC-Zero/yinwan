@@ -1,69 +1,51 @@
 api_config:
-  email_config:
-    email_server_addr: ""
-    sender_email: ""
-    email_secret: ""
-  text_message_config:
-    app_id: ""
-    app_secret: ""
-    api_address: ""
   currency_rate_config:
+    app_key: ""
     list_url: "56"
     rate_url: ""
-    app_key: ""
     sign: ""
+  email_config:
+    email_secret: ""
+    email_server_addr: ""
+    sender_email: ""
+  text_message_config:
+    api_address: ""
+    app_id: ""
+    app_secret: ""
 
 service_config:
   port: 3776
-
-
 storage_config:
-  mysql_config:
-    host: "120.79.130.192"
-    port: "3306"
-    user_name: "root"
-    password: "123456"
-    db_name: "test"
-    log_mode: ""
-
-  mongo_db_config:
-    url: ""
-    db_name: ""
-
-  redis_config:
-    addr_list:
-      - 120.79.130.192:6379
-    password: ""
-
-  minio_config:
-    access_key: ""
-    secret_key: ""
-    end_point: ""
-    bucket: ""
-
-  kafka_config:
-    addr_list:
-      - 120.79.130.192:9200
-    username: ""
-    password: ""
-
   es_config:
     host: ""
-    user: ""
     password: ""
     response_header_timeout_seconds: 0
-
+    user: ""
+  kafka_config:
+    addr_list:
+    - 120.79.130.192:9200
+    password: ""
+    username: ""
   meilisearch_config:
-    host: ""
     api_key: ""
+    host: ""
     timeout: 2
-
-book_name_config:
-  - book_name: "测试"
-    mysql_config:
-      host: ""
-      port: ""
-      user_name: ""
-      password: ""
-      db_name: ""
-      log_mode: ""
+  minio_config:
+    access_key: ""
+    bucket: ""
+    end_point: ""
+    secret_key: ""
+  mongo_db_config:
+    db_name: ""
+    url: ""
+  mysql_config:
+    db_name: test
+    host: 120.79.130.192
+    log_mode: ""
+    password: "123456"
+    port: "3306"
+    user_name: root
+  redis_config:
+    addr_list:
+    - 120.79.130.192:6379
+    password: ""

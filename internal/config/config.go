@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	config2 "github.com/XC-Zero/yinwan/pkg/config"
-	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/fsnotify/fsnotify"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
@@ -61,7 +60,17 @@ func ViperMonitor() {
 	flag.Parse()
 	GlobalViper.WatchConfig()
 	GlobalViper.OnConfigChange(func(e fsnotify.Event) {
-		logger.Info(fmt.Sprintf("检测到配置文件 %s, 开始重新读取配置文件！", e.String()))
+		log.Println(fmt.Sprintf("检测到配置文件 %s, 开始重新读取配置文件！", e.String()))
+		//logger.Info(fmt.Sprintf("检测到配置文件 %s, 开始重新读取配置文件！", e.String()))
 		InitConfiguration()
 	})
+}
+
+func SaveConfig(key string, value interface{}) error {
+
+	GlobalViper.Set(key, value)
+	err := GlobalViper.WriteConfig()
+
+	return err
+
 }

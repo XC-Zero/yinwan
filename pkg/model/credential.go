@@ -1,22 +1,27 @@
 package model
 
-// Credential 财务凭证
-type Credential struct {
+import (
+	_const "github.com/XC-Zero/yinwan/pkg/const"
+	_interface "github.com/XC-Zero/yinwan/pkg/interface"
+)
+
+// FinanceCredential 财务凭证
+type FinanceCredential struct {
 	BasicModel
 	// 凭证标题
-	CredentialLabel string
+	FinanceCredentialLabel string
 	// 凭证责任人ID
-	CredentialOwnerID int
+	FinanceCredentialOwnerID int
 	// 凭证责任人名称
-	CredentialOwnerName string
+	FinanceCredentialOwnerName string
 	// 凭证分录
-	CredentialEvents []CredentialEvent
+	FinanceCredentialEvents []FinanceCredentialEvent
 	//	凭证备注
-	CredentialRemark string
+	FinanceCredentialRemark string
 }
 
-// CredentialEvent 凭证条目
-type CredentialEvent struct {
+// FinanceCredentialEvent 凭证条目
+type FinanceCredentialEvent struct {
 	// 借
 	IncreaseEvent []EventItem
 	// 贷
@@ -34,6 +39,19 @@ type EventItem struct {
 }
 
 // CalculateTotalAmount todo 通过凭证中各条目计算总金额
-func (c *Credential) CalculateTotalAmount() {
+// todo 需不需要，有待商榷
+func (c *FinanceCredential) CalculateTotalAmount() {
 
+}
+
+// CreateFinanceCredential 创建财务凭证
+//  todo
+func CreateFinanceCredential() {
+
+}
+
+// TransferToInvoice 转为单据
+// todo
+func (c *FinanceCredential) TransferToInvoice(invoiceType _const.InvoiceType) _interface.Invoice {
+	return nil
 }

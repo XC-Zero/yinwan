@@ -3,7 +3,7 @@ package services_controller
 import (
 	"github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/access_control"
-	finance2 "github.com/XC-Zero/yinwan/internal/controller/services_controller/finance"
+	finance3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/finance"
 	staff3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/staff"
 	storage3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/storage"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
@@ -47,7 +47,7 @@ func Starter() {
 
 	finance := services.Group("/finance")
 	{
-		finance.POST("/create_credential", finance2.CreateCredential)
+		finance.POST("/create_credential", finance3.CreateCredential)
 	}
 
 	transaction := services.Group("/transaction")

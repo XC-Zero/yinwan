@@ -11,6 +11,7 @@ func main() {
 	go config.ViperMonitor()
 
 	client.MysqlClient = client.InitMysqlGormV2(config.CONFIG.StorageConfig.MysqlConfig)
+
 	services_controller.Starter()
 	select {}
 }
