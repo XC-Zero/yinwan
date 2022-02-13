@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Shopify/sarama"
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/pkg/errors"
@@ -15,7 +14,7 @@ const MaxMessageBytes = 4 * 1024 * 1024
 
 var kafkaInstance sarama.SyncProducer
 
-func InitKafka(config cfg.KafkaConfig) {
+func InitKafka(config cfg.KafkaConfig) (*sarama.Client, error) {
 	cfg := sarama.NewConfig()
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -25,7 +24,7 @@ func InitKafka(config cfg.KafkaConfig) {
 	cfg.Producer.MaxMessageBytes = MaxMessageBytes
 	cfg.Producer.Return.Successes = true
 	if config.Username == "" || config.Password == "" {
-		panic(fmt.Sprintf("KafkaConfig not have username or password! Error is  %s", err.Error()))
+		return nil, err
 	}
 	cfg.Net.SASL.Enable = true
 	cfg.Net.SASL.User = config.Username
@@ -34,15 +33,15 @@ func InitKafka(config cfg.KafkaConfig) {
 
 	pro, err := sarama.NewSyncProducer(address, cfg)
 	if err != nil {
-		panic(fmt.Sprintf("初始化kafka失败: %s", err.Error()))
+		return nil, err
 	}
 	client, err := sarama.NewClient(address, cfg)
 	if err != nil {
-		panic(fmt.Sprintf("初始化kafka失败: %s", err.Error()))
+		return nil, err
 	}
-	KafkaClient = &client
 
 	kafkaInstance = pro
+	return &client, nil
 }
 
 // PushInterfaceToKafka 无限定格式推送kafka

@@ -17,6 +17,7 @@ type StorageConfig struct {
 // BookConfig 账套存储配置
 type BookConfig struct {
 	BookName      string        `json:"book_name"`
+	StorageName   string        `json:"storage_name"`
 	MysqlConfig   MysqlConfig   `json:"mysql_config"`
 	MinioConfig   MinioConfig   `json:"minio_config"`
 	MongoDBConfig MongoDBConfig `json:"mongo_db_config"`

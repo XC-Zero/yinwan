@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+//todo 将所有的 log 替换为 logger
+
 //goland:noinspection GoSnakeCaseUsage
 const SPLIT_LINE = "\n----------------------------------------------------\n"
 
@@ -60,35 +62,39 @@ func Fatal(err errorx.Error, mes string) {
 // Error 打印错误信息
 func Error(err errorx.Error, mes string) {
 	sprintf := fmt.Sprintf("%s %s \n error is %s %s", SPLIT_LINE, mes, err, SPLIT_LINE)
-	Logger{
-		message:   sprintf,
-		stackInfo: err.StackTraces,
-		logType:   ERROR,
-		logHeader: ERROR_HEADER,
-		time:      time.Now(),
-	}.sendLogger()
+	log.Println(sprintf)
+	//Logger{
+	//	message:   sprintf,
+	//	stackInfo: err.StackTraces,
+	//	logType:   ERROR,
+	//	logHeader: ERROR_HEADER,
+	//	time:      time.Now(),
+	//}.sendLogger()
 }
 
 // Waring 打印警告信息
 func Waring(err errorx.Error, mes string) {
 	sprintf := fmt.Sprintf("%s %s \n error is %s %s", SPLIT_LINE, mes, err, SPLIT_LINE)
-	Logger{
-		message:   sprintf,
-		stackInfo: err.StackTraces,
-		logType:   WARING,
-		logHeader: WARING_HEADER,
-		time:      time.Now(),
-	}.sendLogger()
+	log.Println(sprintf)
+
+	//Logger{
+	//	message:   sprintf,
+	//	stackInfo: err.StackTraces,
+	//	logType:   WARING,
+	//	logHeader: WARING_HEADER,
+	//	time:      time.Now(),
+	//}.sendLogger()
 }
 
 // Info 打印普通信息
 func Info(mes string) {
-	Logger{
-		message:   mes,
-		logType:   INFO,
-		logHeader: INFP_HEADER,
-		time:      time.Now(),
-	}.sendLogger()
+	log.Println(mes)
+	//Logger{
+	//	message:   mes,
+	//	logType:   INFO,
+	//	logHeader: INFP_HEADER,
+	//	time:      time.Now(),
+	//}.sendLogger()
 }
 
 func (l Logger) sendLogger() {

@@ -5,14 +5,31 @@ api_config:
     rate_url: ""
     sign: ""
   email_config:
-    email_secret: ""
-    email_server_addr: ""
-    sender_email: ""
+    email_secret: hooszltpzzpjbeaa
+    email_server_addr: smtp.qq.com:587
+    sender_email: 974461742@qq.com
   text_message_config:
     api_address: ""
     app_id: ""
     app_secret: ""
-
+book_name_config:
+  book_name: 测试一号！
+  minio_config:
+    access_key: admin
+    bucket: ceshiyihao-2022-02-14
+    end_point: xccjm.tpddns.cn:9000
+    secret_key: admin123
+  mongo_db_config:
+    db_name: ceshiyihao-2022-02-14
+    url: mongodb://root:root@xccjm.tpddns.cn:27017
+  mysql_config:
+    db_name: ceshiyihao-2022-02-14
+    host: 120.79.130.192
+    log_mode: ""
+    password: "123456"
+    port: "3306"
+    user_name: root
+  storage_name: ceshiyihao-2022-02-14
 service_config:
   port: 3776
 storage_config:
@@ -31,13 +48,13 @@ storage_config:
     host: ""
     timeout: 2
   minio_config:
-    access_key: ""
+    access_key: admin
     bucket: ""
-    end_point: ""
-    secret_key: ""
+    end_point: xccjm.tpddns.cn:9000
+    secret_key: admin123
   mongo_db_config:
-    db_name: ""
-    url: ""
+    db_name: admin
+    url: mongodb://root:root@xccjm.tpddns.cn:27017
   mysql_config:
     db_name: test
     host: 120.79.130.192
