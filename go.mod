@@ -13,7 +13,6 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/influxdata/influxdb-client-go/v2 v2.7.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
-	github.com/meilisearch/meilisearch-go v0.18.0
 	github.com/minio/minio-go/v7 v7.0.21
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/mozillazg/go-pinyin v0.19.0
@@ -32,7 +31,6 @@ require (
 
 require (
 	github.com/ajstarks/svgo v0.0.0-20210923152817-c3b6e2f0c527 // indirect
-	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -64,13 +62,11 @@ require (
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
-	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
-	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/minio/md5-simd v1.1.0 // indirect
 	github.com/minio/sha256-simd v0.1.1 // indirect
@@ -92,8 +88,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.33.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.0 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect
@@ -103,7 +97,7 @@ require (
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect

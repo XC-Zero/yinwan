@@ -14,7 +14,8 @@ type SheetColumn struct {
 
 // SheetCellData 每一个单元格
 type SheetCellData struct {
-	CellData  string  `json:"cell_data"`
-	FontColor string  `json:"font_color"`
-	Action    *Action `json:"action"`
+	CellData   string  `json:"cell_data"`
+	FontColor  string  `json:"font_color"`
+	ColumnName string  `json:"column_name"`
+	Action     *Action `json:"action"`
 }

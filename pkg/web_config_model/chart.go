@@ -4,9 +4,9 @@ type ChartType ComponentType
 
 //goland:noinspection GoSnakeCaseUsage,GoSnakeCaseUsage,GoSnakeCaseUsage
 const (
-	LINE_CHART ChartType = "line_chart"
-	PIPE_CHART ChartType = "pipe_chart"
-	BAR_CHART  ChartType = "bar_chart"
+	LINE_CHART ChartType = iota + 40001
+	PIPE_CHART
+	BAR_CHART
 )
 
 type LineChart struct {

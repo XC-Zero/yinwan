@@ -1,3 +1,3 @@
 package finance
 
-// 应付页面
+// 凭证页面
