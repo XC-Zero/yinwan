@@ -5,7 +5,7 @@ type CommodityBatch struct {
 	BasicModel
 }
 
-// Commodity 材料/产品
+// Commodity 产品
 type Commodity struct {
 	BasicModel
 	CommodityType      *string                `gorm:"type:varchar(50)"`
