@@ -1,0 +1,84 @@
+version: '3.7'
+services:
+  zookeeper:
+    restart: always
+    image: wurstmeister/zookeeper:latest
+    volumes:
+      - ./data:/data
+    ports:
+      - 2182:2181
+
+  kafka1:
+    restart: always
+    image: wurstmeister/kafka:latest
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.1.60:9092   # 这里IP填写当前服务对外提供  访问的地址
+      KAFKA_CREATE_TOPICS: "kafeidou:2:0"   #kafka启动后初始化一个有2个partition(分区)0个副本名叫kafeidou的topic
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+    volumes:
+      - ./kafka-logs:/kafka
+    depends_on:
+      - zookeeper
+
+  kowl:
+    image: quay.io/cloudhut/kowl:v1.1.0
+    restart: on-failure
+    container_name: kowl
+    hostname: kowl
+    volumes:
+      - ./configs/kowl_config.yml:/etc/kowl/config.yaml
+    ports:
+      - "9009:8080"
+    entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+    depends_on:
+      - kafka1
+
+
+  kafka-manager:
+    image: sheepkiller/kafka-manager:latest
+    restart: always
+    container_name: kafka-manager
+    hostname: kafka-manager
+    ports:
+      - "9006:9000"
+    links:            # 连接本compose文件创建的container
+      - kafka1
+    external_links:   # 连接本compose文件以外的container
+      - zookeeper
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      KAFKA_BROKERS: kafka1:9092
+      APPLICATION_SECRET: 4#U7vSa^Ud
+      KM_ARGS: -Djava.net.preferIPv4Stack=true
+    depends_on:
+      - kafka1
+      
+
+#  kafka-manager:
+#    image: sheepkiller/kafka-manager:latest
+#    restart: always
+#    container_name: kafka-manager
+#    hostname: kafka-manager
+#    ports:
+#      - "9006:9000"
+#    links:            # 连接本compose文件创建的container
+#      - kafka1
+#      - kafka2
+#      - kafka3
+#    external_links:   # 连接本compose文件以外的container
+#      - zoo1
+#      - zoo2
+#      - zoo3
+#    environment:
+#      ZK_HOSTS: zoo1:2181,zoo2:2180,zoo3:2179
+#      KAFKA_BROKERS: kafka1:9082,kafka2:9083,kafka3:9084
+#      APPLICATION_SECRET: letmein
+#      KM_ARGS: -Djava.net.preferIPv4Stack=true
+#    depends_on:
+#      - kafka1
+#      - kafka2
+#      - kafka3

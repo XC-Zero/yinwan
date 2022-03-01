@@ -1,0 +1,75 @@
+version: '3'
+services:
+  es01:
+    image: dollarkiller/elasticsearch:v7.14.0
+    container_name: es01
+    hostname: es01
+    environment:
+      - node.name=es01
+      - node.master=true
+      - node.data=true
+      - node.ingest=true
+      - cluster.name=es-cluster
+      - cluster.initial_master_nodes=es01
+      - node.max_local_storage_nodes=5
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms16G -Xmx16G"
+      - network.host=_eth0_
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.license.self_generated.type=trial
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=$CERTS_DIR/es01/es01.key
+      - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.security.http.ssl.certificate=$CERTS_DIR/es01/es01.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=$CERTS_DIR/es01/es01.crt
+      - xpack.security.transport.ssl.key=$CERTS_DIR/es01/es01.key
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 819200
+        hard: 819200
+    cap_add:
+      - ALL
+    volumes:
+      - ./es01_storage:/usr/share/elasticsearch/data
+      # - /home/dev/workspace/elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
+      - certs:$CERTS_DIR
+    ports:
+      - 9201:9200
+      - 9300:9300
+    networks:
+      - esnet
+    restart: on-failure
+
+  kibana:
+    container_name: kibana01
+    hostname: kibana01
+    image: kibana:7.3.2
+    environment:
+      - elasticsearch.ssl.certificateAuthorities=$CERTS_DIR/ca/ca.crt"
+      - elasticsearch.ssl.certificate=$CERTS_DIR/es01/es01.crt
+      - elasticsearch.ssl.key=$CERTS_DIR/es01/es01.key
+    volumes:
+      - certs:$CERTS_DIR
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    depends_on:
+      - es01
+    networks:
+      - esnet
+
+volumes:
+  certs:
+
+networks:
+  esnet:

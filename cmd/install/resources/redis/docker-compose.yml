@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  redis_no_persistent:
+    container_name: "redis_no_persistent"
+    image: redis:6-alpine
+    restart: always
+    ports:
+      - 6379:6379
