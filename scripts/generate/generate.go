@@ -2,13 +2,14 @@ package main
 
 import (
 	"github.com/XC-Zero/yinwan/internal/config"
+	"github.com/XC-Zero/yinwan/pkg/client"
 )
 
 func main() {
 	config.InitConfiguration()
 	go config.ViperMonitor()
-	// todo 初始化配置文件
-	//client.MysqlClient = client.InitMysqlGormV2(config.CONFIG.StorageConfig.MysqlConfig)
+
+	client.InitSystemStorage(config.CONFIG.StorageConfig)
 	//GenerateMysqlSchema()
 
 }

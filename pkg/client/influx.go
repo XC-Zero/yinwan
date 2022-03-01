@@ -8,7 +8,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func InitInflux(config cfg.InfluxConfig) {
+func InitInflux(config cfg.InfluxConfig) (*influxdb2.Client, error) {
 
 	url := fmt.Sprintf("http://%s:%s", config.Host, config.Port)
 
@@ -16,7 +16,7 @@ func InitInflux(config cfg.InfluxConfig) {
 
 	_, err := client.Ready(context.TODO())
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	InfluxDBClient = &client
+	return &client, nil
 }
