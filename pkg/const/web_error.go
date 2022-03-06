@@ -3,21 +3,21 @@ package _const
 type GinErrorCode int
 
 const (
-	CONTINUE                          GinErrorCode = 100
-	OK                                             = 200
-	UNAUTHORIZED_ERROR                             = 401
-	FORBIDDEN_ERROR                                = 403
-	PAGE_NOT_FOUND_ERROR                           = 404
-	MethodNotAllowedError                          = 405
-	TIME_OUT_ERROR                                 = 408
-	CONFLICT_ERROR                                 = 409
-	REQUEST_PARM_ERROR                             = 411
-	REQUEST_RANGE_NOT_SATISFIED_ERROR              = 416
-	EXPECTATION_FAILED_ERROR                       = 417
-	UPGRADE_REQUIRED_ERROR                         = 426
-	TOO_MANY_REQUEST_ERROR                         = 429
-	INTERNAL_ERROR                                 = 500
-	NETWORK_CONNECT_TIMEOUT_ERROR                  = 599
+	CONTINUE                          = 100
+	OK                                = 200
+	UNAUTHORIZED_ERROR                = 401
+	FORBIDDEN_ERROR                   = 403
+	PAGE_NOT_FOUND_ERROR              = 404
+	MethodNotAllowedError             = 405
+	TIME_OUT_ERROR                    = 408
+	CONFLICT_ERROR                    = 409
+	REQUEST_PARM_ERROR                = 411
+	REQUEST_RANGE_NOT_SATISFIED_ERROR = 416
+	EXPECTATION_FAILED_ERROR          = 417
+	UPGRADE_REQUIRED_ERROR            = 426
+	TOO_MANY_REQUEST_ERROR            = 429
+	INTERNAL_ERROR                    = 500
+	NETWORK_CONNECT_TIMEOUT_ERROR     = 599
 )
 
 func (ge GinErrorCode) Display() string {

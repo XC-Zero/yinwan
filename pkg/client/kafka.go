@@ -23,12 +23,12 @@ func InitKafka(config cfg.KafkaConfig) (*sarama.Client, error) {
 	cfg.ClientID = hostname
 	cfg.Producer.MaxMessageBytes = MaxMessageBytes
 	cfg.Producer.Return.Successes = true
-	if config.Username == "" || config.Password == "" {
-		return nil, err
+	if config.Username != "" && config.Password != "" {
+		cfg.Net.SASL.Enable = true
+		cfg.Net.SASL.User = config.Username
+		cfg.Net.SASL.Password = config.Password
 	}
-	cfg.Net.SASL.Enable = true
-	cfg.Net.SASL.User = config.Username
-	cfg.Net.SASL.Password = config.Password
+
 	address := config.AddrList
 
 	pro, err := sarama.NewSyncProducer(address, cfg)

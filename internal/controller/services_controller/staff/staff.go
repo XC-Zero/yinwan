@@ -1,15 +1,46 @@
 package staff
 
 import (
+	"github.com/XC-Zero/yinwan/pkg/client"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/utils/email"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v7"
+	"math/rand"
+	"strconv"
+	"time"
 )
 
+// CreateStaff
+// @Param  model.Staff
 func CreateStaff(ctx *gin.Context) {
-
+	temp := model.Staff{}
+	err := ctx.ShouldBindJSON(&temp)
+	if err != nil {
+		mes := "参数有误"
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg(mes))
+		return
+	}
+	err = client.MysqlClient.Model(&model.Staff{}).Create(&temp).Error
+	if err != nil {
+		mes := "创建员工失败！"
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg(mes))
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateWebErrorMsg("创建员工成功!"))
+	return
 }
+
 func SelectStaff(ctx *gin.Context) {
 
 }
+
 func UpdateStaff(ctx *gin.Context) {
 
 }
@@ -17,6 +48,74 @@ func UpdateStaff(ctx *gin.Context) {
 func DeleteStaff(ctx *gin.Context) {
 
 }
-func ValidateStaffEmail(ctx *gin.Context) {
 
+func SendStaffValidateEmail(ctx *gin.Context) {
+	staffEmail := ctx.PostForm("staff_email")
+	if len(staffEmail) == 0 {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg("未输入邮箱哦")))
+	}
+	rand.Seed(time.Now().Unix())
+	n := strconv.Itoa(rand.Intn(999999))
+	err := client.RedisClient.Set(staffEmail, n, time.Minute*10).Err()
+	if err != nil {
+		mes := "Redis存储邮件验证码失败!"
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	}
+	err = email.SendEmail("好上好系统验证邮件", "<div style=\"width: 100vw;height: 100vh;background-color: #ffffff;display: flex;flex-direction: column; justify-content: center;align-items: center\">"+
+		"<div style=\"width: 80%;text-align:left;\"><h1 style=\"color: #4F709B\">HSH</h1>"+
+		"<h2>欢迎您，您的验证码为：</h2></div>"+
+		"<div style=\" margin-top:50px;margin-bottom:50px;background-color: #ffffff;width: 300px ;height: 150px;box-shadow: 0px 3px 6px #999999;border-radius: 5px ;line-height:150px;text-align:center;letter-spacing:5px;font-size: 40px;\">"+
+		n+
+		"</div>"+
+		"<h3 style=\"width: 80%;text-align:right;\">验证码十分钟有效~</h3>"+
+		"</div>", staffEmail)
+	if err != nil {
+		mes := "发送邮件验证码失败!"
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	}
+	ctx.JSON(200, gin.H(errs.CreateWebErrorMsg("邮箱验证码发送成功！")))
+	return
+}
+
+// ValidateStaffEmail
+// @Description 验证邮箱验证码
+// @Accept  json
+// @Produce  json
+// @Router  /services/staff/validate_staff_email  [post]
+// @Param  staff_email string "用户邮箱",captcha string  "用户输入的验证码"
+// @Success 200
+// @Failure otherCode
+func ValidateStaffEmail(ctx *gin.Context) {
+	staffEmail := ctx.PostForm("staff_email")
+	if len(staffEmail) == 0 {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg("未输入邮箱哦")))
+	}
+	staffCaptcha := ctx.PostForm("captcha")
+	redisCaptcha, err := client.RedisClient.Get(staffEmail).Result()
+	if err == redis.Nil {
+		mes := "邮件验证码不存在或已过期!"
+		logger.Info(mes)
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	} else if err != nil {
+		mes := "Redis 读取失败!"
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	}
+	if staffCaptcha == redisCaptcha {
+		mes := "邮箱验证通过!"
+		logger.Info(mes)
+		ctx.JSON(_const.OK, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	} else {
+		mes := "您的邮箱验证码不正确!"
+		logger.Info(mes)
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		return
+	}
 }

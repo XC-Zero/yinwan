@@ -3,29 +3,27 @@ package access_control
 import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
+// Login
+// @Param  staff_email string,staff_password
 func Login(ctx *gin.Context) {
-	staff := model.Staff{}
-	err := ctx.ShouldBindWith(&staff, binding.JSON)
-	if err != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H{
-			"?": "?",
-		})
+	staffEmail, staffPassword := ctx.PostForm("staff_email"), ctx.PostForm("staff_password")
+	staff := model.Staff{
+		StaffEmail:    staffEmail,
+		StaffPassword: staffPassword,
 	}
+
 	tokenPtr, errMessage := staff.Login()
-	if tokenPtr != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errMessage)
+	if tokenPtr == nil {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg(errMessage)))
 	} else {
 		ctx.JSON(_const.OK, gin.H{
 			"token": *tokenPtr,
 		})
+
 	}
-
-}
-
-func Logout(ctx *gin.Context) {
 
 }

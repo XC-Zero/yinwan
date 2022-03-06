@@ -6,12 +6,12 @@ services:
     image: mongo:latest
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rXsx8pD^J*
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "rXsx8pD^J*"
     ports:
       - 27017:27017
     volumes:
-      - ./data:/data/db
+      - ./data:/data
 
 #  mongo-express:
 #    image: mongo-express:1.0.0-alpha

@@ -11,9 +11,6 @@ import (
 )
 
 //goland:noinspection GoSnakeCaseUsage
-const SPLIT_SYMBOL = "|"
-
-//goland:noinspection GoSnakeCaseUsage
 const EXPIRE_TIME = time.Hour * 2
 
 // Staff 职工表
@@ -33,7 +30,7 @@ type Staff struct {
 // 返回 token 指针 和 错误信息
 func (s Staff) Login() (tokenPtr *string, errorMessage string) {
 	temp := Staff{}
-	err := client.MysqlClient.Model(&Staff{}).Find(&temp, " StaffName = ? or StaffEmail =? or StaffPhone = ?").Error
+	err := client.MysqlClient.Model(&Staff{}).Find(&temp, "  staff_email =? ", s.StaffEmail).Error
 	if err != nil || temp.RecID == nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("用户登录失败，数据库内找不到此用户, staff is %+v\n ,error is %s", s, err))
 		return nil, "无此用户"
@@ -41,8 +38,11 @@ func (s Staff) Login() (tokenPtr *string, errorMessage string) {
 	if s.StaffPassword != temp.StaffPassword {
 		return nil, "抱歉，密码不正确"
 	}
-	tokenStr := token.GenerateToken(strconv.Itoa(*temp.RecID))
-	err = client.RedisClient.Set(s.StaffEmail, tokenStr, EXPIRE_TIME).Err()
+	tokenStr, err := token.GenerateToken(strconv.Itoa(*temp.RecID))
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), fmt.Sprintf("生成 token 失败, error is %s", err))
+	}
+	err = client.RedisClient.Set(tokenStr, s.StaffEmail, EXPIRE_TIME).Err()
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("redis 存储 token 失败, error is %s", err))
 	}

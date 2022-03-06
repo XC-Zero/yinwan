@@ -13,56 +13,39 @@ api_config:
     app_id: ""
     app_secret: ""
 book_name_config:
-  book_name: 测试一号！
-  minio_config:
-    access_key: admin
-    bucket: ceshiyihao-2022-02-14
-    end_point: xccjm.tpddns.cn:9000
-    secret_key: admin123
-  mongo_db_config:
-    db_name: ceshiyihao-2022-02-14
-    url: mongodb://root:root@xccjm.tpddns.cn:27017
-  mysql_config:
-    db_name: ceshiyihao-2022-02-14
-    host: 120.79.130.192
-    log_mode: ""
-    password: "123456"
-    port: "3306"
-    user_name: root
-  storage_name: ceshiyihao-2022-02-14
+
 service_config:
   port: 3776
+
+
 storage_config:
   es_config:
-    host: ""
+    user: ""
+    host: "http://120.79.130.192:9200"
     password: ""
     response_header_timeout_seconds: 0
-    user: ""
   kafka_config:
     addr_list:
-    - 120.79.130.192:9200
-    password: ""
+    - 120.79.130.192:9092
+    password: "4#U7vSa^Ud"
     username: ""
-  meilisearch_config:
-    api_key: ""
-    host: ""
-    timeout: 2
+
   minio_config:
     access_key: admin
-    bucket: ""
-    end_point: xccjm.tpddns.cn:9000
-    secret_key: admin123
+    bucket: "hsh"
+    end_point: 120.79.130.192:9000
+    secret_key: pQ4Jx861Mc
   mongo_db_config:
     db_name: admin
-    url: mongodb://root:root@xccjm.tpddns.cn:27017
+    url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
   mysql_config:
-    db_name: test
+    db_name: hsh
     host: 120.79.130.192
     log_mode: ""
-    password: "123456"
-    port: "3306"
+    password: "CJMcjm136466!"
+    port: "3309"
     user_name: root
   redis_config:
     addr_list:
     - 120.79.130.192:6379
-    password: ""
+

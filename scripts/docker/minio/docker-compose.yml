@@ -7,8 +7,8 @@ services:
       - 9000:9000 # api 端口
       - 9001:9001 # 控制台端口
     environment:
-      MINIO_ACCESS_KEY: admin    #管理后台用户名
-      MINIO_SECRET_KEY: p^cVz@$s3H #管理后台密码，最小8个字符
+      MINIO_ROOT_USER: admin    #管理后台用户名
+      MINIO_ROOT_PASSWORD: pQ4Jx861Mc #管理后台密码，最小8个字符
     volumes:
       - /docker/minio/data:/data               #映射当前目录下的data目录至容器内/data目录
 #      - /docker/minio/config:/root/.minio/     #映射配置目录

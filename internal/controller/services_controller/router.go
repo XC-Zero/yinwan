@@ -6,15 +6,17 @@ import (
 	finance3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/finance"
 	staff3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/staff"
 	storage3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/storage"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func Starter() {
 
 	router := gin.Default()
 	router.POST("/login", access_control.Login)
-	router.POST("/logout", access_control.Logout)
 
 	// 使用组路由，并添加中间件用于判断token
 	services := router.Group("/services", auth)
@@ -25,6 +27,7 @@ func Starter() {
 		staff.POST("/delete_staff", staff3.DeleteStaff)
 		staff.POST("/update_staff", staff3.UpdateStaff)
 		staff.POST("/select_staff", staff3.SelectStaff)
+		staff.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
 		staff.POST("/validate_staff_email", staff3.ValidateStaffEmail)
 	}
 
@@ -63,7 +66,9 @@ func Starter() {
 
 func auth(ctx *gin.Context) {
 	tokenStr := ctx.Request.Header.Get("token")
+	log.Println(tokenStr)
 	if !token.IsExpired(tokenStr) {
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
 		ctx.Abort()
 	}
 	ctx.Next()
