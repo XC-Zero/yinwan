@@ -57,3 +57,7 @@ func (s Staff) LogOut() {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("redis 删除 key 为 %s 的 token 失败, error is %s", s.StaffEmail, err))
 	}
 }
+
+//func (s Staff) HarvestRoleResponse() {
+//	client.MysqlClient.Model(&Role{}).Find()
+//}

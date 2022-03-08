@@ -17,9 +17,10 @@ type Role struct {
 // RoleCapabilities 角色对各模块的权限关系表
 type RoleCapabilities struct {
 	BasicModel
-	RoelID    int `gorm:"type:int;index"`
-	ModuleID  int `gorm:"type:int;index"`
-	CanRead   bool
-	CanWrite  bool
-	CanDelete bool
+	RoelID     int    `gorm:"type:int;index"`
+	ModuleID   int    `gorm:"type:int;index"`
+	ModuleName string `gorm:"type:varchar(50)"`
+	CanRead    bool
+	CanWrite   bool
+	CanDelete  bool
 }

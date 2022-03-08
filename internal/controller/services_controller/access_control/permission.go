@@ -20,10 +20,17 @@ func Login(ctx *gin.Context) {
 	if tokenPtr == nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg(errMessage)))
 	} else {
+
+		//client.MysqlClient.Raw("").Scan()
 		ctx.JSON(_const.OK, gin.H{
 			"token": *tokenPtr,
+			"role":  "",
 		})
 
 	}
+
+}
+
+func HarvestRole(ctx *gin.Context) {
 
 }
