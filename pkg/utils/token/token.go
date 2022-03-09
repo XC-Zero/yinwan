@@ -9,8 +9,8 @@ import (
 //goland:noinspection GoSnakeCaseUsage
 const EXPIRE_TIME = time.Second * 3
 
-func GenerateToken(userID string) (string, error) {
-	tokenStr, err := encode.EncryptByAes(userID)
+func GenerateToken(staffEmail string) (string, error) {
+	tokenStr, err := encode.EncryptByAes(staffEmail)
 	if err != nil {
 		return "", err
 	}
@@ -19,12 +19,19 @@ func GenerateToken(userID string) (string, error) {
 }
 
 // IsExpired token 是否过期
-func IsExpired(tokenStr string) bool {
+func IsExpired(tokenStr, staffEmail string) bool {
 	result, err := client.RedisClient.Get(tokenStr).Result()
 	if err != nil {
 		return false
 	}
 	if len(result) == 0 {
+		return false
+	}
+	aes, err := encode.DecryptByAes(tokenStr)
+	if err != nil {
+		return false
+	}
+	if string(aes) != staffEmail {
 		return false
 	}
 	return true

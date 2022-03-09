@@ -6,7 +6,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/fwhezfwhez/errorx"
-	"strconv"
 	"time"
 )
 
@@ -38,7 +37,7 @@ func (s Staff) Login() (tokenPtr *string, errorMessage string) {
 	if s.StaffPassword != temp.StaffPassword {
 		return nil, "抱歉，密码不正确"
 	}
-	tokenStr, err := token.GenerateToken(strconv.Itoa(*temp.RecID))
+	tokenStr, err := token.GenerateToken(temp.StaffEmail)
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("生成 token 失败, error is %s", err))
 	}

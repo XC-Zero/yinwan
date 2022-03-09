@@ -10,14 +10,13 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 func Starter() {
 
 	router := gin.Default()
 	router.POST("/login", access_control.Login)
-
+	router.POST("/forget_password", access_control.ForgetPassword)
 	// 使用组路由，并添加中间件用于判断token
 	services := router.Group("/services", auth)
 
@@ -29,14 +28,10 @@ func Starter() {
 		staff.POST("/select_staff", staff3.SelectStaff)
 		staff.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
 		staff.POST("/validate_staff_email", staff3.ValidateStaffEmail)
-	}
-
-	department := services.Group("/department")
-	{
-		department.POST("/select_department", staff3.SelectDepartment)
-		department.POST("/create_department", staff3.CreateDepartment)
-		department.POST("/update_department", staff3.UpdateDepartment)
-		department.POST("/delete_department", staff3.DeleteDepartment)
+		staff.POST("/select_department", staff3.SelectDepartment)
+		staff.POST("/create_department", staff3.CreateDepartment)
+		staff.POST("/update_department", staff3.UpdateDepartment)
+		staff.POST("/delete_department", staff3.DeleteDepartment)
 	}
 
 	storage := services.Group("/storage")
@@ -66,8 +61,8 @@ func Starter() {
 
 func auth(ctx *gin.Context) {
 	tokenStr := ctx.Request.Header.Get("token")
-	log.Println(tokenStr)
-	if !token.IsExpired(tokenStr) {
+	staffEmail := ctx.Request.Header.Get("staff_email")
+	if !token.IsExpired(tokenStr, staffEmail) {
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
 		ctx.Abort()
 	}
