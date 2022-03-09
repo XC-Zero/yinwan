@@ -16,5 +16,4 @@ func main() {
 	client.InitSystemStorage(config.CONFIG.StorageConfig)
 	services_controller.Starter()
 
-	select {}
 }

@@ -62,7 +62,7 @@ func Starter() {
 func auth(ctx *gin.Context) {
 	tokenStr := ctx.Request.Header.Get("token")
 	staffEmail := ctx.Request.Header.Get("staff_email")
-	if !token.IsExpired(tokenStr, staffEmail) {
+	if token.IsExpired(tokenStr, staffEmail) {
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
 		ctx.Abort()
 	}

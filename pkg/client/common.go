@@ -9,6 +9,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
+	"log"
 )
 
 var (
@@ -27,6 +28,7 @@ var (
 
 // InitSystemStorage 初始化系统配置
 func InitSystemStorage(config config.StorageConfig) {
+	log.Println("????")
 	msy, err := InitMysqlGormV2(config.MysqlConfig)
 	if err != nil {
 		panic(err)
@@ -39,10 +41,10 @@ func InitSystemStorage(config config.StorageConfig) {
 	if err != nil {
 		panic(err)
 	}
-	kk, err := InitKafka(config.KafkaConfig)
-	if err != nil {
-		panic(err)
-	}
+	//kk, err := InitKafka(config.KafkaConfig)
+	//if err != nil {
+	//	panic(err)
+	//}
 	rr, err := InitRedis(config.RedisConfig)
 	if err != nil {
 		panic(err)
@@ -57,5 +59,5 @@ func InitSystemStorage(config config.StorageConfig) {
 	MysqlClient = msy
 	MinioClient = mClient
 	MongoDBClient = mgClient
-	KafkaClient = kk
+	//KafkaClient = kk
 }

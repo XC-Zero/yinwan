@@ -3,6 +3,7 @@ package token
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/utils/encode"
+	"log"
 	"time"
 )
 
@@ -22,18 +23,21 @@ func GenerateToken(staffEmail string) (string, error) {
 func IsExpired(tokenStr, staffEmail string) bool {
 	result, err := client.RedisClient.Get(tokenStr).Result()
 	if err != nil {
-		return false
+		return true
 	}
 	if len(result) == 0 {
-		return false
+		return true
 	}
 	aes, err := encode.DecryptByAes(tokenStr)
 	if err != nil {
-		return false
+		log.Println(err)
+		return true
 	}
+	log.Println(string(aes), staffEmail)
 	if string(aes) != staffEmail {
-		return false
+		log.Println(string(aes) == staffEmail)
+		return true
 	}
-	return true
+	return false
 
 }

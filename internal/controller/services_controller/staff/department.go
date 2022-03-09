@@ -20,13 +20,16 @@ func SelectDepartment(ctx *gin.Context) {
 	return
 }
 
+// CreateDepartment todo !!!
 func CreateDepartment(ctx *gin.Context) {
 
 }
 
+// UpdateDepartment todo !!!
 func UpdateDepartment(ctx *gin.Context) {
 }
 
+// DeleteDepartment todo !!!
 func DeleteDepartment(ctx *gin.Context) {
 	staffEmail := ctx.PostForm("staff_email")
 	var staffList []model.Staff
