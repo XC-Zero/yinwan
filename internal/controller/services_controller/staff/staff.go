@@ -1,6 +1,7 @@
 package staff
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
@@ -10,6 +11,7 @@ import (
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -37,19 +39,91 @@ func CreateStaff(ctx *gin.Context) {
 	return
 }
 
-// SelectStaff todo    !!!
+// SelectStaff 查询员工
 func SelectStaff(ctx *gin.Context) {
+
+	departmentID := ctx.PostForm("department_id")
+	staffPosition := ctx.PostForm("staff_position")
+	staffRoleId := ctx.PostForm("staff_role_id")
+	staffName := ctx.PostForm("staff_name")
+	log.Printf("%+v", staffName)
+
+	var staffList []model.Staff
+
+	sql := `select %s from staffs where 1 = 1 `
+	if departmentID != "" {
+		sql += fmt.Sprintf(" and staff_department_id = '%s'", departmentID)
+	}
+	if staffPosition != "" {
+		sql += fmt.Sprintf(" and staff_position = '%s'", staffPosition)
+	}
+	if staffRoleId != "" {
+		sql += fmt.Sprintf(" and staff_role_id = '%s'", staffRoleId)
+	}
+	contentSql, countSql := fmt.Sprintf(sql, "*"), fmt.Sprintf(sql, "count(*)")
+	// 不能前置，% 符会被 sprintf 解析成 (MISSING)
+	if staffName != "" {
+		suffixSql := fmt.Sprintf(" and staff_name like '%%%s%%'", staffName)
+		contentSql += suffixSql
+		countSql += suffixSql
+	}
+	contentSql += " order by  " + _const.PRIMARY_KEY_NAME + client.PaginateSql(ctx)
+	err := client.MysqlClient.Raw(contentSql).Scan(&staffList).Error
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), "查询时员工失败！")
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询时员工内容失败！")))
+		return
+	}
+	count := 0
+	err = client.MysqlClient.Raw(countSql).Scan(&count).Error
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), "查询时员工总数失败！")
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询时员工失败！")))
+		return
+	}
+	ctx.JSON(_const.OK, gin.H{
+		"count":      count,
+		"staff_list": model.IgnoreStaffPassword(staffList),
+	})
+	return
 
 }
 
 // UpdateStaff todo  !!!
 func UpdateStaff(ctx *gin.Context) {
-
+	var staff model.Staff
+	err := ctx.ShouldBind(&staff)
+	if err != nil {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
+		return
+	}
+	err = client.MysqlClient.Model(&model.Staff{}).Omit("staff_password", "rec_id  ").Updates(staff).Error
+	if err != nil {
+		mes := fmt.Sprintf("更新职工信息出错，职工ID为 %d ！", staff.RecID)
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(mes))
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("修改职工信息成功！"))
+	return
 }
 
 // DeleteStaff todo  !!!
 func DeleteStaff(ctx *gin.Context) {
-
+	recID := ctx.PostForm("id")
+	if recID == "" {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("请输入职工ID哦！"))
+		return
+	}
+	err := client.MysqlClient.Delete(&model.Staff{}, recID).Error
+	if err != nil {
+		mes := fmt.Sprintf("删除职工失败！职工ID: %s!", recID)
+		logger.Error(errorx.MustWrap(err), mes)
+		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(mes))
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除职工成功！"))
+	return
 }
 
 func SendStaffValidateEmail(ctx *gin.Context) {
@@ -80,7 +154,7 @@ func SendStaffValidateEmail(ctx *gin.Context) {
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
 		return
 	}
-	ctx.JSON(200, gin.H(errs.CreateWebErrorMsg("邮箱验证码发送成功！")))
+	ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg("邮箱验证码发送成功！")))
 	return
 }
 
@@ -113,7 +187,7 @@ func ValidateStaffEmail(ctx *gin.Context) {
 	if staffCaptcha == redisCaptcha {
 		mes := "邮箱验证通过!"
 		logger.Info(mes)
-		ctx.JSON(_const.OK, gin.H(errs.CreateWebErrorMsg(mes)))
+		ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg(mes)))
 		return
 	} else {
 		mes := "您的邮箱验证码不正确!"
@@ -121,4 +195,8 @@ func ValidateStaffEmail(ctx *gin.Context) {
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
 		return
 	}
+}
+
+func SelectStaffRole(ctx *gin.Context) {
+
 }

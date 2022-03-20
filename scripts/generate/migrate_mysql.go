@@ -17,6 +17,7 @@ var bookNameMysqlMigrateList []interface{}
 var mongoMigrateList []string
 var moduleList []model.Module
 var roleCapabilities []model.RoleCapabilities
+var departmentList []model.Department
 
 // todo 供应商、客户是各个账套 独立？ or 共享？ (目前共享)
 func init() {
@@ -97,6 +98,10 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 		if err != nil {
 			return err
 		}
+		err = tx.Exec("truncate departments").Error
+		if err != nil {
+			return err
+		}
 		err = tx.Exec("truncate staffs").Error
 		if err != nil {
 			return err
@@ -114,6 +119,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 	role := model.Role{
 		RoleName: "root",
 	}
+	var staffAlias, staffPosition = "超管", "系统开发攻城狮"
 	err = db.Model(&model.Role{}).Create(&role).Error
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统超级管理员失败！")
@@ -133,16 +139,66 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统超级管理员权限失败！")
 	}
+	departmentList = append(departmentList, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "技术部",
+		DepartmentLocation:    "",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "财务部",
+		DepartmentLocation:    "2楼205",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "生产车间",
+		DepartmentLocation:    "",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "仓库",
+		DepartmentLocation:    "1楼",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "销售部",
+		DepartmentLocation:    "1楼",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "人事部",
+		DepartmentLocation:    "1楼",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	}, model.Department{
+		BasicModel:            model.BasicModel{},
+		DepartmentName:        "行政部",
+		DepartmentLocation:    "1楼",
+		DepartmentManagerID:   1,
+		DepartmentManagerName: "超级管理员",
+	})
 
+	err = db.Model(&model.Department{}).CreateInBatches(departmentList, mysql.CalcMysqlBatchSize(departmentList[0])).Error
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), "初始化部门列表失败！")
+	}
 	err = db.Model(&model.Staff{}).Create(&model.Staff{
-		BasicModel:    model.BasicModel{},
-		StaffName:     "超级管理员",
-		StaffAlias:    nil,
-		StaffEmail:    "645171033@qq.com",
-		StaffPhone:    nil,
-		StaffPassword: "HSHROOT",
-		StaffRoleID:   *role.RecID,
-		StaffRoleName: "root",
+		BasicModel:          model.BasicModel{},
+		StaffName:           "超级管理员",
+		StaffAlias:          &staffAlias,
+		StaffEmail:          "645171033@qq.com",
+		StaffPhone:          nil,
+		StaffPassword:       "HSHROOT",
+		StaffRoleID:         *role.RecID,
+		StaffRoleName:       "root",
+		StaffDepartmentID:   departmentList[0].RecID,
+		StaffPosition:       &staffPosition,
+		StaffDepartmentName: &departmentList[0].DepartmentName,
 	}).Error
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统超级管理员权限失败！")

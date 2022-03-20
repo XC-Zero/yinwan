@@ -8,3 +8,9 @@ func CreateWebErrorMsg(errorMsg string, otherInfo ...interface{}) map[string]int
 		},
 	}
 }
+
+func CreateSuccessMsg(msg string) map[string]interface{} {
+	return map[string]interface{}{
+		"message": msg,
+	}
+}

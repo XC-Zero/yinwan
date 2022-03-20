@@ -10,8 +10,8 @@ services:
       MINIO_ROOT_USER: admin    #管理后台用户名
       MINIO_ROOT_PASSWORD: pQ4Jx861Mc #管理后台密码，最小8个字符
     volumes:
-      - /docker/minio/data:/data               #映射当前目录下的data目录至容器内/data目录
-#      - /docker/minio/config:/root/.minio/     #映射配置目录
+      - ./data:/data               #映射当前目录下的data目录至容器内/data目录
+      - ./config:/root/.minio/     #映射配置目录
     command: server --console-address ':9001' /data  #指定容器中的目录 /data
     privileged: true
     restart: always

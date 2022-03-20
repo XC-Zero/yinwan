@@ -1,9 +1,9 @@
 #!/bin/sh
 
-source_path=./cmd
+source_path=./cmd/services
 go_file=main.go
-image_name=qx_service
-build_output=management_server
+image_name=hsh
+build_output=hsh
 version=0.0.1
 
 CGO_ENABLED=0 GOOS="linux" GOARCH="amd64" go build -o $source_path/$build_output $source_path/$go_file

@@ -2,6 +2,6 @@ package storage
 
 import "github.com/gin-gonic/gin"
 
-func StockIn(ctx *gin.Context) {
+func CreateStockIn(ctx *gin.Context) {
 
 }

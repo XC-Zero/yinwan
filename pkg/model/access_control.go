@@ -11,7 +11,7 @@ type Module struct {
 type Role struct {
 	BasicModel
 	RoleName   string  `gorm:"type:varchar(50)" `
-	RoleRemark *string `gorm:"type:varchar(200)" bson:"role_remark"`
+	RoleRemark *string `gorm:"type:varchar(200)"  json:"role_remark,omitempty"`
 }
 
 // RoleCapabilities 角色对各模块的权限关系表

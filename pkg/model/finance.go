@@ -15,12 +15,12 @@ type Currency struct {
 type Payable struct {
 	BasicModel
 	//	关联凭证ID
-	CredentialID int `gorm:"type:int"`
+	CredentialID *int `gorm:"type:int" json:"credential_id,omitempty"`
 }
 
 // Receivable 应收
 type Receivable struct {
 	BasicModel
 	//	关联凭证ID
-	CredentialID int `gorm:"type:int"`
+	CredentialID *int `gorm:"type:int" json:"credential_id,omitempty"`
 }

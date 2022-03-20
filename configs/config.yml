@@ -45,6 +45,13 @@ storage_config:
     password: "CJMcjm136466!"
     port: "3309"
     user_name: root
+#   mysql_config:
+#     db_name: hsh
+#     host: server.natappfree.cc
+#     log_mode: ""
+#     password: "t^qzZ%VH"
+#     port: 39449
+#     user_name: root
   redis_config:
     addr_list:
     - 120.79.130.192:6379

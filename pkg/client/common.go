@@ -1,15 +1,18 @@
 package client
 
 import (
+	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
 var (
@@ -60,4 +63,48 @@ func InitSystemStorage(config config.StorageConfig) {
 	MinioClient = mClient
 	MongoDBClient = mgClient
 	//KafkaClient = kk
+}
+
+// Paginate 分页函数
+func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		pageNumber := ctx.PostForm("page_number")
+		pageSize := ctx.PostForm("page_size")
+		log.Println(pageNumber, pageSize)
+		n, limit := 0, 0
+		if pn, err := strconv.Atoi(pageNumber); err != nil {
+			n = 1
+		} else {
+			n = pn
+		}
+		if ps, err := strconv.Atoi(pageSize); err != nil {
+			limit = 5
+		} else {
+			limit = ps
+		}
+
+		offset := (n - 1) * limit
+		log.Println(offset, limit)
+		return db.Offset(offset).Limit(limit)
+	}
+}
+
+func PaginateSql(ctx *gin.Context) string {
+	pageNumber := ctx.PostForm("page_number")
+	pageSize := ctx.PostForm("page_size")
+	log.Println(pageNumber, pageSize)
+	n, limit := 0, 0
+	if pn, err := strconv.Atoi(pageNumber); err != nil {
+		n = 1
+	} else {
+		n = pn
+	}
+	if ps, err := strconv.Atoi(pageSize); err != nil {
+		limit = 5
+	} else {
+		limit = ps
+	}
+
+	offset := (n - 1) * limit
+	return fmt.Sprintf(" limit %d,%d ", offset, limit)
 }

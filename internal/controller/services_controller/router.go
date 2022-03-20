@@ -10,6 +10,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func Starter() {
@@ -36,8 +37,8 @@ func Starter() {
 
 	storage := services.Group("/storage")
 	{
-		storage.POST("/stack_out", storage3.StockIn)
-		storage.POST("/stack_in", storage3.StockOut)
+		storage.POST("/stack_out", storage3.CreateStockIn)
+		storage.POST("/stack_in", storage3.CreateStockOut)
 		storage.POST("/scan_qrcode", storage3.ScanQRCode)
 		storage.POST("/create_qrcode", storage3.CreateQRCode)
 		storage.POST("/download_qrcode", storage3.DownloadQRCode)
@@ -62,8 +63,10 @@ func Starter() {
 func auth(ctx *gin.Context) {
 	tokenStr := ctx.Request.Header.Get("token")
 	staffEmail := ctx.Request.Header.Get("staff_email")
+	log.Println("***************************\n")
+	log.Printf("token is %s \n email is %s \n ************************************************", tokenStr, staffEmail)
 	if token.IsExpired(tokenStr, staffEmail) {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
+		ctx.JSON(_const.UNAUTHORIZED_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
 		ctx.Abort()
 	}
 	ctx.Next()

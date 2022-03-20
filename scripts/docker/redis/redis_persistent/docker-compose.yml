@@ -1,14 +1,13 @@
 version: '3'
 
 services:
-  redis_persistent:
-    container_name: "redis_persistent"
+  redis:
     image: redis:6-alpine
     restart: always
     ports:
       - 6389:6379
-#    volumes:
-#      - redis_persistent:/data
+   volumes:
+     - ./data:/data
     entrypoint:
       - "redis-server --appendonly yes"
 #volumes:

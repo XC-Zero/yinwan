@@ -13,22 +13,12 @@ services:
       - cluster.initial_master_nodes=es01
       - node.max_local_storage_nodes=5
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms16G -Xmx16G"
+      - "ES_JAVA_OPTS=-Xms8G -Xmx8G"
       - network.host=_eth0_
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - xpack.security.enabled=true
       - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
-      - xpack.license.self_generated.type=trial
-      - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.key=$CERTS_DIR/es01/es01.key
-      - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
-      - xpack.security.http.ssl.certificate=$CERTS_DIR/es01/es01.crt
-      - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.verification_mode=certificate
-      - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
-      - xpack.security.transport.ssl.certificate=$CERTS_DIR/es01/es01.crt
-      - xpack.security.transport.ssl.key=$CERTS_DIR/es01/es01.key
     ulimits:
       nproc: 65535
       memlock:
