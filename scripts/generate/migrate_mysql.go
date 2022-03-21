@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
@@ -10,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var systemMysqlMigrateList []interface{}
@@ -18,8 +20,9 @@ var mongoMigrateList []string
 var moduleList []model.Module
 var roleCapabilities []model.RoleCapabilities
 var departmentList []model.Department
+var baseRole model.Role
+var typeTreeList []model.TypeTree
 
-// todo 供应商、客户是各个账套 独立？ or 共享？ (目前共享)
 func init() {
 	systemMysqlMigrateList = []interface{}{
 		&model.Department{},
@@ -28,6 +31,7 @@ func init() {
 		&model.Module{},
 		&model.Staff{},
 		&model.Commodity{},
+		&model.CommodityHistoricalCost{},
 		&model.CommodityBatch{},
 		&model.Material{},
 		&model.MaterialBatch{},
@@ -35,6 +39,7 @@ func init() {
 		&model.Customer{},
 		&model.Provider{},
 		&model.ManipulationLog{},
+		&model.TypeTree{},
 	}
 	bookNameMysqlMigrateList = []interface{}{
 		&model.Payable{},
@@ -62,7 +67,62 @@ func init() {
 			ModuleName: "transaction",
 		},
 	}
+	baseRole = model.Role{
+		RoleName: "root",
+	}
 	roleCapabilities = []model.RoleCapabilities{}
+
+	departmentList = []model.Department{
+		{
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "技术部",
+			DepartmentLocation:    "",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "财务部",
+			DepartmentLocation:    "2楼205",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "生产车间",
+			DepartmentLocation:    "",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "仓库",
+			DepartmentLocation:    "1楼",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "销售部",
+			DepartmentLocation:    "1楼",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "人事部",
+			DepartmentLocation:    "1楼",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员",
+		}, {
+			BasicModel:            model.BasicModel{},
+			DepartmentName:        "行政部",
+			DepartmentLocation:    "1楼",
+			DepartmentManagerID:   1,
+			DepartmentManagerName: "超级管理员"}}
+	typeTreeList = []model.TypeTree{
+		{model.BasicModel{}, "固定资产", nil, nil},
+		{model.BasicModel{}, "产成品", nil, nil},
+		{model.BasicModel{}, "原材料", nil, nil},
+		{model.BasicModel{}, "周转材料", nil, nil},
+		{model.BasicModel{}, "低值易耗品", nil, nil},
+		{model.BasicModel{}, "其他类型 ", nil, nil},
+	}
 }
 
 func GenerateBookNameMigrateMysql(db *gorm.DB) error {
@@ -81,52 +141,49 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 	if db == nil {
 		return errors.New("Mysql client is not init! ")
 	}
+	// 初始化建表
 	err := db.AutoMigrate(systemMysqlMigrateList...)
 	if err != nil {
 		return err
 	}
+
+	// 清空所有表
 	err = db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec("truncate modules").Error
-		if err != nil {
-			return err
-		}
-		err = tx.Exec("truncate role_capabilities ").Error
-		if err != nil {
-			return err
-		}
-		err = tx.Exec("truncate roles").Error
-		if err != nil {
-			return err
-		}
-		err = tx.Exec("truncate departments").Error
-		if err != nil {
-			return err
-		}
-		err = tx.Exec("truncate staffs").Error
-		if err != nil {
-			return err
+		for i := range systemMysqlMigrateList {
+			object, ok := systemMysqlMigrateList[i].(schema.Tabler)
+			if !ok {
+				panic("有张表没实现tableName接口！")
+			}
+			err := tx.Exec(fmt.Sprintf("truncate %s;", object.TableName())).Error
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "清空前置表失败！")
 	}
-
+	// 录入系统模块
 	err = db.Model(&model.Module{}).CreateInBatches(moduleList, mysql.CalcMysqlBatchSize(moduleList[0])).Error
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统模块失败！")
+		return err
 	}
-	role := model.Role{
-		RoleName: "root",
+	err = db.Model(&model.TypeTree{}).CreateInBatches(typeTreeList, mysql.CalcMysqlBatchSize(typeTreeList[0])).Error
+	if err != nil {
+		logger.Error(errorx.MustWrap(err), "初始化类型表失败！")
+		return err
 	}
 	var staffAlias, staffPosition = "超管", "系统开发攻城狮"
-	err = db.Model(&model.Role{}).Create(&role).Error
+	err = db.Model(&model.Role{}).Create(&baseRole).Error
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统超级管理员失败！")
+		return err
 	}
 	for i := range moduleList {
 		roleCapabilities = append(roleCapabilities, model.RoleCapabilities{
-			RoleID:     *role.RecID,
+			RoleID:     *baseRole.RecID,
 			ModuleID:   *moduleList[i].RecID,
 			ModuleName: moduleList[i].ModuleName,
 			CanRead:    true,
@@ -139,49 +196,6 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), "初始化系统超级管理员权限失败！")
 	}
-	departmentList = append(departmentList, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "技术部",
-		DepartmentLocation:    "",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "财务部",
-		DepartmentLocation:    "2楼205",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "生产车间",
-		DepartmentLocation:    "",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "仓库",
-		DepartmentLocation:    "1楼",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "销售部",
-		DepartmentLocation:    "1楼",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "人事部",
-		DepartmentLocation:    "1楼",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	}, model.Department{
-		BasicModel:            model.BasicModel{},
-		DepartmentName:        "行政部",
-		DepartmentLocation:    "1楼",
-		DepartmentManagerID:   1,
-		DepartmentManagerName: "超级管理员",
-	})
 
 	err = db.Model(&model.Department{}).CreateInBatches(departmentList, mysql.CalcMysqlBatchSize(departmentList[0])).Error
 	if err != nil {
@@ -194,7 +208,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 		StaffEmail:          "645171033@qq.com",
 		StaffPhone:          nil,
 		StaffPassword:       "HSHROOT",
-		StaffRoleID:         *role.RecID,
+		StaffRoleID:         *baseRole.RecID,
 		StaffRoleName:       "root",
 		StaffDepartmentID:   departmentList[0].RecID,
 		StaffPosition:       &staffPosition,

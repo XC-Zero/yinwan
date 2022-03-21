@@ -1,5 +1,5 @@
 package model
 
-type FixedAsset struct {
+type Warehouse struct {
 	BasicModel
 }

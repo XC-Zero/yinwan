@@ -89,6 +89,7 @@ func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+// PaginateSql 生成分页sql
 func PaginateSql(ctx *gin.Context) string {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
@@ -100,7 +101,7 @@ func PaginateSql(ctx *gin.Context) string {
 		n = pn
 	}
 	if ps, err := strconv.Atoi(pageSize); err != nil {
-		limit = 5
+		limit = 10
 	} else {
 		limit = ps
 	}

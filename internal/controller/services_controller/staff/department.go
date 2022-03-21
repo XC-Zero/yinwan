@@ -55,6 +55,8 @@ func CreateDepartment(ctx *gin.Context) {
 
 // UpdateDepartment todo !!!
 func UpdateDepartment(ctx *gin.Context) {
+	var department model.Department
+	ctx.ShouldBind(&department)
 }
 
 // DeleteDepartment todo !!!

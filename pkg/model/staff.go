@@ -27,6 +27,10 @@ type Staff struct {
 	StaffRoleName       string  `gorm:"type:varchar(50)" json:"staff_role_name"  binding:"required"`
 }
 
+func (s Staff) TableName() string {
+	return "staffs"
+}
+
 // Login 登录
 // 查mysql ,校验一下，生成个 token 丢 redis ，设置 2 小时过期
 // 返回 token 指针 和 错误信息
@@ -70,6 +74,15 @@ func IgnoreStaffPassword(staffList []Staff) []Staff {
 	return staffs
 }
 
-//func (s Staff) HarvestRoleResponse() {
-//	client.MysqlClient.Model(&Role{}).Find()
-//}
+type Department struct {
+	BasicModel
+	DepartmentName        string  `gorm:"type:varchar(50)" json:"department_name" binding:"required" cn:"部门名称"`
+	DepartmentLocation    string  `gorm:"type:varchar(50)" json:"department_location" cn:"部门地点"`
+	DepartmentManagerID   int     `json:"department_manager_id" cn:"部门主管ID"`
+	DepartmentManagerName string  `gorm:"type:varchar(50)" json:"department_manager_name" cn:"部门主管名称"`
+	DepartmentPhone       *string `gorm:"type:varchar(50)" json:"department_phone,omitempty" cn:"部门联系电话"`
+}
+
+func (d Department) TableName() string {
+	return "departments"
+}

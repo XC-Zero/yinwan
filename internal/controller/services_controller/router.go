@@ -10,12 +10,12 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 func Starter() {
 
 	router := gin.Default()
+	//router.Use() todo 使用自定义的日志输出！
 	router.POST("/login", access_control.Login)
 	router.POST("/forget_password", access_control.ForgetPassword)
 	// 使用组路由，并添加中间件用于判断token
@@ -63,8 +63,6 @@ func Starter() {
 func auth(ctx *gin.Context) {
 	tokenStr := ctx.Request.Header.Get("token")
 	staffEmail := ctx.Request.Header.Get("staff_email")
-	log.Println("***************************\n")
-	log.Printf("token is %s \n email is %s \n ************************************************", tokenStr, staffEmail)
 	if token.IsExpired(tokenStr, staffEmail) {
 		ctx.JSON(_const.UNAUTHORIZED_ERROR, gin.H(errs.CreateWebErrorMsg("登录过期了哦，重新登录呢")))
 		ctx.Abort()
