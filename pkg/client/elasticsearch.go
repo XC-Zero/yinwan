@@ -3,15 +3,16 @@ package client
 import (
 	"crypto/tls"
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
-	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/olivere/elastic/v7"
 	"net"
 	"net/http"
 	"time"
 )
 
 // InitElasticsearch ...
-func InitElasticsearch(config cfg.ESConfig) (*elasticsearch.Client, error) {
-	var c = elasticsearch.Config{
+func InitElasticsearch(config cfg.ESConfig) (*elastic.Client, error) {
+	elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(host))
+	var c = elastic.Config{
 		Addresses: []string{
 			config.Host,
 		},
@@ -28,7 +29,7 @@ func InitElasticsearch(config cfg.ESConfig) (*elasticsearch.Client, error) {
 		},
 	}
 
-	esClient, err := elasticsearch.NewClient(c)
+	esClient, err := elastic.NewClient(c)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +43,8 @@ func InitElasticsearch(config cfg.ESConfig) (*elasticsearch.Client, error) {
 }
 
 // InitElasticsearchWithoutTLS ...
-func InitElasticsearchWithoutTLS(config cfg.ESConfig) (*elasticsearch.Client, error) {
-	var cfg = elasticsearch.Config{
+func InitElasticsearchWithoutTLS(config cfg.ESConfig) (*elastic.Client, error) {
+	var cfg = elastic.Config{
 		Addresses: []string{
 			config.Host,
 		},
@@ -56,9 +57,13 @@ func InitElasticsearchWithoutTLS(config cfg.ESConfig) (*elasticsearch.Client, er
 		},
 	}
 
-	esClient, err := elasticsearch.NewClient(cfg)
+	esClient, err := elastic.NewClient(cfg)
 	if err != nil {
 		return nil, err
 	}
 	return esClient, nil
+}
+
+func CreateIndex(indexName string) {
+	ESClient.Index.
 }

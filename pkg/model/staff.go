@@ -17,14 +17,14 @@ type Staff struct {
 	BasicModel
 	StaffName           string  `gorm:"type:varchar(50);not null;" json:"staff_name"`
 	StaffAlias          *string `gorm:"type:varchar(50)" json:"staff_alias,omitempty"` // 职工别名
-	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"`
+	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  binding:"required"`
 	StaffPhone          *string `gorm:"type:varchar(50);index;" json:"staff_phone,omitempty"`
-	StaffPassword       string  `gorm:"type:varchar(20)" json:"staff_password"`
+	StaffPassword       string  `gorm:"type:varchar(20)" json:"staff_password"  binding:"required"`
 	StaffPosition       *string `gorm:"type:varchar(50)" json:"staff_position,omitempty"`
 	StaffDepartmentID   *int    `json:"staff_department_id,omitempty"`
 	StaffDepartmentName *string `gorm:"type:varchar(50)" json:"staff_department_name,omitempty"`
-	StaffRoleID         int     `gorm:"type:int" json:"staff_role_id"`
-	StaffRoleName       string  `gorm:"type:varchar(50)" json:"staff_role_name"`
+	StaffRoleID         int     `gorm:"type:int" json:"staff_role_id"  binding:"required"`
+	StaffRoleName       string  `gorm:"type:varchar(50)" json:"staff_role_name"  binding:"required"`
 }
 
 // Login 登录

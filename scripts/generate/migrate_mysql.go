@@ -126,7 +126,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 	}
 	for i := range moduleList {
 		roleCapabilities = append(roleCapabilities, model.RoleCapabilities{
-			RoelID:     *role.RecID,
+			RoleID:     *role.RecID,
 			ModuleID:   *moduleList[i].RecID,
 			ModuleName: moduleList[i].ModuleName,
 			CanRead:    true,

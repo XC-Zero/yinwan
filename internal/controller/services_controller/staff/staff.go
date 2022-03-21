@@ -21,7 +21,7 @@ import (
 // @Param  model.Staff
 func CreateStaff(ctx *gin.Context) {
 	temp := model.Staff{}
-	err := ctx.ShouldBindJSON(&temp)
+	err := ctx.ShouldBind(&temp)
 	if err != nil {
 		mes := "参数有误"
 		logger.Error(errorx.MustWrap(err), mes)
