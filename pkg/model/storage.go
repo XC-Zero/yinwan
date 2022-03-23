@@ -10,15 +10,26 @@ type Warehouse struct {
 	Remark             *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"仓库备注"`
 }
 
+func (m Warehouse) TableName() string {
+	return "warehouses"
+}
+
 // Material 原材料
 type Material struct {
 	BasicModel
 	MaterialName      string  `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
+	MaterialTypeID    int     `gorm:"type:int;not null;index" json:"material_type_id" cn:"原材料类型ID"`
+	MaterialTypeName  string  `gorm:"type:varchar(50);not null" json:"material_type_name" cn:"原材料类型名称"`
 	MaterialStyle     string  `gorm:"type:varchar(50);not null" json:"material_style" cn:"原材料规格"`
 	MaterialOwnerID   *int    `gorm:"type:int" json:"material_owner_id,omitempty" cn:"原材料负责人ID"`
 	MaterialOwnerName *string `gorm:"type:varchar(50)" json:"material_owner_name,omitempty" cn:"原材料负责人名称"`
 	AverageUnitPrice  *string `gorm:"type:varchar(50)" json:"average_unit_price,omitempty" cn:"原材料平均价格"`
+	MaterialPicUrl    *string `gorm:"type:varchar(500)" json:"material_pic_url,omitempty" cn:"原材料展示图"`
 	Remark            *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"原材料备注"`
+}
+
+func (m Material) TableName() string {
+	return "materials"
 }
 
 // MaterialBatch 原材料批次
@@ -36,4 +47,8 @@ type MaterialBatch struct {
 	WarehouseID                *int    `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
 	WarehouseName              *string `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
 	Remark                     *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
+}
+
+func (m MaterialBatch) TableName() string {
+	return "material_batches"
 }

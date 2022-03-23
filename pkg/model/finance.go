@@ -38,7 +38,15 @@ type FixedAsset struct {
 	Remark                    *string `gorm:"type:varchar(200)" json:"remark" cn:"备注"`
 }
 
+func (m FixedAsset) TableName() string {
+	return "fixed_assets"
+}
+
 // FixedAssetStatement 固定资产月度表
 type FixedAssetStatement struct {
 	BasicModel
+}
+
+func (m FixedAssetStatement) TableName() string {
+	return "fixed_asset_statements"
 }

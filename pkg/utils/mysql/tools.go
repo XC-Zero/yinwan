@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"fmt"
+	"gorm.io/gorm/schema"
 	"reflect"
 	"strings"
 )
@@ -22,4 +24,45 @@ func countStructFields(v reflect.Value) int {
 		}
 	}
 	return count
+}
+
+type SqlGeneration struct {
+	sql string
+}
+
+func InitSql(model schema.Tabler, isCount bool) *SqlGeneration {
+	str := "*"
+	if true {
+		str = "count(*)"
+	}
+	var s SqlGeneration
+	s.sql = fmt.Sprintf("select %s from %s where 1=1 ", str, model.TableName())
+	return &s
+}
+
+func (s *SqlGeneration) AddConditions(symbol string, conditions ...string) *SqlGeneration {
+	length := len(conditions)
+	for i := range conditions {
+		if i%2 != 0 {
+			continue
+		}
+		if i+1 >= length {
+			break
+		}
+		if conditions[i+1] != "" {
+			s.sql += fmt.Sprintf(" and %s %s '%s'", conditions[i], symbol, conditions[i+1])
+		}
+	}
+	return s
+}
+func (s *SqlGeneration) AddOther(text string) *SqlGeneration {
+	s.sql += text
+	return s
+}
+func (s *SqlGeneration) Harvest() string {
+	return s.sql
+}
+
+type BatchSqlGeneration struct {
+	sqlList []SqlGeneration
 }

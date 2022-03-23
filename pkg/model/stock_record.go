@@ -11,6 +11,10 @@ type StockInRecord struct {
 	Remark                 *string                `gorm:"type:varchar(200);" json:"remark,omitempty" bson:"remark"`
 }
 
+func (m StockInRecord) TableName() string {
+	return "stock_in_records"
+}
+
 // StockOutRecord 出库记录
 // 存 MongoDB 一份
 type StockOutRecord struct {
@@ -20,4 +24,8 @@ type StockOutRecord struct {
 	StockOutRecordType      string                 `gorm:"type:varchar(50);not null" json:"stock_out_record_type" bson:"stock_out_record_type"`
 	StockOutRecordContent   map[string]interface{} `gorm:"type:varchar(500);not null" json:"stock_out_record_content" bson:"stock_out_record_content"`
 	Remark                  *string                `gorm:"type:varchar(200);" json:"remark,omitempty" bson:"remark"`
+}
+
+func (m StockOutRecord) TableName() string {
+	return "stock_out_records"
 }

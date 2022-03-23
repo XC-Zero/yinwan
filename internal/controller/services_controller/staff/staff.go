@@ -8,6 +8,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/email"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
@@ -47,19 +48,22 @@ func SelectStaff(ctx *gin.Context) {
 	staffRoleId := ctx.PostForm("staff_role_id")
 	staffName := ctx.PostForm("staff_name")
 	log.Printf("%+v", staffName)
-
 	var staffList []model.Staff
 
 	sql := `select %s from staffs where 1 = 1 `
-	if departmentID != "" {
-		sql += fmt.Sprintf(" and staff_department_id = '%s'", departmentID)
-	}
-	if staffPosition != "" {
-		sql += fmt.Sprintf(" and staff_position = '%s'", staffPosition)
-	}
-	if staffRoleId != "" {
-		sql += fmt.Sprintf(" and staff_role_id = '%s'", staffRoleId)
-	}
+	mysql.CombineSqlWithConditions(sql, "=",
+		"staff_department_id", departmentID,
+		"staff_position", staffPosition, "staff_role_id", staffRoleId)
+
+	//if departmentID != "" {
+	//	sql += fmt.Sprintf(" and staff_department_id = '%s'", departmentID)
+	//}
+	//if staffPosition != "" {
+	//	sql += fmt.Sprintf(" and staff_position = '%s'", staffPosition)
+	//}
+	//if staffRoleId != "" {
+	//	sql += fmt.Sprintf(" and staff_role_id = '%s'", staffRoleId)
+	//}
 	contentSql, countSql := fmt.Sprintf(sql, "*"), fmt.Sprintf(sql, "count(*)")
 	// 不能前置，% 符会被 sprintf 解析成 (MISSING)
 	if staffName != "" {

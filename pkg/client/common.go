@@ -52,12 +52,12 @@ func InitSystemStorage(config config.StorageConfig) {
 	if err != nil {
 		panic(err)
 	}
-	es, err := InitElasticsearch(config.ESConfig)
+	//es, err := InitElasticsearch(config.ESConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	ESClient = es
+	//ESClient = es
 	RedisClient = rr
 	MysqlClient = msy
 	MinioClient = mClient

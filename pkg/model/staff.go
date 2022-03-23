@@ -15,14 +15,14 @@ const EXPIRE_TIME = time.Hour * 2
 // Staff 职工表
 type Staff struct {
 	BasicModel
-	StaffName           string  `gorm:"type:varchar(50);not null;" json:"staff_name"`
-	StaffAlias          *string `gorm:"type:varchar(50)" json:"staff_alias,omitempty"` // 职工别名
-	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  binding:"required"`
+	StaffName           string  `gorm:"type:varchar(50);not null;" json:"staff_name" cn:"职工名称"`
+	StaffAlias          *string `gorm:"type:varchar(50)" json:"staff_alias,omitempty" cn:"职工别名"` // 职工别名
+	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  binding:"required" cn:"职工邮箱"`
 	StaffPhone          *string `gorm:"type:varchar(50);index;" json:"staff_phone,omitempty"`
 	StaffPassword       string  `gorm:"type:varchar(20)" json:"staff_password"  binding:"required"`
 	StaffPosition       *string `gorm:"type:varchar(50)" json:"staff_position,omitempty"`
 	StaffDepartmentID   *int    `json:"staff_department_id,omitempty"`
-	StaffDepartmentName *string `gorm:"type:varchar(50)" json:"staff_department_name,omitempty"`
+	StaffDepartmentName *string `gorm:"type:varchar(50)" json:"staff_department_name,omitempty" cn:"职工部门名称"`
 	StaffRoleID         int     `gorm:"type:int" json:"staff_role_id"  binding:"required"`
 	StaffRoleName       string  `gorm:"type:varchar(50)" json:"staff_role_name"  binding:"required"`
 }
