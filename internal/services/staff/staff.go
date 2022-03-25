@@ -21,7 +21,3 @@ func UpdateStaff(db *gorm.DB, oldStaff, newStaff model.Staff) bool {
 func AddStaff(db *gorm.DB, staff model.Staff) {
 
 }
-
-func SelectStaffByID() {
-
-}

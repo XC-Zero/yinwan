@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"fmt"
 	"log"
 )
 
@@ -22,25 +22,22 @@ func main() {
 	//
 	//services_controller.Starter()
 	//select {}
+	var a interface{}
+	a = "asdad"
 
-	mapping := model.QRCodeMapping{}
-	var i = 8
-
-	err := mapping.GenerateSql(model.Staff{
-		BasicModel:          model.BasicModel{RecID: &i},
-		StaffName:           "test01x",
-		StaffAlias:          nil,
-		StaffEmail:          "",
-		StaffPhone:          nil,
-		StaffPassword:       "",
-		StaffPosition:       nil,
-		StaffDepartmentID:   nil,
-		StaffDepartmentName: nil,
-		StaffRoleID:         0,
-		StaffRoleName:       "",
-	})
-	if err != nil {
-		panic(err)
-	}
-	log.Printf("%+v", mapping)
+	log.Println(fmt.Sprintf(">>>>%s", a))
+	//err := client.MysqlClient.Raw(sqlBatch[1] ).Scan(&materialList).Error
+	//if err != nil {
+	//	return
+	//}
+	//err = client.MysqlClient.Raw(sqlBatch[0]).Scan(&count).Error
+	//if err != nil {
+	//	panic(err)
+	//	return
+	//}
+	//ctx.JSON(_const.OK, gin.H{
+	//	"count":         count,
+	//	"material_list": materialList,
+	//})
+	return
 }

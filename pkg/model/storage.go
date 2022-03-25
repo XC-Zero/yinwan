@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 // Warehouse 仓库
 type Warehouse struct {
 	BasicModel
@@ -35,18 +37,19 @@ func (m Material) TableName() string {
 // MaterialBatch 原材料批次
 type MaterialBatch struct {
 	BasicModel
-	MaterialID                 int     `gorm:"type:int;not null" json:"material_id" cn:"原材料ID"`
-	MaterialName               string  `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
-	StockInRecordID            int     `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`
-	MaterialBatchOwnerID       *int    `gorm:"type:int;index" json:"material_batch_owner_id,omitempty" cn:"负责人ID"`
-	MaterialBatchOwnerName     *string `gorm:"type:varchar(50)" json:"material_batch_owner_name,omitempty" cn:"负责人名称"`
-	MaterialBatchTotalPrice    string  `gorm:"type:varchar(50);not null" json:"material_batch_total_price" cn:"批次总价"`
-	MaterialBatchNumber        int     `gorm:"type:int;not null" json:"material_batch_number" cn:"批次原材料总数"`
-	MaterialBatchSurplusNumber int     `gorm:"type:int;not null" json:"material_batch_surplus_number" cn:"当前批次原材料剩余数量"`
-	MaterialBatchUnitPrice     string  `gorm:"type:varchar(50);not null" json:"material_batch_unit_price" cn:"单价"`
-	WarehouseID                *int    `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
-	WarehouseName              *string `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
-	Remark                     *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
+	MaterialID                 int        `gorm:"type:int;not null" json:"material_id" cn:"原材料ID"`
+	MaterialName               string     `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
+	StockInRecordID            int        `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`
+	MaterialBatchOwnerID       *int       `gorm:"type:int;index" json:"material_batch_owner_id,omitempty" cn:"负责人ID"`
+	MaterialBatchOwnerName     *string    `gorm:"type:varchar(50)" json:"material_batch_owner_name,omitempty" cn:"负责人名称"`
+	MaterialBatchTotalPrice    string     `gorm:"type:varchar(50);not null" json:"material_batch_total_price" cn:"批次总价"`
+	MaterialBatchNumber        int        `gorm:"type:int;not null" json:"material_batch_number" cn:"批次原材料总数"`
+	MaterialBatchSurplusNumber int        `gorm:"type:int;not null" json:"material_batch_surplus_number" cn:"当前批次原材料剩余数量"`
+	MaterialBatchUnitPrice     string     `gorm:"type:varchar(50);not null" json:"material_batch_unit_price" cn:"单价"`
+	WarehouseID                *int       `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
+	WarehouseName              *string    `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
+	StockInTime                *time.Time `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
+	Remark                     *string    `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
 }
 
 func (m MaterialBatch) TableName() string {
