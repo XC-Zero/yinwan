@@ -16,6 +16,10 @@ func (m Warehouse) TableName() string {
 	return "warehouses"
 }
 
+func (m Warehouse) TableCnName() string {
+	return "仓库"
+}
+
 // Material 原材料
 type Material struct {
 	BasicModel
@@ -32,6 +36,9 @@ type Material struct {
 
 func (m Material) TableName() string {
 	return "materials"
+}
+func (m Material) TableCnName() string {
+	return "原材料"
 }
 
 // MaterialBatch 原材料批次
@@ -54,4 +61,7 @@ type MaterialBatch struct {
 
 func (m MaterialBatch) TableName() string {
 	return "material_batches"
+}
+func (m MaterialBatch) TableCnName() string {
+	return "原材料批次"
 }

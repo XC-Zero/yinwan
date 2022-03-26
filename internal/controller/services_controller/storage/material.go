@@ -19,12 +19,12 @@ func SelectMaterial(ctx *gin.Context) {
 	sqlBatch := mysql.InitBatchSqlGeneration().
 		AddSqlGeneration("count", mysql.InitSqlGeneration(model.Material{}, mysql.COUNT)).
 		AddSqlGeneration("content", mysql.InitSqlGeneration(model.Material{}, mysql.ALL)).
-		AddConditions("like", "material_name", "%"+materialName+"%").
+		AddConditions("like", "material_name", materialName).
 		AddConditions("=", "material_id", recID, "material_type_id", materialTypeID)
 
 	err := client.MysqlClient.Raw(
 		sqlBatch.Harvest("content").
-			AddGroupBy(mysql.BASIC_MODEL_PRIMARY_KEY).
+			AddOrderBy(mysql.BASIC_MODEL_PRIMARY_KEY).
 			AddSuffixOther(client.PaginateSql(ctx)).
 			HarvestSql()).
 		Scan(&materialList).Error
@@ -56,7 +56,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 	err := client.MysqlClient.Model(&model.MaterialBatch{}).
 		Scopes(client.Paginate(ctx)).
 		Where(" material_id = ? ", materialID).
-		Order("created_at").
+		Order("stock_in_time").
 		Find(&materialBatchList).
 		Error
 	if err != nil {

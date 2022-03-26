@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// OperatorSymbol 。。。
 type OperatorSymbol string
 
 const (
@@ -30,6 +31,7 @@ const (
 	BASIC_MODEL_PRIMARY_KEY = "id"
 )
 
+// CalcMysqlBatchSize 批量插入时计算长度的
 func CalcMysqlBatchSize(data interface{}) int {
 	count := countStructFields(reflect.ValueOf(data))
 	return 60000 / count
@@ -56,12 +58,12 @@ type sqlGeneration struct {
 
 // InitSqlGeneration 初始化
 func InitSqlGeneration(model schema.Tabler, selected Selected) *sqlGeneration {
-
 	var s sqlGeneration
 	s.sql = fmt.Sprintf("select %s from %s where 1=1 ", selected, model.TableName())
 	return &s
 }
 
+// AddConditions 添加 where 条件，都是 and
 func (s *sqlGeneration) AddConditions(symbol OperatorSymbol, conditions ...string) *sqlGeneration {
 	length := len(conditions)
 	for i := range conditions {
@@ -92,6 +94,11 @@ func (s *sqlGeneration) AddGroupBy(columnName string) *sqlGeneration {
 	s.sql += fmt.Sprintf(" group by %s ", columnName)
 	return s
 }
+func (s *sqlGeneration) AddOrderBy(columnName string) *sqlGeneration {
+	s.sql += fmt.Sprintf(" order by %s ", columnName)
+	return s
+}
+
 func (s *sqlGeneration) AddSuffixOther(text string) *sqlGeneration {
 	s.sql += text
 	return s
@@ -117,6 +124,7 @@ func (b *batchSqlGeneration) AddSqlGeneration(name string, s *sqlGeneration) *ba
 	return b
 }
 
+// AddConditions 添加条件
 func (b *batchSqlGeneration) AddConditions(symbol OperatorSymbol, conditions ...string) *batchSqlGeneration {
 	for i := range b.sqlMap {
 		b.sqlMap[i].AddConditions(symbol, conditions...)
@@ -124,6 +132,7 @@ func (b *batchSqlGeneration) AddConditions(symbol OperatorSymbol, conditions ...
 	return b
 }
 
+// AddSuffixOther 在尾部追加sql
 func (b *batchSqlGeneration) AddSuffixOther(text string) *batchSqlGeneration {
 	for i := range b.sqlMap {
 		b.sqlMap[i].AddSuffixOther(text)
@@ -131,6 +140,7 @@ func (b *batchSqlGeneration) AddSuffixOther(text string) *batchSqlGeneration {
 	return b
 }
 
+// HarvestSql 根据名字获取对应sql
 func (b *batchSqlGeneration) HarvestSql(name string) string {
 	if v, ok := b.sqlMap[name]; ok {
 		return v.HarvestSql()
@@ -138,6 +148,7 @@ func (b *batchSqlGeneration) HarvestSql(name string) string {
 	return ""
 }
 
+// Harvest 获取sqlGeneration对象
 func (b *batchSqlGeneration) Harvest(name string) *sqlGeneration {
 	if v, ok := b.sqlMap[name]; ok {
 		return v
@@ -145,7 +156,8 @@ func (b *batchSqlGeneration) Harvest(name string) *sqlGeneration {
 	return nil
 }
 
-func (b *batchSqlGeneration) HarvestAll() []string {
+// HarvestAllSql 获取所有Sql
+func (b *batchSqlGeneration) HarvestAllSql() []string {
 	var sqlList []string
 	for key := range b.sqlMap {
 		sqlList = append(sqlList, b.sqlMap[key].HarvestSql())

@@ -1,55 +1,57 @@
 package staff
 
 import (
-	"fmt"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
-	"strings"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // SelectDepartment 查询部门
 func SelectDepartment(ctx *gin.Context) {
-	departmentName := ctx.PostForm("department_name")
-	departmentMangerName := ctx.PostForm("department_manger_name")
-	departmentManagerID := ctx.PostForm("department_manager_id")
 
-	var departmentList []model.Department
-	var count int
-	sql := `select * from departments where 1 = 1 `
-	if departmentName != "" {
-		sql += fmt.Sprintf(" and department_name like '%%%s%%' ", departmentName)
+	conditions := []common.Condition{
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "department_name",
+			ColumnValue: ctx.PostForm("department_name"),
+		},
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "department_manger_name",
+			ColumnValue: ctx.PostForm("department_manger_name"),
+		},
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "department_manager_id",
+			ColumnValue: ctx.PostForm("department_manager_id"),
+		},
 	}
-	if departmentMangerName != "" {
-		sql += fmt.Sprintf(" and department_manager_name like '%%%s%%' ", departmentMangerName)
-	}
-	if departmentManagerID != "" {
-		sql += fmt.Sprintf(" and department_manager_id = '%s' ", departmentManagerID)
-	}
-	countSql := strings.Replace(sql, "*", "count(*)", 1)
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, conditions...)
 
-	sql += " order by rec_id " + client.PaginateSql(ctx)
-	err := client.MysqlClient.Raw(sql).Scan(&departmentList).Error
-	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询部门内容失败！")))
-		return
-	}
-	err = client.MysqlClient.Raw(countSql).Scan(&count).Error
-	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询部门总数失败！")))
-		return
-	}
-	ctx.JSON(_const.OK, gin.H{
-		"count":           count,
-		"department_list": departmentList,
-	})
 	return
 }
 
 // CreateDepartment todo !!!
 func CreateDepartment(ctx *gin.Context) {
+	var department model.Department
+	err := ctx.ShouldBindWith(&department, binding.Form)
+	if err != nil {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("部门参数有误！"))
+		return
+	}
+	err = client.MysqlClient.Model(&model.Department{}).Create(&department).Error
+	if err != nil {
+		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建部门失败！"))
+		return
+	}
+
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建部门成功！"))
+	return
 
 }
 

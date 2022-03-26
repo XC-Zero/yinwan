@@ -12,8 +12,8 @@ import (
 )
 
 type roleResponse struct {
-	role             model.Role               `json:"role" binding:"required,dive"`
-	roleCapabilities []model.RoleCapabilities `json:"role_capabilities" binding:"required,dive"`
+	Role             model.Role               `json:"role" binding:"required,dive"`
+	RoleCapabilities []model.RoleCapabilities `json:"role_capabilities" binding:"required,dive"`
 }
 
 func CreateRole(ctx *gin.Context) {
@@ -23,15 +23,15 @@ func CreateRole(ctx *gin.Context) {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("输入有误！"))
 		return
 	}
-	err = client.MysqlClient.Model(&model.Role{}).Create(&roleResponse.role).Error
+	err = client.MysqlClient.Model(&model.Role{}).Create(&roleResponse.Role).Error
 	if err != nil {
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建角色失败！"))
 		return
 	}
-	for i := range roleResponse.roleCapabilities {
-		roleResponse.roleCapabilities[i].RoleID = *roleResponse.role.RecID
+	for i := range roleResponse.RoleCapabilities {
+		roleResponse.RoleCapabilities[i].RoleID = *roleResponse.Role.RecID
 	}
-	err = client.MysqlClient.Model(&model.Role{}).CreateInBatches(roleResponse.roleCapabilities, mysql.CalcMysqlBatchSize(roleResponse.roleCapabilities[0])).Error
+	err = client.MysqlClient.Model(&model.Role{}).CreateInBatches(roleResponse.RoleCapabilities, mysql.CalcMysqlBatchSize(roleResponse.RoleCapabilities[0])).Error
 	if err != nil {
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建角色内权限失败！"))
 		return

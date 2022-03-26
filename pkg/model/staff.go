@@ -86,3 +86,7 @@ type Department struct {
 func (d Department) TableName() string {
 	return "departments"
 }
+
+func (d Department) TableCnName() string {
+	return "部门"
+}

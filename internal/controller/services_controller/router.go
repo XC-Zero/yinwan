@@ -6,6 +6,7 @@ import (
 	finance3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/finance"
 	staff3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/staff"
 	storage3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/storage"
+	system2 "github.com/XC-Zero/yinwan/internal/controller/services_controller/system"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
@@ -53,7 +54,12 @@ func Starter() {
 	{
 		transaction.POST("")
 	}
+	system := services.Group("/system")
+	{
+		system.POST("create_book_name", system2.CreateBookName)
+		system.POST("select_all_book_name", system2.SelectAllBookName)
 
+	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)
 	if err != nil {
 		panic(err)

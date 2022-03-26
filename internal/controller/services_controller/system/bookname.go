@@ -2,6 +2,7 @@ package system
 
 import (
 	"github.com/XC-Zero/yinwan/internal/services/system"
+	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
@@ -24,4 +25,16 @@ func CreateBookName(ctx *gin.Context) {
 		}
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建账套失败！"))
 	}
+}
+
+func SelectAllBookName(ctx *gin.Context) {
+	var bookNameList = make([]string, 0, len(client.BookNameMap))
+	for key := range client.BookNameMap {
+		bookNameList = append(bookNameList, key)
+	}
+	ctx.JSON(_const.OK, gin.H{
+		"count":          len(bookNameList),
+		"book_name_list": bookNameList,
+	})
+	return
 }

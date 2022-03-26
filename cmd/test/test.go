@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -22,10 +21,8 @@ func main() {
 	//
 	//services_controller.Starter()
 	//select {}
-	var a interface{}
-	a = "asdad"
-
-	log.Println(fmt.Sprintf(">>>>%s", a))
+	c := color.New(color.BgMagenta).Add(color.Underline)
+	c.Println("Prints cyan text with an underline.")
 	//err := client.MysqlClient.Raw(sqlBatch[1] ).Scan(&materialList).Error
 	//if err != nil {
 	//	return
