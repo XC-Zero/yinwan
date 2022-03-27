@@ -23,13 +23,16 @@ type Condition struct {
 // ctx             略
 // db              执行语句的数据库
 // tableModel      结构体
+// orderByColumn   OrderBy 的字段 默认为 id
 // conditionList   条件
 // 返回给前端俩字段
 // count
-func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, conditionList ...Condition) {
+func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, orderByColumn string, conditionList ...Condition) {
 	var count int
 	var dataList []_interface.ChineseTabler
-
+	if orderByColumn == "" {
+		orderByColumn = "id"
+	}
 	sqlBatch := mysql.InitBatchSqlGeneration().
 		AddSqlGeneration("count", mysql.InitSqlGeneration(tableModel, mysql.COUNT)).
 		AddSqlGeneration("content", mysql.InitSqlGeneration(tableModel, mysql.ALL))
@@ -37,7 +40,7 @@ func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableMod
 		sqlBatch.AddConditions(conditionList[i].Symbol, conditionList[i].ColumnName, conditionList[i].ColumnValue)
 	}
 
-	contentSql, countSql := sqlBatch.Harvest("content").AddOrderBy("id").
+	contentSql, countSql := sqlBatch.Harvest("content").AddOrderBy(orderByColumn).
 		AddSuffixOther(client.PaginateSql(ctx)).HarvestSql(), sqlBatch.HarvestSql("count")
 	c := color.New(color.BgMagenta).Add(color.Underline)
 	// 打印成功与否并不重要，error 忽略掉就行
@@ -59,4 +62,8 @@ func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableMod
 		"list":  dataList,
 	})
 	return
+}
+
+func UpdateOneObjectTemplate() {
+
 }

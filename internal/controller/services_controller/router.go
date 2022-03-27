@@ -38,6 +38,10 @@ func Starter() {
 
 	storage := services.Group("/storage")
 	{
+
+		storage.POST("/select_material", storage3.SelectMaterial)
+		storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
+
 		storage.POST("/stack_out", storage3.CreateStockIn)
 		storage.POST("/stack_in", storage3.CreateStockOut)
 		storage.POST("/scan_qrcode", storage3.ScanQRCode)

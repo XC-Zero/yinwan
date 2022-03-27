@@ -31,7 +31,7 @@ func SelectDepartment(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("department_manager_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, conditions...)
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, "", conditions...)
 
 	return
 }
@@ -58,7 +58,12 @@ func CreateDepartment(ctx *gin.Context) {
 // UpdateDepartment todo !!!
 func UpdateDepartment(ctx *gin.Context) {
 	var department model.Department
-	ctx.ShouldBind(&department)
+	err := ctx.ShouldBind(&department)
+	if err != nil {
+		ctx.JSON(_const.REQUEST_PARM_ERROR, "输入有误！")
+		return
+	}
+	client.MysqlClient.Model(&model.Department{}).Updates(department)
 }
 
 // DeleteDepartment todo !!!

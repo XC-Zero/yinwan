@@ -4,14 +4,18 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/utils/encode"
 	"log"
+	"strings"
 	"time"
 )
 
 //goland:noinspection GoSnakeCaseUsage
 const EXPIRE_TIME = time.Second * 3
+const SPLIT_SYMBOL = "|||||"
 
 func GenerateToken(staffEmail string) (string, error) {
-	tokenStr, err := encode.EncryptByAes(staffEmail)
+	str := staffEmail + SPLIT_SYMBOL + time.Now().String()
+	log.Printf(str)
+	tokenStr, err := encode.EncryptByAes(str)
 	if err != nil {
 		return "", err
 	}
@@ -33,9 +37,9 @@ func IsExpired(tokenStr, staffEmail string) bool {
 		log.Println(err)
 		return true
 	}
-	log.Println(string(aes), staffEmail)
-	if string(aes) != staffEmail {
-		log.Println(string(aes) == staffEmail)
+	email := strings.Split(string(aes), SPLIT_SYMBOL)[0]
+	log.Printf("aes email is %s \n input email is %s ", email, staffEmail)
+	if email != staffEmail {
 		return true
 	}
 	return false

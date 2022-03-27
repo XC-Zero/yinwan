@@ -23,19 +23,17 @@ func CreateStaff(ctx *gin.Context) {
 	temp := model.Staff{}
 	err := ctx.ShouldBind(&temp)
 	if err != nil {
-		mes := "参数有误"
-		logger.Error(errorx.MustWrap(err), mes)
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg(mes))
+		log.Println(err)
+		log.Printf("%+v", temp)
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
 		return
 	}
 	err = client.MysqlClient.Model(&model.Staff{}).Create(&temp).Error
 	if err != nil {
-		mes := "创建员工失败！"
-		logger.Error(errorx.MustWrap(err), mes)
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg(mes))
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("创建员工失败！"))
 		return
 	}
-	ctx.JSON(_const.OK, errs.CreateWebErrorMsg("创建员工成功!"))
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建员工成功!"))
 	return
 }
 
