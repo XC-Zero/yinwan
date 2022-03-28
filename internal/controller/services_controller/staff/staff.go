@@ -7,6 +7,7 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/XC-Zero/yinwan/pkg/utils/email"
+	"github.com/XC-Zero/yinwan/pkg/utils/encode"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
@@ -63,7 +64,7 @@ func SelectStaff(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("staff_role_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Staff{}, "", conditions...)
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Staff{}, "", model.IgnoreStaffPassword, conditions...)
 
 	return
 
@@ -92,7 +93,7 @@ func UpdateStaff(ctx *gin.Context) {
 func DeleteStaff(ctx *gin.Context) {
 	recID := ctx.PostForm("id")
 	if recID == "" {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("请输入职工ID哦！"))
+		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("请输入职工ID ！"))
 		return
 	}
 	err := client.MysqlClient.Delete(&model.Staff{}, recID).Error
@@ -115,9 +116,7 @@ func SendStaffValidateEmail(ctx *gin.Context) {
 	n := strconv.Itoa(rand.Intn(999999))
 	err := client.RedisClient.Set(staffEmail, n, time.Minute*10).Err()
 	if err != nil {
-		mes := "Redis存储邮件验证码失败!"
-		logger.Error(errorx.MustWrap(err), mes)
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("Redis存储邮件验证码失败!")))
 		return
 	}
 	err = email.SendEmail("好上好系统验证邮件", "<div style=\"width: 100vw;height: 100vh;background-color: #ffffff;display: flex;flex-direction: column; justify-content: center;align-items: center\">"+
@@ -129,9 +128,7 @@ func SendStaffValidateEmail(ctx *gin.Context) {
 		"<h3 style=\"width: 80%;text-align:right;\">验证码十分钟有效~</h3>"+
 		"</div>", staffEmail)
 	if err != nil {
-		mes := "发送邮件验证码失败!"
-		logger.Error(errorx.MustWrap(err), mes)
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
+		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("发送邮件验证码失败!")))
 		return
 	}
 	ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg("邮箱验证码发送成功！")))
@@ -165,23 +162,21 @@ func ValidateStaffEmail(ctx *gin.Context) {
 		return
 	}
 	if staffCaptcha == redisCaptcha {
-		mes := "邮箱验证通过!"
-		logger.Info(mes)
-		ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg(mes)))
+		aes, err := encode.EncryptByAes(staffEmail)
+		if err != nil {
+			log.Println(err)
+		}
+		ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg("邮箱验证通过!", map[string]interface{}{
+			"secret_key": aes,
+		})))
 		return
 	} else {
 		mes := "您的邮箱验证码不正确!"
-		logger.Info(mes)
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
 		return
 	}
 }
 
 func SelectStaffRole(ctx *gin.Context) {
-
-}
-
-// ForgetPassword 忘记密码
-func ForgetPassword(ctx *gin.Context) {
 
 }

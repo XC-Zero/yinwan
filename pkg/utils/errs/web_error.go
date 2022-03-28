@@ -2,15 +2,16 @@ package errs
 
 func CreateWebErrorMsg(errorMsg string, otherInfo ...interface{}) map[string]interface{} {
 	return map[string]interface{}{
-		"error": map[string]interface{}{
-			"message":   errorMsg,
-			"otherInfo": otherInfo,
-		},
+		"status":    "error",
+		"message":   errorMsg,
+		"otherInfo": otherInfo,
 	}
 }
 
-func CreateSuccessMsg(msg string) map[string]interface{} {
+func CreateSuccessMsg(msg string, otherInfo ...interface{}) map[string]interface{} {
 	return map[string]interface{}{
-		"message": msg,
+		"status":    "success",
+		"message":   msg,
+		"otherInfo": otherInfo,
 	}
 }

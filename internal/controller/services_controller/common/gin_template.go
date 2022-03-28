@@ -25,9 +25,10 @@ type Condition struct {
 // tableModel      结构体
 // orderByColumn   OrderBy 的字段 默认为 id
 // conditionList   条件
+// resHookFunc     返回前处理函数
 // 返回给前端俩字段
 // count
-func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, orderByColumn string, conditionList ...Condition) {
+func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, orderByColumn string, resHookFunc func(data []_interface.ChineseTabler) []_interface.ChineseTabler, conditionList ...Condition) {
 	var count int
 	var dataList []_interface.ChineseTabler
 	if orderByColumn == "" {
@@ -56,6 +57,9 @@ func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableMod
 	if err != nil {
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s总数失败！", tableModel.TableCnName()))))
 		return
+	}
+	if resHookFunc != nil {
+		dataList = resHookFunc(dataList)
 	}
 	ctx.JSON(_const.OK, gin.H{
 		"count": count,

@@ -19,6 +19,8 @@ func Starter() {
 	//router.Use() todo 使用自定义的日志输出！
 	router.POST("/login", access_control.Login)
 	router.POST("/forget_password", access_control.ForgetPassword)
+	router.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
+	router.POST("/validate_staff_email", staff3.ValidateStaffEmail)
 	// 使用组路由，并添加中间件用于判断token
 	services := router.Group("/services", auth)
 
@@ -28,9 +30,6 @@ func Starter() {
 		staff.POST("/select_staff", staff3.SelectStaff)
 		staff.POST("/update_staff", staff3.UpdateStaff)
 		staff.POST("/delete_staff", staff3.DeleteStaff)
-
-		staff.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
-		staff.POST("/validate_staff_email", staff3.ValidateStaffEmail)
 
 		staff.POST("/create_department", staff3.CreateDepartment)
 		staff.POST("/select_department", staff3.SelectDepartment)
