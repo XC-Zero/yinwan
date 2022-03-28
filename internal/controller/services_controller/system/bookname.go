@@ -33,8 +33,8 @@ func SelectAllBookName(ctx *gin.Context) {
 		bookNameList = append(bookNameList, key)
 	}
 	ctx.JSON(_const.OK, gin.H{
-		"count":          len(bookNameList),
-		"book_name_list": bookNameList,
+		"count": len(bookNameList),
+		"list":  bookNameList,
 	})
 	return
 }

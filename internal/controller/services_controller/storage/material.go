@@ -28,7 +28,7 @@ func SelectMaterial(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("material_type_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, "", conditions...)
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Material{}, "", conditions...)
 
 	return
 }
@@ -53,7 +53,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("material_type_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, "", conditions...)
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.MaterialBatch{}, "", conditions...)
 
 	return
 }

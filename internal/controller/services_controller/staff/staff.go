@@ -2,12 +2,14 @@ package staff
 
 import (
 	"fmt"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/XC-Zero/yinwan/pkg/utils/email"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
@@ -39,50 +41,30 @@ func CreateStaff(ctx *gin.Context) {
 
 // SelectStaff 查询员工
 func SelectStaff(ctx *gin.Context) {
+	conditions := []common.Condition{
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "staff_name",
+			ColumnValue: ctx.PostForm("staff_name"),
+		},
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "staff_position",
+			ColumnValue: ctx.PostForm("staff_position"),
+		},
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "department_id",
+			ColumnValue: ctx.PostForm("department_id"),
+		},
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "staff_role_id",
+			ColumnValue: ctx.PostForm("staff_role_id"),
+		},
+	}
+	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Staff{}, "", conditions...)
 
-	departmentID := ctx.PostForm("department_id")
-	staffPosition := ctx.PostForm("staff_position")
-	staffRoleId := ctx.PostForm("staff_role_id")
-	staffName := ctx.PostForm("staff_name")
-	log.Printf("%+v", staffName)
-	var staffList []model.Staff
-
-	sql := `select %s from staffs where 1 = 1 `
-
-	if departmentID != "" {
-		sql += fmt.Sprintf(" and staff_department_id = '%s'", departmentID)
-	}
-	if staffPosition != "" {
-		sql += fmt.Sprintf(" and staff_position = '%s'", staffPosition)
-	}
-	if staffRoleId != "" {
-		sql += fmt.Sprintf(" and staff_role_id = '%s'", staffRoleId)
-	}
-	contentSql, countSql := fmt.Sprintf(sql, "*"), fmt.Sprintf(sql, "count(*)")
-	// 不能前置，% 符会被 sprintf 解析成 (MISSING)
-	if staffName != "" {
-		suffixSql := fmt.Sprintf(" and staff_name like '%%%s%%'", staffName)
-		contentSql += suffixSql
-		countSql += suffixSql
-	}
-	contentSql += " order by  " + _const.PRIMARY_KEY_NAME + client.PaginateSql(ctx)
-	err := client.MysqlClient.Raw(contentSql).Scan(&staffList).Error
-	if err != nil {
-		logger.Error(errorx.MustWrap(err), "查询时员工失败！")
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询时员工内容失败！")))
-		return
-	}
-	count := 0
-	err = client.MysqlClient.Raw(countSql).Scan(&count).Error
-	if err != nil {
-		logger.Error(errorx.MustWrap(err), "查询时员工总数失败！")
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询时员工失败！")))
-		return
-	}
-	ctx.JSON(_const.OK, gin.H{
-		"count":      count,
-		"staff_list": model.IgnoreStaffPassword(staffList),
-	})
 	return
 
 }

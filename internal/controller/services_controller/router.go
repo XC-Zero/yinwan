@@ -25,13 +25,15 @@ func Starter() {
 	staff := services.Group("/staff")
 	{
 		staff.POST("/create_staff", staff3.CreateStaff)
-		staff.POST("/delete_staff", staff3.DeleteStaff)
-		staff.POST("/update_staff", staff3.UpdateStaff)
 		staff.POST("/select_staff", staff3.SelectStaff)
+		staff.POST("/update_staff", staff3.UpdateStaff)
+		staff.POST("/delete_staff", staff3.DeleteStaff)
+
 		staff.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
 		staff.POST("/validate_staff_email", staff3.ValidateStaffEmail)
-		staff.POST("/select_department", staff3.SelectDepartment)
+
 		staff.POST("/create_department", staff3.CreateDepartment)
+		staff.POST("/select_department", staff3.SelectDepartment)
 		staff.POST("/update_department", staff3.UpdateDepartment)
 		staff.POST("/delete_department", staff3.DeleteDepartment)
 	}
@@ -40,6 +42,7 @@ func Starter() {
 	{
 
 		storage.POST("/select_material", storage3.SelectMaterial)
+
 		storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
 
 		storage.POST("/stack_out", storage3.CreateStockIn)
@@ -51,7 +54,10 @@ func Starter() {
 
 	finance := services.Group("/finance")
 	{
+		finance.POST("/select_credential", finance3.SelectCredential)
 		finance.POST("/create_credential", finance3.CreateCredential)
+		finance.POST("/update_credential", finance3.UpdateCredential)
+		finance.POST("/delete_credential", finance3.DeleteCredential)
 	}
 
 	transaction := services.Group("/transaction")

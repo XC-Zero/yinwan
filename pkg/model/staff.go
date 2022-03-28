@@ -30,6 +30,9 @@ type Staff struct {
 func (s Staff) TableName() string {
 	return "staffs"
 }
+func (s Staff) TableCnName() string {
+	return "员工"
+}
 
 // Login 登录
 // 查mysql ,校验一下，生成个 token 丢 redis ，设置 2 小时过期
