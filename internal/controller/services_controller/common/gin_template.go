@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ type Condition struct {
 	ColumnValue string
 }
 
-// SelectTableContentWithCountTemplate 通用查询模板
+// SelectTableContentWithCountMysqlTemplate 通用 Mysql 查询模板
 // 入参为
 // ctx             略
 // db              执行语句的数据库
@@ -28,7 +29,7 @@ type Condition struct {
 // resHookFunc     返回前处理函数
 // 返回给前端俩字段
 // count
-func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, orderByColumn string, resHookFunc func(data []_interface.ChineseTabler) []_interface.ChineseTabler, conditionList ...Condition) {
+func SelectTableContentWithCountMysqlTemplate(ctx *gin.Context, db *gorm.DB, tableModel _interface.ChineseTabler, orderByColumn string, resHookFunc func(data []_interface.ChineseTabler) []_interface.ChineseTabler, conditionList ...Condition) {
 	var count int
 	var dataList []_interface.ChineseTabler
 	if orderByColumn == "" {
@@ -68,6 +69,6 @@ func SelectTableContentWithCountTemplate(ctx *gin.Context, db *gorm.DB, tableMod
 	return
 }
 
-func UpdateOneObjectTemplate() {
-
+func SelectTableContentWithCountMongoDBTemplate(ctx *gin.Context, db *mongo.Collection) {
+	//db.Find()
 }

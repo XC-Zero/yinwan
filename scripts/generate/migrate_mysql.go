@@ -47,8 +47,8 @@ func init() {
 		&model.Payable{},
 		&model.Receivable{},
 		&model.FinanceCredential{},
-		&model.StockInRecord{},
-		&model.StockInRecord{},
+		//&model.StockInRecord{},
+		//&model.StockInRecord{},
 		&model.FinanceCredentialEvent{},
 		&model.EventItem{},
 	}

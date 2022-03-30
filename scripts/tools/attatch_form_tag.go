@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// 270 330
 var fileList map[string]*os.File = make(map[string]*os.File, 0)
 
 func main() {

@@ -31,7 +31,7 @@ func SelectDepartment(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("department_manager_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Department{}, "", nil, conditions...)
+	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Department{}, "", nil, conditions...)
 
 	return
 }

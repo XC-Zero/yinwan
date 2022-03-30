@@ -21,7 +21,7 @@ func main() {
 	//
 	//services_controller.Starter()
 	//select {}
-	c := color.New(color.BgMagenta).Add(color.Underline)
+	c := color.New(color.BgHiRed).Add(color.Underline)
 	c.Println("Prints cyan text with an underline.")
 	//err := client.MysqlClient.Raw(sqlBatch[1] ).Scan(&materialList).Error
 	//if err != nil {

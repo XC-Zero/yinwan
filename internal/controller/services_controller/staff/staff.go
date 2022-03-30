@@ -64,7 +64,7 @@ func SelectStaff(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("staff_role_id"),
 		},
 	}
-	common.SelectTableContentWithCountTemplate(ctx, client.MysqlClient, model.Staff{}, "", model.IgnoreStaffPassword, conditions...)
+	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Staff{}, "", model.IgnoreStaffPassword, conditions...)
 
 	return
 
