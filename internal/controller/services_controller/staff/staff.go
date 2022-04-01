@@ -26,8 +26,6 @@ func CreateStaff(ctx *gin.Context) {
 	temp := model.Staff{}
 	err := ctx.ShouldBind(&temp)
 	if err != nil {
-		log.Println(err)
-		log.Printf("%+v", temp)
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
 		return
 	}
@@ -78,7 +76,7 @@ func UpdateStaff(ctx *gin.Context) {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
 		return
 	}
-	err = client.MysqlClient.Model(&model.Staff{}).Omit("staff_password", "rec_id  ").Updates(staff).Error
+	err = client.MysqlClient.Model(&model.Staff{}).Omit("staff_password", "rec_id").Updates(staff).Error
 	if err != nil {
 		mes := fmt.Sprintf("更新职工信息出错，职工ID为 %d ！", staff.RecID)
 		logger.Error(errorx.MustWrap(err), mes)
@@ -105,6 +103,9 @@ func DeleteStaff(ctx *gin.Context) {
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除职工成功！"))
 	return
+}
+func UpdatePassword(ctx *gin.Context) {
+
 }
 
 func SendStaffValidateEmail(ctx *gin.Context) {

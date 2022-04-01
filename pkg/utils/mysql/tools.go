@@ -11,9 +11,14 @@ import (
 type OperatorSymbol string
 
 const (
-	EQUAL OperatorSymbol = "="
-	LIKE  OperatorSymbol = "like"
-	IN    OperatorSymbol = "in"
+	EQUAL              OperatorSymbol = "="
+	LIKE               OperatorSymbol = "like"
+	IN                 OperatorSymbol = "in"
+	GREATER_THEN       OperatorSymbol = ">"
+	GREATER_THEN_EQUAL OperatorSymbol = ">="
+	LESS_THAN          OperatorSymbol = "<"
+	LESS_THAN_EQUAL    OperatorSymbol = "<="
+	NOT_EQUAL          OperatorSymbol = "<>"
 )
 
 type Selected string

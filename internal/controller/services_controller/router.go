@@ -26,29 +26,46 @@ func Starter() {
 
 	staff := services.Group("/staff")
 	{
-		staff.POST("/create_staff", staff3.CreateStaff)
-		staff.POST("/select_staff", staff3.SelectStaff)
-		staff.POST("/update_staff", staff3.UpdateStaff)
-		staff.POST("/delete_staff", staff3.DeleteStaff)
-
-		staff.POST("/create_department", staff3.CreateDepartment)
-		staff.POST("/select_department", staff3.SelectDepartment)
-		staff.POST("/update_department", staff3.UpdateDepartment)
-		staff.POST("/delete_department", staff3.DeleteDepartment)
+		{
+			staff.POST("/create_staff", staff3.CreateStaff)
+			staff.POST("/select_staff", staff3.SelectStaff)
+			staff.POST("/update_staff", staff3.UpdateStaff)
+			staff.POST("/delete_staff", staff3.DeleteStaff)
+			staff.POST("/update_password", staff3.UpdatePassword)
+		}
+		{
+			staff.POST("/create_department", staff3.CreateDepartment)
+			staff.POST("/select_department", staff3.SelectDepartment)
+			staff.POST("/update_department", staff3.UpdateDepartment)
+			staff.POST("/delete_department", staff3.DeleteDepartment)
+		}
 	}
 
 	storage := services.Group("/storage")
 	{
+		{
+			storage.POST("/create_material", storage3.CreateMaterial)
+			storage.POST("/select_material", storage3.SelectMaterial)
+			storage.POST("/update_material", storage3.UpdateMaterial)
+			storage.POST("/delete_material", storage3.DeleteMaterial)
+		}
+		{
+			storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
 
-		storage.POST("/select_material", storage3.SelectMaterial)
+		}
+		{
+			storage.POST("/stack_in", storage3.CreateStockIn)
+		}
+		{
+			storage.POST("/stack_out", storage3.CreateStockOut)
 
-		storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
+		}
+		{
+			storage.POST("/scan_qrcode", storage3.ScanQRCode)
+			storage.POST("/create_qrcode", storage3.CreateQRCode)
+			storage.POST("/download_qrcode", storage3.DownloadQRCode)
+		}
 
-		storage.POST("/stack_out", storage3.CreateStockIn)
-		storage.POST("/stack_in", storage3.CreateStockOut)
-		storage.POST("/scan_qrcode", storage3.ScanQRCode)
-		storage.POST("/create_qrcode", storage3.CreateQRCode)
-		storage.POST("/download_qrcode", storage3.DownloadQRCode)
 	}
 
 	finance := services.Group("/finance")

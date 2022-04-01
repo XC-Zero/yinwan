@@ -10,6 +10,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
@@ -89,8 +90,8 @@ func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-// PaginateSql 生成分页sql
-func PaginateSql(ctx *gin.Context) string {
+// MysqlPaginateSql 生成分页sql
+func MysqlPaginateSql(ctx *gin.Context) string {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
 	log.Println(pageNumber, pageSize)
@@ -108,4 +109,27 @@ func PaginateSql(ctx *gin.Context) string {
 
 	offset := (n - 1) * limit
 	return fmt.Sprintf(" limit %d,%d ", offset, limit)
+}
+
+func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.FindOptions {
+	pageNumber := ctx.PostForm("page_number")
+	pageSize := ctx.PostForm("page_size")
+	log.Println(pageNumber, pageSize)
+	var n, limit int64 = 0, 0
+	if pn, err := strconv.Atoi(pageNumber); err != nil {
+		n = 1
+	} else {
+		n = int64(pn)
+	}
+	if ps, err := strconv.Atoi(pageSize); err != nil {
+		limit = 10
+	} else {
+		limit = int64(ps)
+	}
+
+	offset := (n - 1) * limit
+
+	options.Limit = &limit
+	options.Skip = &offset
+	return options
 }

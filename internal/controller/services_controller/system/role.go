@@ -1,24 +1,24 @@
 package system
 
 import (
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
 )
 
 type roleResponse struct {
-	Role             model.Role               `json:"role" binding:"required,dive"`
-	RoleCapabilities []model.RoleCapabilities `json:"role_capabilities" binding:"required,dive"`
+	Role             model.Role               `form:"role" json:"role" binding:"required,dive"`
+	RoleCapabilities []model.RoleCapabilities `form:"role_capabilities" json:"role_capabilities" binding:"required,dive"`
 }
 
 func CreateRole(ctx *gin.Context) {
 	var roleResponse roleResponse
-	err := ctx.ShouldBindWith(&roleResponse, binding.Form)
+	err := ctx.ShouldBind(&roleResponse)
 	if err != nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("输入有误！"))
 		return
@@ -42,7 +42,20 @@ func CreateRole(ctx *gin.Context) {
 }
 
 func SelectRole(ctx *gin.Context) {
-
+	conditions := []common.Condition{
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "id",
+			ColumnValue: ctx.PostForm("role_id"),
+		},
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "id",
+			ColumnValue: ctx.PostForm("role_name"),
+		},
+	}
+	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Role{}, "", nil, conditions...)
+	return
 }
 
 func UpdateRole(ctx *gin.Context) {

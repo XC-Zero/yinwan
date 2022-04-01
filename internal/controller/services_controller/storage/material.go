@@ -8,6 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func CreateMaterial(ctx *gin.Context) {
+
+}
+
 // SelectMaterial 原材料
 func SelectMaterial(ctx *gin.Context) {
 
@@ -33,6 +37,18 @@ func SelectMaterial(ctx *gin.Context) {
 	return
 }
 
+func UpdateMaterial(ctx *gin.Context) {
+
+}
+
+func DeleteMaterial(ctx *gin.Context) {
+
+}
+
+func CreateMaterialBatch(ctx *gin.Context) {
+
+}
+
 // SelectMaterialDetail 原材料批次信息
 func SelectMaterialDetail(ctx *gin.Context) {
 
@@ -56,12 +72,4 @@ func SelectMaterialDetail(ctx *gin.Context) {
 	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.MaterialBatch{}, "", nil, conditions...)
 
 	return
-}
-
-func CreateMaterial(ctx *gin.Context) {
-
-}
-
-func CreateMaterialBatch(ctx *gin.Context) {
-
 }
