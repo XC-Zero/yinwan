@@ -35,9 +35,12 @@ storage_config:
     bucket: "hsh"
     end_point: 120.79.130.192:9000
     secret_key: pQ4Jx861Mc
+#  mongo_db_config:
+#    db_name: admin
+#    url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
   mongo_db_config:
     db_name: admin
-    url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
+    url: mongodb://localhost:27017
   mysql_config:
     db_name: hsh
     host: 120.79.130.192

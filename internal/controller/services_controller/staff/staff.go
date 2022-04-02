@@ -97,7 +97,6 @@ func DeleteStaff(ctx *gin.Context) {
 	err := client.MysqlClient.Delete(&model.Staff{}, recID).Error
 	if err != nil {
 		mes := fmt.Sprintf("删除职工失败！职工ID: %s!", recID)
-		logger.Error(errorx.MustWrap(err), mes)
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(mes))
 		return
 	}

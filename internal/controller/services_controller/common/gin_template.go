@@ -2,11 +2,8 @@ package common
 
 import (
 	"context"
-	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fatih/color"
@@ -62,21 +59,19 @@ func SelectTableContentWithCountMysqlTemplate(ctx *gin.Context, db *gorm.DB, tab
 
 	err := db.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s内容失败！", tableModel.TableCnName()))))
+		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, tableModel)
 		return
 	}
 	err = db.Raw(countSql).Scan(&count).Error
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s总数失败！", tableModel.TableCnName()))))
+		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, tableModel)
 		return
 	}
 	if resHookFunc != nil {
 		dataList = resHookFunc(dataList)
 	}
-	ctx.JSON(_const.OK, gin.H{
-		"count": count,
-		"list":  dataList,
-	})
+
+	SelectSuccessTemplate(ctx, int64(count), dataList)
 	return
 }
 
@@ -89,7 +84,7 @@ func SelectTableContentWithCountMongoDBTemplate(ctx *gin.Context, db *mongo.Data
 	var list []_interface.ChineseTabler
 
 	if db == nil || tx == nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg("未选择账套！")))
+		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return
 	}
 	for _, condition := range conditionList {
@@ -98,26 +93,22 @@ func SelectTableContentWithCountMongoDBTemplate(ctx *gin.Context, db *mongo.Data
 	findOptions.Sort = bson.D{{orderByColumn, 1}}
 	data, err := tx.Find(context.TODO(), filter, findOptions)
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s内容失败！", tableModel.TableCnName()))))
+		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, tableModel)
 		return
 	}
 	err = data.Decode(&list)
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s内容失败！", tableModel.TableCnName()))))
+		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, tableModel)
 		return
 	}
 	count, err := tx.CountDocuments(context.TODO(), filter, countOptions)
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(fmt.Sprintf("查询%s总数失败！", tableModel.TableCnName()))))
+		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, tableModel)
 		return
 	}
 	if resHookFunc != nil {
 		list = resHookFunc(list)
 	}
-
-	ctx.JSON(_const.OK, gin.H{
-		"count": count,
-		"list":  list,
-	})
+	SelectSuccessTemplate(ctx, count, list)
 	return
 }

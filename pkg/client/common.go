@@ -14,11 +14,54 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"strconv"
+	"sync"
 )
+
+// todo 实际上不应该导出，这样有修改风险，应该应该以单例,后面再改吧
+//
+//var instance *client
+//var once sync.Once
+//
+//func GetClientInstance()*client{
+//    once.Do(func(){
+//        instance=client.new()
+//    })
+//    return instance
+//}
+var bk *bookNameMap
+var once sync.Once
+
+type bookNameMap struct {
+	sync.RWMutex
+	bookNameMap map[string]BookName
+}
+
+func GetInstance() *bookNameMap {
+	once.Do(func() {
+		bk.Lock()
+		bk = &bookNameMap{bookNameMap: make(map[string]BookName, 0)}
+		bk.Unlock()
+	})
+	return bk
+}
+func ReadBookMap(key string) (value BookName, ok bool) {
+	GetInstance().RLock()
+	value, ok = GetInstance().bookNameMap[key]
+	GetInstance().RUnlock()
+	return
+}
+func AddBookMap(key string, bn BookName) bool {
+	GetInstance().Lock()
+	defer GetInstance().Unlock()
+	if _, ok := GetInstance().bookNameMap[key]; ok {
+		return false
+	}
+	GetInstance().bookNameMap[key] = bn
+	return true
+}
 
 var (
 	// BookNameMap 账套Map
-	BookNameMap = make(map[string]BookName, 0)
 
 	RedisClient        *redis.Client
 	RedisClusterClient *redis.ClusterClient
@@ -45,6 +88,7 @@ func InitSystemStorage(config config.StorageConfig) {
 	if err != nil {
 		panic(err)
 	}
+	//todo kafka
 	//kk, err := InitKafka(config.KafkaConfig)
 	//if err != nil {
 	//	panic(err)
@@ -53,10 +97,11 @@ func InitSystemStorage(config config.StorageConfig) {
 	if err != nil {
 		panic(err)
 	}
+	//todo es
 	//es, err := InitElasticsearch(config.ESConfig)
-	if err != nil {
-		panic(err)
-	}
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	//ESClient = es
 	RedisClient = rr
@@ -66,7 +111,7 @@ func InitSystemStorage(config config.StorageConfig) {
 	//KafkaClient = kk
 }
 
-// Paginate 分页函数
+// Paginate 分页函数 纯 gorm 时在 scope 里调用
 func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		pageNumber := ctx.PostForm("page_number")
@@ -90,7 +135,7 @@ func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-// MysqlPaginateSql 生成分页sql
+// MysqlPaginateSql 生成分页sql语句
 func MysqlPaginateSql(ctx *gin.Context) string {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
@@ -132,4 +177,16 @@ func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.Find
 	options.Limit = &limit
 	options.Skip = &offset
 	return options
+}
+
+func HarvestClientFromGinContext(ctx *gin.Context) *BookName {
+	bookName := ctx.PostForm("book_name")
+	if bookName == "" {
+		return nil
+	}
+	if book, ok := ReadBookMap(bookName); ok {
+		return &book
+	} else {
+		return nil
+	}
 }
