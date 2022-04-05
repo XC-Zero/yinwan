@@ -7,7 +7,7 @@ import (
 
 // BasicModel 基本模型
 type BasicModel struct {
-	RecID     *int           `gorm:"primaryKey;type:int;autoIncrement" json:"id,omitempty" bson:"rec_id" cn:"记录ID"`
+	RecID     *int           `gorm:"primaryKey;type:int;autoIncrement" json:"rec_id,omitempty" bson:"rec_id" cn:"记录ID"`
 	CreatedAt time.Time      `gorm:"type:timestamp;not null" json:"created_at" bson:"created_at" cn:"创建时间"`
 	UpdatedAt *time.Time     `gorm:"type:timestamp" json:"updated_at" bson:"updated_at" cn:"更新时间"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at" bson:"deleted_at" cn:"删除时间"`

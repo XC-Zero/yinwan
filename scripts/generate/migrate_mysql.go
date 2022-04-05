@@ -46,6 +46,7 @@ func init() {
 	bookNameMysqlMigrateList = []interface{}{
 		&model.Payable{},
 		&model.Receivable{},
+		&model.Purchase{},
 		&model.FinanceCredential{},
 		//&model.StockInRecord{},
 		//&model.StockInRecord{},
@@ -158,7 +159,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 		for i := range systemMysqlMigrateList {
 			object, ok := systemMysqlMigrateList[i].(schema.Tabler)
 			if !ok {
-				panic("有张表没实现tableName接口！")
+				panic(fmt.Sprintf("第 %d 张表没实现tableName接口！", i))
 			}
 			err := tx.Exec(fmt.Sprintf("truncate %s;", object.TableName())).Error
 			if err != nil {

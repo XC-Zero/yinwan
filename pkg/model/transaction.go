@@ -46,6 +46,13 @@ type Transaction struct {
 	TransactionRemark  *string   `gorm:"type:varchar(200)"`
 }
 
+func (c Transaction) TableCnName() string {
+	return "交易"
+}
+func (c Transaction) TableName() string {
+	return "transactions"
+}
+
 func (t *Transaction) SetTransactionContent(m map[string]interface{}) {
 	marshal, _ := json.Marshal(m)
 	t.TransactionContent = string(marshal)

@@ -15,6 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
+	"log"
+	"reflect"
 	"time"
 )
 
@@ -37,7 +39,7 @@ type SelectMysqlTemplateOptions struct {
 	DB            *gorm.DB
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
-	ResHookFunc   func(data []_interface.ChineseTabler) []_interface.ChineseTabler
+	ResHookFunc   func(data []interface{}) []interface{}
 }
 
 // SelectMongoDBTemplateOptions MongoDB 搜索模板配置
@@ -45,7 +47,7 @@ type SelectMongoDBTemplateOptions struct {
 	DB            *mongo.Database
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
-	ResHookFunc   func(data []_interface.ChineseTabler) []_interface.ChineseTabler
+	ResHookFunc   func(data []interface{}) []interface{}
 }
 
 // CreateMysqlTemplateOptions MySQL 创建模板配置
@@ -69,15 +71,19 @@ type UpdateMysqlTemplateOptions struct {
 }
 
 /*
-	----------------------------------    华丽的分割线   ---------------------------------
+	----------------------------------    华丽的分割线   ----------------------------------------
 */
 
 // SelectMysqlTableContentWithCountTemplate  Mysql 搜索模板
 func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTemplateOptions, conditionList ...MysqlCondition) {
 	var count int
-	var dataList []_interface.ChineseTabler
+	var arrTyp = reflect.SliceOf(reflect.TypeOf(op.TableModel))
+	log.Println(arrTyp)
+
+	var dataList = reflect.MakeSlice(arrTyp, 0, 0).Interface()
+
 	if op.OrderByColumn == "" {
-		op.OrderByColumn = "id"
+		op.OrderByColumn = "rec_id"
 	}
 	sqlBatch := mysql.InitBatchSqlGeneration().
 		AddSqlGeneration("count", mysql.InitSqlGeneration(op.TableModel, mysql.COUNT)).
@@ -103,11 +109,18 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
 		return
 	}
+
+	log.Printf("%+v", dataList)
+	var list []_interface.ChineseTabler
+	l := SliceConvert(list, []interface{}{}).([]interface{})
+	log.Printf("%+v", l)
+	var res interface{} = list
+
 	if op.ResHookFunc != nil {
-		dataList = op.ResHookFunc(dataList)
+		res = op.ResHookFunc(SliceConvert(list, reflect.TypeOf([]interface{}{})).([]interface{}))
 	}
 
-	SelectSuccessTemplate(ctx, int64(count), dataList)
+	SelectSuccessTemplate(ctx, int64(count), res)
 	return
 }
 
@@ -147,10 +160,11 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
 		return
 	}
+	var res interface{} = list
 	if op.ResHookFunc != nil {
-		list = op.ResHookFunc(list)
+		res = op.ResHookFunc(SliceConvert(list, reflect.TypeOf([]interface{}{})).([]interface{}))
 	}
-	SelectSuccessTemplate(ctx, count, list)
+	SelectSuccessTemplate(ctx, count, res)
 	return
 }
 
@@ -198,4 +212,17 @@ func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOption
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
+}
+
+// SliceConvert todo!!!
+func SliceConvert(slice interface{}, newSlice interface{}) interface{} {
+	ot := reflect.ValueOf(slice)
+	nt := reflect.TypeOf(newSlice)
+	if ot.Kind() != reflect.Slice {
+		panic(fmt.Sprintf("Slice called with non-slice value of type %T", slice))
+	}
+	if nt.Kind() != reflect.Slice {
+		panic(fmt.Sprintf("Slice called with non-slice type of type %T", nt))
+	}
+	return nil
 }

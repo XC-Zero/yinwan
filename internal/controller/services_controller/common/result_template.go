@@ -36,7 +36,7 @@ func InternalDataBaseErrorTemplate(ctx *gin.Context, message PredefinedMessage, 
 }
 
 // SelectSuccessTemplate 普适的查询返回
-func SelectSuccessTemplate(ctx *gin.Context, count int64, dataList []_interface.ChineseTabler) {
+func SelectSuccessTemplate(ctx *gin.Context, count int64, dataList interface{}) {
 	ctx.JSON(_const.OK, gin.H{
 		"count": count,
 		"list":  dataList,

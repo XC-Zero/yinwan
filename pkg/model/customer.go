@@ -14,3 +14,10 @@ type Customer struct {
 	CustomerOwnerID          *int    `json:"customer_owner_id" gorm:"type:varchar(50)" cn:"客户负责人ID"`
 	CustomerOwnerName        *string `json:"customer_owner_name"  gorm:"type:varchar(50)" cn:"客户负责人名称"`
 }
+
+func (c Customer) TableCnName() string {
+	return "客户"
+}
+func (c Customer) TableName() string {
+	return "customers"
+}

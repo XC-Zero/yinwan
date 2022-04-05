@@ -13,3 +13,10 @@ type ManipulationLog struct {
 	ManipulationTime    time.Time
 	ManipulationRemark  string `gorm:"type:varchar(500)"`
 }
+
+func (c ManipulationLog) TableCnName() string {
+	return "操作日志"
+}
+func (c ManipulationLog) TableName() string {
+	return "manipulation_logs"
+}

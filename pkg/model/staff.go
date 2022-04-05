@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/fwhezfwhez/errorx"
@@ -70,8 +69,8 @@ func (s Staff) LogOut() {
 }
 
 // IgnoreStaffPassword 去除密码
-func IgnoreStaffPassword(staffList []_interface.ChineseTabler) []_interface.ChineseTabler {
-	staffs := make([]_interface.ChineseTabler, 0, len(staffList))
+func IgnoreStaffPassword(staffList []interface{}) []interface{} {
+	staffs := make([]interface{}, 0, len(staffList))
 	for i := range staffList {
 		staff, _ := staffList[i].(Staff)
 		staff.StaffPassword = "********"

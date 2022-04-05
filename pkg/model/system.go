@@ -20,6 +20,9 @@ type TypeTree struct {
 func (m TypeTree) TableName() string {
 	return "type_tree"
 }
+func (m TypeTree) TableCnName() string {
+	return "类型"
+}
 
 // QRCodeMapping 二维码映射表
 type QRCodeMapping struct {
