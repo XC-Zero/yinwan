@@ -18,6 +18,15 @@ type Payable struct {
 	CredentialID *int `gorm:"type:int" json:"credential_id,omitempty"`
 }
 
+func (p Payable) TableCnName() string {
+	return "应付"
+}
+
+func (p Payable) TableName() string {
+	return "payables"
+
+}
+
 // Receivable 应收
 type Receivable struct {
 	BasicModel

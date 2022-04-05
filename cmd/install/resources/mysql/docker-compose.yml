@@ -12,6 +12,6 @@ services:
     environment:
       - "MYSQL_ROOT_PASSWORD=t^qzZ%VH"  # 设置密码
       - "TZ=Asia/Shanghai"
-    #      - "MYSQL_DATABASE=mydb"  # 设置默认数据库
+    #      - "MYSQL_DATABASE=mysql"  # 设置默认数据库
     ports:
       - 3306:3306

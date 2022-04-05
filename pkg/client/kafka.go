@@ -15,27 +15,27 @@ const MaxMessageBytes = 4 * 1024 * 1024
 var kafkaInstance sarama.SyncProducer
 
 func InitKafka(config cfg.KafkaConfig) (*sarama.Client, error) {
-	cfg := sarama.NewConfig()
+	conf := sarama.NewConfig()
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Println(err)
 	}
-	cfg.ClientID = hostname
-	cfg.Producer.MaxMessageBytes = MaxMessageBytes
-	cfg.Producer.Return.Successes = true
+	conf.ClientID = hostname
+	conf.Producer.MaxMessageBytes = MaxMessageBytes
+	conf.Producer.Return.Successes = true
 	if config.Username != "" && config.Password != "" {
-		cfg.Net.SASL.Enable = true
-		cfg.Net.SASL.User = config.Username
-		cfg.Net.SASL.Password = config.Password
+		conf.Net.SASL.Enable = true
+		conf.Net.SASL.User = config.Username
+		conf.Net.SASL.Password = config.Password
 	}
 
 	address := config.AddrList
 
-	pro, err := sarama.NewSyncProducer(address, cfg)
+	pro, err := sarama.NewSyncProducer(address, conf)
 	if err != nil {
 		return nil, err
 	}
-	client, err := sarama.NewClient(address, cfg)
+	client, err := sarama.NewClient(address, conf)
 	if err != nil {
 		return nil, err
 	}

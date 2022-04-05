@@ -40,7 +40,7 @@ func CreateStaff(ctx *gin.Context) {
 
 // SelectStaff 查询员工
 func SelectStaff(ctx *gin.Context) {
-	conditions := []common.Condition{
+	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.LIKE,
 			ColumnName:  "staff_name",
@@ -62,7 +62,12 @@ func SelectStaff(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("staff_role_id"),
 		},
 	}
-	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Staff{}, "", model.IgnoreStaffPassword, conditions...)
+	op := common.SelectMysqlTemplateOptions{
+		DB:          client.MysqlClient,
+		TableModel:  model.Staff{},
+		ResHookFunc: model.IgnoreStaffPassword,
+	}
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
 	return
 

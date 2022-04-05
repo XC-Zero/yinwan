@@ -32,7 +32,7 @@ const (
 	FATAL_HEADER  LogHeader = "$#8000fa$(致命问题)"
 	ERROR_HEADER  LogHeader = "$#e50c3e$(错误)"
 	WARING_HEADER LogHeader = "$#fabe07$(警告)"
-	INFP_HEADER   LogHeader = "$#04ea5f$(信息)"
+	INFO_HEADER   LogHeader = "$#04ea5f$(信息)"
 )
 
 // Logger 打印日志到系统日志文件中，应符合日志打印的基本原则
@@ -92,7 +92,7 @@ func Info(mes string) {
 	//Logger{
 	//	message:   mes,
 	//	logType:   INFO,
-	//	logHeader: INFP_HEADER,
+	//	logHeader: INFO_HEADER,
 	//	time:      time.Now(),
 	//}.sendLogger()
 }

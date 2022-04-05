@@ -42,7 +42,7 @@ func CreateRole(ctx *gin.Context) {
 }
 
 func SelectRole(ctx *gin.Context) {
-	conditions := []common.Condition{
+	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "id",
@@ -54,7 +54,11 @@ func SelectRole(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("role_name"),
 		},
 	}
-	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Role{}, "", nil, conditions...)
+	op := common.SelectMysqlTemplateOptions{
+		DB:         client.MysqlClient,
+		TableModel: model.Role{},
+	}
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 	return
 }
 

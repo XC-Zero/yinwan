@@ -36,7 +36,7 @@ type bookNameMap struct {
 	bookNameMap map[string]BookName
 }
 
-func GetInstance() *bookNameMap {
+func GetBookNameInstance() *bookNameMap {
 	once.Do(func() {
 		bk.Lock()
 		bk = &bookNameMap{bookNameMap: make(map[string]BookName, 0)}
@@ -45,32 +45,42 @@ func GetInstance() *bookNameMap {
 	return bk
 }
 func ReadBookMap(key string) (value BookName, ok bool) {
-	GetInstance().RLock()
-	value, ok = GetInstance().bookNameMap[key]
-	GetInstance().RUnlock()
+	GetBookNameInstance().RLock()
+	value, ok = GetBookNameInstance().bookNameMap[key]
+	GetBookNameInstance().RUnlock()
 	return
 }
 func AddBookMap(key string, bn BookName) bool {
-	GetInstance().Lock()
-	defer GetInstance().Unlock()
-	if _, ok := GetInstance().bookNameMap[key]; ok {
+	GetBookNameInstance().Lock()
+	defer GetBookNameInstance().Unlock()
+	if _, ok := GetBookNameInstance().bookNameMap[key]; ok {
 		return false
 	}
-	GetInstance().bookNameMap[key] = bn
+	GetBookNameInstance().bookNameMap[key] = bn
 	return true
+}
+func GetAllBookMap() []BookName {
+	var bkList []BookName
+	GetBookNameInstance().Lock()
+	defer GetBookNameInstance().Unlock()
+	bk := GetBookNameInstance().bookNameMap
+	for key := range bk {
+		bkList = append(bkList, bk[key])
+	}
+	return bkList
+
 }
 
 var (
 	// BookNameMap 账套Map
 
-	RedisClient        *redis.Client
-	RedisClusterClient *redis.ClusterClient
-	ESClient           *elasticsearch.Client
-	MysqlClient        *gorm.DB
-	MinioClient        *minio.Client
-	InfluxDBClient     *influxdb2.Client
-	MongoDBClient      *mongo.Database
-	KafkaClient        *sarama.Client
+	RedisClient    *redis.Client
+	ESClient       *elasticsearch.Client
+	MysqlClient    *gorm.DB
+	MinioClient    *minio.Client
+	InfluxDBClient *influxdb2.Client
+	MongoDBClient  *mongo.Database
+	KafkaClient    *sarama.Client
 )
 
 // InitSystemStorage 初始化系统配置

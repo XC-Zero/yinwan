@@ -14,7 +14,7 @@ import (
 // SelectDepartment 查询部门
 func SelectDepartment(ctx *gin.Context) {
 
-	conditions := []common.Condition{
+	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.LIKE,
 			ColumnName:  "department_name",
@@ -31,7 +31,13 @@ func SelectDepartment(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("department_manager_id"),
 		},
 	}
-	common.SelectTableContentWithCountMysqlTemplate(ctx, client.MysqlClient, model.Department{}, "", nil, conditions...)
+	op := common.SelectMysqlTemplateOptions{
+		DB:            client.MysqlClient,
+		TableModel:    model.Department{},
+		OrderByColumn: "",
+		ResHookFunc:   nil,
+	}
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
 	return
 }

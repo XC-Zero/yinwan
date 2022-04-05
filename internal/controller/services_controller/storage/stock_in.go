@@ -14,7 +14,7 @@ func CreateStockIn(ctx *gin.Context) {
 	if err != nil || bookName == "" {
 		return
 	}
-	client.BookNameMap[bookName].MongoDBClient.Collection(temp.TableName())
+	client.ReadBookMap(bookName)
 }
 
 func SelectStockInRecord(ctx *gin.Context) {

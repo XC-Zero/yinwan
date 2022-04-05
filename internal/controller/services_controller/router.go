@@ -43,23 +43,42 @@ func Starter() {
 
 	storage := services.Group("/storage")
 	{
+		// 原材料
 		{
 			storage.POST("/create_material", storage3.CreateMaterial)
 			storage.POST("/select_material", storage3.SelectMaterial)
 			storage.POST("/update_material", storage3.UpdateMaterial)
 			storage.POST("/delete_material", storage3.DeleteMaterial)
 		}
+		// 原材料详情
 		{
 			storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
 
 		}
+		// 供应商
 		{
-			storage.POST("/stack_in", storage3.CreateStockIn)
+			storage.POST("/create_provider", storage3.CreateProvider)
+			storage.POST("/select_provider", storage3.SelectProvider)
+			storage.POST("/update_provider", storage3.UpdateProvider)
+			storage.POST("/delete_provider", storage3.DeleteProvider)
 		}
+		// 采购
 		{
-			storage.POST("/stack_out", storage3.CreateStockOut)
+			storage.POST("/create_purchase", storage3.CreatePurchase)
+			storage.POST("/select_purchase", storage3.SelectPurchase)
+			storage.POST("/update_purchase", storage3.UpdatePurchase)
+			storage.POST("/delete_purchase", storage3.DeletePurchase)
+		}
+		// 入库
+		{
+			storage.POST("/stock_in", storage3.CreateStockIn)
+		}
+		// 出库
+		{
+			storage.POST("/stock_out", storage3.CreateStockOut)
 
 		}
+		//扫码 小程序用
 		{
 			storage.POST("/scan_qrcode", storage3.ScanQRCode)
 			storage.POST("/create_qrcode", storage3.CreateQRCode)
