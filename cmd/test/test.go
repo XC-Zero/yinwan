@@ -3,26 +3,35 @@ package main
 import (
 	"fmt"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model"
 	"log"
 	"reflect"
 )
 
 func main() {
-	//// 读取配置文件
-	//config.InitConfiguration()
-	//// 开协程监听配置文件修改，实现热加载
-	//go config.ViperMonitor()
-	//mgClient, err := client.InitMongoDB(config.CONFIG.StorageConfig.MongoDBConfig)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//mgClient.Client().Database("hello2")
-	//
-	//return
-	a := reflectNewSlice(model.Staff{})
-	log.Println(reflect.TypeOf(a))
+
 }
+
+type Person interface {
+	Walk()
+}
+
+type Man struct {
+	Name string
+	Age  int32
+}
+
+func (m Man) Walk() {
+	fmt.Println("man walk")
+}
+
+// 检查Person接口对应iface结构体的data成员
+//func PrintData(p interface{}) {
+//	pd := (**[]Man)(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + unsafe.Sizeof(p)))
+//	var m []Man
+//	fmt.Printf("iface &data:%p, data:%p, *data:%+v\n", pd, *pd, m)
+//	m = **pd
+//
+//}
 
 //反射创建新对象。
 func reflectNewSlice(target interface{}) []_interface.ChineseTabler {

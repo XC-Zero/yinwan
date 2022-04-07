@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
+	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -77,10 +78,8 @@ type UpdateMysqlTemplateOptions struct {
 // SelectMysqlTableContentWithCountTemplate  Mysql 搜索模板
 func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTemplateOptions, conditionList ...MysqlCondition) {
 	var count int
-	var arrTyp = reflect.SliceOf(reflect.TypeOf(op.TableModel))
-	log.Println(arrTyp)
-
-	var dataList = reflect.MakeSlice(arrTyp, 0, 0).Interface()
+	// 根据传入的类型决定创建对应类型的切片
+	var dataList = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
 
 	if op.OrderByColumn == "" {
 		op.OrderByColumn = "rec_id"
@@ -110,14 +109,14 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 		return
 	}
 
-	log.Printf("%+v", dataList)
-	var list []_interface.ChineseTabler
-	l := SliceConvert(list, []interface{}{}).([]interface{})
-	log.Printf("%+v", l)
-	var res interface{} = list
+	var res = dataList
 
 	if op.ResHookFunc != nil {
-		res = op.ResHookFunc(SliceConvert(list, reflect.TypeOf([]interface{}{})).([]interface{}))
+		convert, err := tools.SliceConvert(dataList, []interface{}{})
+		if err == nil {
+			res = op.ResHookFunc(convert.([]interface{}))
+		}
+		log.Println(err)
 	}
 
 	SelectSuccessTemplate(ctx, int64(count), res)
@@ -162,7 +161,11 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	}
 	var res interface{} = list
 	if op.ResHookFunc != nil {
-		res = op.ResHookFunc(SliceConvert(list, reflect.TypeOf([]interface{}{})).([]interface{}))
+		convert, err := tools.SliceConvert(list, []interface{}{})
+		if err == nil {
+			res = op.ResHookFunc(convert.([]interface{}))
+		}
+		log.Println(err)
 	}
 	SelectSuccessTemplate(ctx, count, res)
 	return
@@ -212,17 +215,4 @@ func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOption
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
-}
-
-// SliceConvert todo!!!
-func SliceConvert(slice interface{}, newSlice interface{}) interface{} {
-	ot := reflect.ValueOf(slice)
-	nt := reflect.TypeOf(newSlice)
-	if ot.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("Slice called with non-slice value of type %T", slice))
-	}
-	if nt.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("Slice called with non-slice type of type %T", nt))
-	}
-	return nil
 }
