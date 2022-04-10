@@ -1,6 +1,7 @@
 package access_control
 
 import (
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
@@ -23,13 +24,21 @@ func Login(ctx *gin.Context) {
 	if tokenPtr == nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg(errMessage)))
 	} else {
+		var rc []model.RoleCapabilities
+		role := model.Role{}
+		err1 := client.MysqlClient.Model(&model.Role{}).Where("rec_id = (select staff_role_id from staffs where staff_email = ? limit 1) ", staffEmail).Find(&role).Error
+		err2 := client.MysqlClient.Raw("select * from "+model.RoleCapabilities{}.TableName()+" where role_id = (select staff_role_id from staffs where staff_email = ? limit 1)", staffEmail).Scan(&rc).Error
 
-		//client.MysqlClient.Raw("").Scan()
+		if err1 != nil || err2 != nil {
+			common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_SELECT_ERROR, role)
+			return
+		}
 		ctx.JSON(_const.OK, gin.H{
-			"token": *tokenPtr,
-			"role":  "",
+			"token":             *tokenPtr,
+			"role":              role,
+			"role_capabilities": rc,
 		})
-
+		return
 	}
 
 }
@@ -50,13 +59,13 @@ func ForgetPassword(ctx *gin.Context) {
 	log.Println(secretKey)
 	email, err := encode.DecryptByAes(secretKey)
 	if err != nil {
-		log.Println(err)
-		log.Println(string(email))
+		ctx.JSON(_const.FORBIDDEN_ERROR, errs.CreateWebErrorMsg("禁止访问！"))
+		return
 	}
 	if string(email) == staffEmail && staffEmail != "" && staffPass != "" {
 		err := client.MysqlClient.Model(&model.Staff{}).
-			Update("staff_password", staffPass).
 			Where("staff_email = ?", staffEmail).
+			Update("staff_password", staffPass).
 			Error
 
 		if err != nil {

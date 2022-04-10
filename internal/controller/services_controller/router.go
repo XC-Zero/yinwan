@@ -104,6 +104,13 @@ func Starter() {
 		system.POST("create_book_name", system2.CreateBookName)
 		system.POST("select_all_book_name", system2.SelectAllBookName)
 
+		// 角色
+		{
+			system.POST("/create_role", system2.CreateRole)
+			system.POST("/select_role", system2.SelectRole)
+			system.POST("/update_role", system2.UpdateRole)
+			system.POST("/delete_role", system2.DeleteRole)
+		}
 	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)
 	if err != nil {

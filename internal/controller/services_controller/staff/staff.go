@@ -53,7 +53,7 @@ func SelectStaff(ctx *gin.Context) {
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "department_id",
+			ColumnName:  "staff_department_id",
 			ColumnValue: ctx.PostForm("department_id"),
 		},
 		{

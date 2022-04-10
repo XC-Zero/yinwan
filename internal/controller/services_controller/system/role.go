@@ -1,6 +1,7 @@
 package system
 
 import (
+	"encoding/json"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -11,29 +12,49 @@ import (
 	"gorm.io/gorm"
 )
 
-type roleResponse struct {
-	Role             model.Role               `form:"role" json:"role" binding:"required,dive"`
-	RoleCapabilities []model.RoleCapabilities `form:"role_capabilities" json:"role_capabilities" binding:"required,dive"`
-}
-
+// CreateRole 创建角色
 func CreateRole(ctx *gin.Context) {
-	var roleResponse roleResponse
-	err := ctx.ShouldBind(&roleResponse)
-	if err != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("输入有误！"))
+	var postData map[string]interface{}
+	err := ctx.ShouldBind(&postData)
+	r, ok := postData["role"]
+	rc, rcOK := postData["role_capabilities"]
+
+	if !ok || !rcOK || err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&model.Role{}).Create(&roleResponse.Role).Error
+	var role model.Role
+	var roleCapList []model.RoleCapabilities
+
+	rb, _ := json.Marshal(r)
+	rcb, _ := json.Marshal(rc)
+	err = json.Unmarshal(rb, &role)
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建角色失败！"))
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	for i := range roleResponse.RoleCapabilities {
-		roleResponse.RoleCapabilities[i].RoleID = *roleResponse.Role.RecID
-	}
-	err = client.MysqlClient.Model(&model.Role{}).CreateInBatches(roleResponse.RoleCapabilities, mysql.CalcMysqlBatchSize(roleResponse.RoleCapabilities[0])).Error
+	err = json.Unmarshal(rcb, &roleCapList)
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建角色内权限失败！"))
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+
+	err = client.MysqlClient.Transaction(func(tx *gorm.DB) error {
+		err := client.MysqlClient.Model(&model.Role{}).Create(&role).Error
+		if err != nil {
+			return err
+		}
+		for i := range roleCapList {
+			roleCapList[i].RoleID = *role.RecID
+		}
+		err = client.MysqlClient.Model(&model.RoleCapabilities{}).CreateInBatches(roleCapList, mysql.CalcMysqlBatchSize(roleCapList[0])).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, model.Role{})
 		return
 	}
 
@@ -41,16 +62,17 @@ func CreateRole(ctx *gin.Context) {
 	return
 }
 
+// SelectRole 查询角色
 func SelectRole(ctx *gin.Context) {
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "id",
+			ColumnName:  "rec_id",
 			ColumnValue: ctx.PostForm("role_id"),
 		},
 		{
 			Symbol:      mysql.LIKE,
-			ColumnName:  "id",
+			ColumnName:  "role_name",
 			ColumnValue: ctx.PostForm("role_name"),
 		},
 	}

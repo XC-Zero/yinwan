@@ -6,7 +6,7 @@ services:
     container_name: consul-server1
     restart: always
     volumes:
-      - ./server1.json:/consul/config/server1.json:ro
+      - ./server1.postData:/consul/config/server1.postData:ro
       - ./certs/:/consul/config/certs/:ro
     networks:
       - consul
@@ -21,7 +21,7 @@ services:
     container_name: consul-server2
     restart: always
     volumes:
-      - ./server2.json:/consul/config/server2.json:ro
+      - ./server2.postData:/consul/config/server2.postData:ro
       - ./certs/:/consul/config/certs/:ro
     networks:
       - consul
@@ -32,7 +32,7 @@ services:
     container_name: consul-server3
     restart: always
     volumes:
-      - ./server3.json:/consul/config/server3.json:ro
+      - ./server3.postData:/consul/config/server3.postData:ro
       - ./certs/:/consul/config/certs/:ro
     networks:
       - consul
@@ -43,7 +43,7 @@ services:
     container_name: consul-client
     restart: always
     volumes:
-      - ./client.json:/consul/config/client.json:ro
+      - ./client.postData:/consul/config/client.postData:ro
       - ./certs/consul-agent-ca.pem:/consul/config/certs/consul-agent-ca.pem:ro
     networks:
       - consul

@@ -29,7 +29,7 @@ func (r Role) TableName() string {
 // RoleCapabilities 角色对各模块的权限关系表
 type RoleCapabilities struct {
 	BasicModel
-	RoleID     int    `gorm:"type:int;index" form:"role_id" json:"role_id" binding:"required"`
+	RoleID     int    `gorm:"type:int;index" form:"role_id" json:"role_id"`
 	ModuleID   int    `gorm:"type:int;index" form:"module_id" json:"module_id" binding:"required"`
 	ModuleName string `gorm:"type:varchar(50)" form:"module_name" json:"module_name" binding:"required"`
 	CanRead    bool   `form:"can_read" json:"can_read"`

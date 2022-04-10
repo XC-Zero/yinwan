@@ -48,8 +48,6 @@ func init() {
 		&model.Receivable{},
 		&model.Purchase{},
 		&model.FinanceCredential{},
-		//&model.StockInRecord{},
-		//&model.StockInRecord{},
 		&model.FinanceCredentialEvent{},
 		&model.EventItem{},
 	}
@@ -267,5 +265,9 @@ func MigrateMongo(db *mongo.Database) error {
 }
 
 func MigrateMinio() {
+
+}
+
+func Fate() {
 
 }

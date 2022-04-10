@@ -8,7 +8,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 // SelectDepartment 查询部门
@@ -42,17 +41,17 @@ func SelectDepartment(ctx *gin.Context) {
 	return
 }
 
-// CreateDepartment todo !!!
+// CreateDepartment 创建部门
 func CreateDepartment(ctx *gin.Context) {
 	var department model.Department
-	err := ctx.ShouldBindWith(&department, binding.Form)
+	err := ctx.ShouldBind(&department)
 	if err != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("部门参数有误！"))
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Model(&model.Department{}).Create(&department).Error
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建部门失败！"))
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, department)
 		return
 	}
 
@@ -61,27 +60,35 @@ func CreateDepartment(ctx *gin.Context) {
 
 }
 
-// UpdateDepartment todo !!!
+// UpdateDepartment 更新部门
 func UpdateDepartment(ctx *gin.Context) {
 	var department model.Department
 	err := ctx.ShouldBind(&department)
 	if err != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, "输入有误！")
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	client.MysqlClient.Model(&model.Department{}).Updates(department)
+	err = client.MysqlClient.Model(&model.Department{}).Updates(department).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, department)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新部门成功！"))
+	return
 }
 
-// DeleteDepartment todo !!!
+// DeleteDepartment 删除部门
 func DeleteDepartment(ctx *gin.Context) {
-	staffEmail := ctx.PostForm("staff_email")
-	var staffList []model.Staff
-
-	err := client.MysqlClient.Model(&model.Staff{}).Raw("delete from staff where staff_email = ?", staffEmail).Scan(staffList).Error
-	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("查询失败！")))
+	departmentID := ctx.PostForm("department_id")
+	if departmentID == "" {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	ctx.JSON(_const.OK, staffList)
+	err := client.MysqlClient.Delete(&model.Department{}, departmentID).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, model.Department{})
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除部门成功！"))
 	return
 }

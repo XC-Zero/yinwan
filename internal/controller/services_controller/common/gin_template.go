@@ -114,7 +114,10 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	if op.ResHookFunc != nil {
 		convert, err := tools.SliceConvert(dataList, []interface{}{})
 		if err == nil {
-			res = op.ResHookFunc(convert.([]interface{}))
+			// TODO  Convert panic !
+			if slice, ok := convert.([]interface{}); ok {
+				res = op.ResHookFunc(slice)
+			}
 		}
 		log.Println(err)
 	}
