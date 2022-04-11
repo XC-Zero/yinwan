@@ -29,6 +29,11 @@ func SelectDepartment(ctx *gin.Context) {
 			ColumnName:  "department_manager_id",
 			ColumnValue: ctx.PostForm("department_manager_id"),
 		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:            client.MysqlClient,

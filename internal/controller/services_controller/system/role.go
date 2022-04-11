@@ -75,6 +75,11 @@ func SelectRole(ctx *gin.Context) {
 			ColumnName:  "role_name",
 			ColumnValue: ctx.PostForm("role_name"),
 		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         client.MysqlClient,

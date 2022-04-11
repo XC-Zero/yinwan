@@ -31,6 +31,11 @@ func SelectMaterial(ctx *gin.Context) {
 			ColumnName:  "material_type_id",
 			ColumnValue: ctx.PostForm("material_type_id"),
 		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
 	}
 	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: model.Material{}}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -68,6 +73,11 @@ func SelectMaterialDetail(ctx *gin.Context) {
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "material_type_id",
 			ColumnValue: ctx.PostForm("material_type_id"),
+		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: model.MaterialBatch{}}

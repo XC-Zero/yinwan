@@ -75,50 +75,51 @@ func init() {
 	readWriteRole = model.Role{RoleName: "读写账号"}
 
 	roleCapabilities = []model.RoleCapabilities{}
-
+	departmentManagerName, departmentManagerID, finAddr := "超级管理员", 1, "2楼205"
 	departmentList = []model.Department{
 		{
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "技术部",
-			DepartmentLocation:    "",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "财务部",
-			DepartmentLocation:    "2楼205",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    &finAddr,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "生产车间",
-			DepartmentLocation:    "",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "仓库",
-			DepartmentLocation:    "1楼",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "销售部",
-			DepartmentLocation:    "1楼",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "人事部",
-			DepartmentLocation:    "1楼",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员",
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
 		}, {
 			BasicModel:            model.BasicModel{},
 			DepartmentName:        "行政部",
-			DepartmentLocation:    "1楼",
-			DepartmentManagerID:   1,
-			DepartmentManagerName: "超级管理员"}}
+			DepartmentLocation:    nil,
+			DepartmentManagerID:   &departmentManagerID,
+			DepartmentManagerName: &departmentManagerName,
+		}}
 	typeTreeList = []model.TypeTree{
 		{model.BasicModel{}, "固定资产", nil, nil},
 		{model.BasicModel{}, "产成品", nil, nil},

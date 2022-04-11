@@ -14,6 +14,8 @@ const (
 	EQUAL              OperatorSymbol = "="
 	LIKE               OperatorSymbol = "like"
 	IN                 OperatorSymbol = "in"
+	NULL               OperatorSymbol = "is null"
+	NOT_NULL           OperatorSymbol = "is not null"
 	GREATER_THEN       OperatorSymbol = ">"
 	GREATER_THEN_EQUAL OperatorSymbol = ">="
 	LESS_THAN          OperatorSymbol = "<"
@@ -86,6 +88,12 @@ func (s *sqlGeneration) AddConditions(symbol OperatorSymbol, conditions ...strin
 			case IN:
 				tempSql = fmt.Sprintf(" and %s %s (%s)", conditions[i], symbol, conditions[i+1])
 			case EQUAL:
+				tempSql = fmt.Sprintf(" and %s %s '%s'", conditions[i], symbol, conditions[i+1])
+			case NULL:
+				tempSql = fmt.Sprintf(" and %s %s ", conditions[i], symbol)
+			case NOT_NULL:
+				tempSql = fmt.Sprintf(" and %s %s ", conditions[i], symbol)
+			case NOT_EQUAL:
 				tempSql = fmt.Sprintf(" and %s %s '%s'", conditions[i], symbol, conditions[i+1])
 
 			}

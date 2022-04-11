@@ -4,6 +4,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,7 +24,11 @@ func CreateProvider(ctx *gin.Context) {
 }
 func SelectProvider(ctx *gin.Context) {
 	conditions := []common.MysqlCondition{
-		{},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         client.MysqlClient,
