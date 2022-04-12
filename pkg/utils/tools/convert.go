@@ -30,5 +30,5 @@ func SliceConvert(slice interface{}, newSlice interface{}) (interface{}, error) 
 		dv = reflect.Append(dv, v.Index(i).Convert(nte))
 	}
 
-	return dv, nil
+	return dv.Interface(), nil
 }

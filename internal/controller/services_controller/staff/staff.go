@@ -1,7 +1,6 @@
 package staff
 
 import (
-	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -78,19 +77,17 @@ func SelectStaff(ctx *gin.Context) {
 
 }
 
-// UpdateStaff todo  !!!
+// UpdateStaff 更新员工
 func UpdateStaff(ctx *gin.Context) {
 	var staff model.Staff
 	err := ctx.ShouldBind(&staff)
 	if err != nil {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Model(&model.Staff{}).Omit("staff_password", "rec_id").Updates(staff).Error
 	if err != nil {
-		mes := fmt.Sprintf("更新职工信息出错，职工ID为 %d ！", staff.RecID)
-		logger.Error(errorx.MustWrap(err), mes)
-		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(mes))
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("修改职工信息成功！"))
@@ -99,15 +96,14 @@ func UpdateStaff(ctx *gin.Context) {
 
 // DeleteStaff todo  !!!
 func DeleteStaff(ctx *gin.Context) {
-	recID := ctx.PostForm("id")
+	recID := ctx.PostForm("staff_id")
 	if recID == "" {
-		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("请输入职工ID ！"))
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err := client.MysqlClient.Delete(&model.Staff{}, recID).Error
 	if err != nil {
-		mes := fmt.Sprintf("删除职工失败！职工ID: %s!", recID)
-		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(mes))
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, model.Staff{})
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除职工成功！"))

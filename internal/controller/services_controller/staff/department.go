@@ -69,11 +69,11 @@ func CreateDepartment(ctx *gin.Context) {
 func UpdateDepartment(ctx *gin.Context) {
 	var department model.Department
 	err := ctx.ShouldBind(&department)
-	if err != nil {
+	if err != nil || department.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&model.Department{}).Updates(department).Error
+	err = client.MysqlClient.Model(&model.Department{}).Where(" rec_id = ? ", department.RecID).Omit("rec_id").Updates(department).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, department)
 		return
