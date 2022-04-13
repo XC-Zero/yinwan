@@ -10,6 +10,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 )
 
 // CreateRole 创建角色
@@ -29,7 +30,7 @@ func CreateRole(ctx *gin.Context) {
 	rb, _ := json.Marshal(r)
 	rcb, _ := json.Marshal(rc)
 	err = json.Unmarshal(rb, &role)
-	if err != nil {
+	if err != nil || role.RoleName == "" {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -38,7 +39,8 @@ func CreateRole(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-
+	// 补全
+	roleCapList = model.RoleCapabilitiesMerge(roleCapList)
 	err = client.MysqlClient.Transaction(func(tx *gorm.DB) error {
 		err := client.MysqlClient.Model(&model.Role{}).Create(&role).Error
 		if err != nil {
@@ -57,9 +59,13 @@ func CreateRole(ctx *gin.Context) {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, model.Role{})
 		return
 	}
-
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建角色成功！"))
 	return
+}
+
+type TempRole struct {
+	Role model.Role               `json:"role"`
+	Rcs  []model.RoleCapabilities `json:"role_capabilities"`
 }
 
 // SelectRole 查询角色
@@ -80,21 +86,22 @@ func SelectRole(ctx *gin.Context) {
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
+		}}
+	role := common.SelectMysqlTableContentWithCountTemplate(ctx,
+		common.SelectMysqlTemplateOptions{
+			DB:          client.MysqlClient,
+			TableModel:  model.Role{},
+			NotReturn:   true,
+			NotPaginate: true,
+		}, conditions...).([]model.Role)
+
+	rcs := common.SelectMysqlTableContentWithCountTemplate(ctx,
+		common.SelectMysqlTemplateOptions{
+			DB:          client.MysqlClient,
+			TableModel:  model.RoleCapabilities{},
+			NotReturn:   true,
+			NotPaginate: true,
 		},
-	}
-	op := common.SelectMysqlTemplateOptions{
-		DB:         client.MysqlClient,
-		TableModel: model.Role{},
-	}
-	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
-
-	// 查询角色内置权限  todo 测试！
-	op2 := common.SelectMysqlTemplateOptions{
-		DB:         client.MysqlClient,
-		TableModel: model.RoleCapabilities{},
-	}
-
-	common.SelectMysqlTableContentWithCountTemplate(ctx, op2,
 		common.MysqlCondition{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "rec_id",
@@ -104,9 +111,36 @@ func SelectRole(ctx *gin.Context) {
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
-		})
+		}).([]model.RoleCapabilities)
+	log.Printf("%+v\n\n", role)
+	log.Printf("%+v\n", rcs)
 
-	return
+	if role != nil && rcs != nil {
+		count := len(role)
+		data := make([]interface{}, 0, count)
+
+		for i := range role {
+			r := role[i]
+			tr := TempRole{
+				Role: r,
+				Rcs:  []model.RoleCapabilities{},
+			}
+			for j := range rcs {
+				rc := rcs[j]
+				if r.RecID != nil && rc.RoleID == *r.RecID {
+					tr.Rcs = append(tr.Rcs, rc)
+				}
+			}
+			log.Println(tr)
+			data = append(data, tr)
+		}
+		log.Println(data)
+		common.GinPaginate(ctx, data)
+		return
+	} else {
+		common.InternalDataBaseErrorTemplate(ctx, common.OTHER_ERROR, model.Role{})
+		return
+	}
 }
 
 func UpdateRole(ctx *gin.Context) {

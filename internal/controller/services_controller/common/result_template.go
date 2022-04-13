@@ -18,6 +18,7 @@ const (
 	DATABASE_INSERT_ERROR PredefinedMessage = "添加%s失败！"
 	DATABASE_SELECT_ERROR PredefinedMessage = "查询%s内容失败！"
 	DATABASE_COUNT_ERROR  PredefinedMessage = "查询%s总数失败！"
+	OTHER_ERROR           PredefinedMessage = "其他问题导致操作%s失败"
 )
 
 // RequestParamErrorTemplate 入参异常

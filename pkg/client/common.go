@@ -149,7 +149,6 @@ func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 func MysqlPaginateSql(ctx *gin.Context) string {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
-	log.Println(pageNumber, pageSize)
 	n, limit := 0, 0
 	if pn, err := strconv.Atoi(pageNumber); err != nil {
 		n = 1

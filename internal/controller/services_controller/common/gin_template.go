@@ -18,6 +18,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -41,6 +42,8 @@ type SelectMysqlTemplateOptions struct {
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
 	ResHookFunc   func(data []interface{}) []interface{}
+	NotReturn     bool
+	NotPaginate   bool
 }
 
 // SelectMongoDBTemplateOptions MongoDB 搜索模板配置
@@ -76,7 +79,8 @@ type UpdateMysqlTemplateOptions struct {
 */
 
 // SelectMysqlTableContentWithCountTemplate  Mysql 搜索模板
-func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTemplateOptions, conditionList ...MysqlCondition) {
+func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTemplateOptions, conditionList ...MysqlCondition) interface{} {
+
 	var count int
 	// 根据传入的类型决定创建对应类型的切片
 	var dataList = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
@@ -90,9 +94,11 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	for i := range conditionList {
 		sqlBatch.AddConditions(conditionList[i].Symbol, conditionList[i].ColumnName, conditionList[i].ColumnValue)
 	}
-
-	contentSql, countSql := sqlBatch.Harvest("content").AddOrderBy(op.OrderByColumn).
-		AddSuffixOther(client.MysqlPaginateSql(ctx)).HarvestSql(), sqlBatch.HarvestSql("count")
+	sg := sqlBatch.Harvest("content").AddOrderBy(op.OrderByColumn)
+	if !op.NotPaginate {
+		sg = sg.AddSuffixOther(client.MysqlPaginateSql(ctx))
+	}
+	contentSql, countSql := sg.HarvestSql(), sqlBatch.HarvestSql("count")
 	c := color.New(color.BgMagenta).Add(color.Underline)
 	// 打印成功与否并不重要，error 忽略掉就行
 	c.Println(contentSql)
@@ -101,16 +107,16 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	err := op.DB.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-		return
+
+		return nil
 	}
 	err = op.DB.Raw(countSql).Scan(&count).Error
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
-		return
+		return nil
 	}
 
 	var res = dataList
-
 	if op.ResHookFunc != nil {
 		convert, err := tools.SliceConvert(dataList, []interface{}{})
 		if err == nil {
@@ -121,8 +127,11 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 		log.Println(err)
 	}
 
-	SelectSuccessTemplate(ctx, int64(count), res)
-	return
+	if !op.NotReturn {
+		SelectSuccessTemplate(ctx, int64(count), res)
+		return nil
+	}
+	return res
 }
 
 // SelectMongoDBTableContentWithCountTemplate MongoDB 搜索模板
@@ -222,3 +231,35 @@ func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOption
 /*
 	----------------------------------    华丽的分割线   ----------------------------------------
 */
+
+func GinPaginate(ctx *gin.Context, data []interface{}) {
+	pageNumber := ctx.PostForm("page_number")
+	pageSize := ctx.PostForm("page_size")
+	n, limit := 0, 0
+	if pn, err := strconv.Atoi(pageNumber); err != nil {
+		n = 1
+	} else {
+		n = pn
+	}
+	if ps, err := strconv.Atoi(pageSize); err != nil {
+		limit = 10
+	} else {
+		limit = ps
+	}
+
+	offset := (n - 1) * limit
+	end := offset + limit
+	length := len(data)
+	if offset > length {
+		data = nil
+	} else if end > length {
+		data = data[offset:]
+	} else {
+		data = data[offset:end]
+	}
+	ctx.JSON(_const.OK, gin.H{
+		"count": length,
+		"list":  data,
+	})
+	return
+}

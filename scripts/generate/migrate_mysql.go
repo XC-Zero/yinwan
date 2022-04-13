@@ -17,7 +17,8 @@ import (
 var systemMysqlMigrateList []interface{}
 var bookNameMysqlMigrateList []interface{}
 var mongoMigrateList []string
-var moduleList []model.Module
+var moduleList = model.GetModuleList()
+
 var roleCapabilities []model.RoleCapabilities
 var departmentList []model.Department
 var allRole model.Role
@@ -51,36 +52,16 @@ func init() {
 		&model.FinanceCredentialEvent{},
 		&model.EventItem{},
 	}
-	moduleList = []model.Module{
-		{
-			ModuleName: "storage",
-		},
-		{
-			ModuleName: "finance",
-		},
-		{
-			ModuleName: "system",
-		},
-		{
-			ModuleName: "staff",
-		},
-		{
-			ModuleName: "transaction",
-		},
-	}
 	allRole = model.Role{
 		RoleName: "root",
 	}
 	readRole = model.Role{RoleName: "只读账号"}
 	readWriteRole = model.Role{RoleName: "读写账号"}
-
 	roleCapabilities = []model.RoleCapabilities{}
 	departmentManagerName, departmentManagerID, finAddr := "超级管理员", 1, "2楼205"
 	departmentList = []model.Department{
 		{
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "技术部",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
@@ -90,33 +71,23 @@ func init() {
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "生产车间",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "仓库",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "销售部",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "人事部",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
 			DepartmentName:        "行政部",
-			DepartmentLocation:    nil,
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}}
