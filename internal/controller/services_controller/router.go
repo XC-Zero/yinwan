@@ -71,11 +71,18 @@ func Starter() {
 		}
 		// 入库
 		{
-			storage.POST("/stock_in", storage3.CreateStockIn)
+			storage.POST("/create_stock_in", storage3.CreateStockIn)
+			storage.POST("/select_stock_in", storage3.SelectStockIn)
+			storage.POST("/update_stock_in", storage3.UpdateStockIn)
+			storage.POST("/delete_stock_in", storage3.DeleteStockIn)
+
 		}
 		// 出库
 		{
-			storage.POST("/stock_out", storage3.CreateStockOut)
+			storage.POST("/create_stock_out", storage3.CreateStockOut)
+			storage.POST("/select_stock_out", storage3.SelectStockOut)
+			storage.POST("/update_stock_out", storage3.UpdateStockOut)
+			storage.POST("/delete_stock_out", storage3.DeleteStockOut)
 
 		}
 		//扫码 小程序用
@@ -103,7 +110,7 @@ func Starter() {
 	{
 		system.POST("create_book_name", system2.CreateBookName)
 		system.POST("select_all_book_name", system2.SelectAllBookName)
-
+		system.POST("select_module", system2.SelectModule)
 		// 角色
 		{
 			system.POST("/create_role", system2.CreateRole)

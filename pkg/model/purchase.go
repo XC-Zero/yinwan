@@ -20,3 +20,12 @@ type Purchase struct {
 	PurchaseContent          *map[string]interface{} `json:"purchase_content" form:"purchase_content" bson:"purchase_content" cn:"采购内容"`
 	PurchaseDate             time.Time               `json:"purchase_date" form:"purchase_date" bson:"purchase_date" binding:"required" cn:"采购日期"`
 }
+
+func (p Purchase) TableCnName() string {
+	return "采购"
+}
+
+func (p Purchase) TableName() string {
+	return "purchases"
+
+}

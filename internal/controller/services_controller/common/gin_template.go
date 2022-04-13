@@ -218,3 +218,7 @@ func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOption
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
 }
+
+/*
+	----------------------------------    华丽的分割线   ----------------------------------------
+*/

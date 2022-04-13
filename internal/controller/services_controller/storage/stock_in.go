@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model"
 	"github.com/gin-gonic/gin"
@@ -8,15 +9,35 @@ import (
 
 func CreateStockIn(ctx *gin.Context) {
 	temp := model.StockInRecord{}
-
-	bookName := ctx.PostForm("book_name")
-	err := ctx.ShouldBind(&temp)
-	if err != nil || bookName == "" {
+	bk := client.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
 		return
 	}
-	client.ReadBookMap(bookName)
+	err := ctx.ShouldBind(&temp)
+	if err != nil {
+		return
+	}
 }
 
-func SelectStockInRecord(ctx *gin.Context) {
-
+func SelectStockIn(ctx *gin.Context) {
+	bk := client.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+		return
+	}
+}
+func UpdateStockIn(ctx *gin.Context) {
+	bk := client.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+		return
+	}
+}
+func DeleteStockIn(ctx *gin.Context) {
+	bk := client.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+		return
+	}
 }

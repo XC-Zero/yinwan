@@ -64,11 +64,12 @@ func CreateRole(ctx *gin.Context) {
 
 // SelectRole 查询角色
 func SelectRole(ctx *gin.Context) {
+	roleID := ctx.PostForm("role_id")
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("role_id"),
+			ColumnValue: roleID,
 		},
 		{
 			Symbol:      mysql.LIKE,
@@ -86,6 +87,25 @@ func SelectRole(ctx *gin.Context) {
 		TableModel: model.Role{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
+
+	// 查询角色内置权限  todo 测试！
+	op2 := common.SelectMysqlTemplateOptions{
+		DB:         client.MysqlClient,
+		TableModel: model.RoleCapabilities{},
+	}
+
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op2,
+		common.MysqlCondition{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "rec_id",
+			ColumnValue: roleID,
+		},
+		common.MysqlCondition{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		})
+
 	return
 }
 
