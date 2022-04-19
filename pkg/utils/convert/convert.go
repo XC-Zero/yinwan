@@ -1,8 +1,9 @@
-package tools
+package convert
 
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"log"
 	"reflect"
 )
 
@@ -11,7 +12,7 @@ import (
 func SliceConvert(slice interface{}, newSlice interface{}) (interface{}, error) {
 	ot, nt := reflect.TypeOf(slice), reflect.TypeOf(newSlice)
 	ote, nte := ot.Elem(), nt.Elem()
-
+	log.Println(ot, ote, ote.Name())
 	if ot.Kind() != reflect.Slice {
 		return nil, errors.New(fmt.Sprintf("Slice called with non-slice value of type %T", ot))
 	}
@@ -31,4 +32,20 @@ func SliceConvert(slice interface{}, newSlice interface{}) (interface{}, error) 
 	}
 
 	return dv.Interface(), nil
+}
+
+// OneToManyCombinationConvert 一对多合并
+func OneToManyCombinationConvert(one, many []interface{}, combColumnName string) []interface{} {
+	var res []interface{}
+	if len(one) == 0 || len(many) == 0 {
+		return nil
+	}
+	//oneKey := string_plus.ToSnakeString(reflect.TypeOf(reflect.ValueOf(one).Index(0).Elem().Interface()).Name())
+	//manyKey := string_plus.ToSnakeString(reflect.TypeOf(reflect.ValueOf(many).Index(0).Elem().Interface()).Name())
+	//var tempMap = make(map[interface{}]interface{}, len(one))
+	//for i := range many {
+	//	many[i]
+	//}
+	return res
+
 }

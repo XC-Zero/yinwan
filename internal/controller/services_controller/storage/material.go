@@ -3,12 +3,25 @@ package storage
 import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateMaterial(ctx *gin.Context) {
+	var material model.Material
+	err := ctx.ShouldBind(&material)
+	if err != nil {
+		return
+	}
+	err = client.MysqlClient.Create(&material).Error
+	if err != nil {
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建原材料成功！"))
+	return
 
 }
 

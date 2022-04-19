@@ -96,10 +96,18 @@ func Starter() {
 
 	finance := services.Group("/finance")
 	{
-		finance.POST("/select_credential", finance3.SelectCredential)
-		finance.POST("/create_credential", finance3.CreateCredential)
-		finance.POST("/update_credential", finance3.UpdateCredential)
-		finance.POST("/delete_credential", finance3.DeleteCredential)
+		{
+			finance.POST("/select_credential", finance3.SelectCredential)
+			finance.POST("/create_credential", finance3.CreateCredential)
+			finance.POST("/update_credential", finance3.UpdateCredential)
+			finance.POST("/delete_credential", finance3.DeleteCredential)
+		}
+		{
+			finance.POST("/select_fixed_asset", finance3.SelectFixedAsset)
+			finance.POST("/create_fixed_asset", finance3.CreateFixedAsset)
+			finance.POST("/update_fixed_asset", finance3.UpdateFixedAsset)
+			finance.POST("/delete_fixed_asset", finance3.DeleteFixedAsset)
+		}
 	}
 
 	transaction := services.Group("/transaction")

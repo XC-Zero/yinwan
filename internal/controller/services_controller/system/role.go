@@ -10,7 +10,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 // CreateRole 创建角色
@@ -112,8 +111,6 @@ func SelectRole(ctx *gin.Context) {
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
 		}).([]model.RoleCapabilities)
-	log.Printf("%+v\n\n", role)
-	log.Printf("%+v\n", rcs)
 
 	if role != nil && rcs != nil {
 		count := len(role)
@@ -131,10 +128,8 @@ func SelectRole(ctx *gin.Context) {
 					tr.Rcs = append(tr.Rcs, rc)
 				}
 			}
-			log.Println(tr)
 			data = append(data, tr)
 		}
-		log.Println(data)
 		common.GinPaginate(ctx, data)
 		return
 	} else {

@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/gin-gonic/gin"
@@ -191,11 +192,14 @@ func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.Find
 func HarvestClientFromGinContext(ctx *gin.Context) *BookName {
 	bookName := ctx.PostForm("book_name")
 	if bookName == "" {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
 		return nil
 	}
 	if book, ok := ReadBookMap(bookName); ok {
 		return &book
 	} else {
+		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+
 		return nil
 	}
 }

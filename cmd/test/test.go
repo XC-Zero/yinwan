@@ -2,13 +2,11 @@ package main
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/model"
-	"github.com/XC-Zero/yinwan/pkg/utils/tools"
-	"log"
-	"reflect"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 )
 
 func main() {
-	var dataList []model.Staff
+	var dataList []interface{}
 	dataList = append(dataList, model.Staff{
 		BasicModel:          model.BasicModel{},
 		StaffName:           "",
@@ -22,11 +20,10 @@ func main() {
 		StaffRoleID:         0,
 		StaffRoleName:       "",
 	})
-	convert, err := tools.SliceConvert(dataList, []interface{}{})
+	cv, err := convert.SliceConvert(dataList, []interface{}{})
 	if err != nil {
+		panic(err)
 		return
 	}
-	log.Println(reflect.TypeOf(convert))
-	i := convert.([]interface{})
-	log.Println(i)
+	convert.OneToManyCombinationConvert(dataList, cv.([]interface{}), "")
 }

@@ -6,10 +6,10 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
-	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -118,9 +118,9 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 
 	var res = dataList
 	if op.ResHookFunc != nil {
-		convert, err := tools.SliceConvert(dataList, []interface{}{})
+		sliceConvert, err := convert.SliceConvert(dataList, []interface{}{})
 		if err == nil {
-			if slice, ok := convert.([]interface{}); ok {
+			if slice, ok := sliceConvert.([]interface{}); ok {
 				res = op.ResHookFunc(slice)
 			}
 		}
@@ -172,9 +172,9 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	}
 	var res interface{} = list
 	if op.ResHookFunc != nil {
-		convert, err := tools.SliceConvert(list, []interface{}{})
+		sliceConvert, err := convert.SliceConvert(list, []interface{}{})
 		if err == nil {
-			res = op.ResHookFunc(convert.([]interface{}))
+			res = op.ResHookFunc(sliceConvert.([]interface{}))
 		}
 		log.Println(err)
 	}
@@ -232,6 +232,7 @@ func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOption
 	----------------------------------    华丽的分割线   ----------------------------------------
 */
 
+// GinPaginate 在service层面分页
 func GinPaginate(ctx *gin.Context, data []interface{}) {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
