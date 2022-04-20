@@ -9,40 +9,40 @@ import (
 
 func CreatePurchase(ctx *gin.Context) {
 	var purchase model.Purchase
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 	err := ctx.ShouldBind(&purchase)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	op := common.CreateMongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
+		DB:         client.MongoDBClient,
 		TableModel: model.Purchase{},
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
 }
 func SelectPurchase(ctx *gin.Context) {
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 }
 func UpdatePurchase(ctx *gin.Context) {
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 }
 func DeletePurchase(ctx *gin.Context) {
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 }

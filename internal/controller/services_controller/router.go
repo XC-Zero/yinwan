@@ -126,6 +126,13 @@ func Starter() {
 			system.POST("/update_role", system2.UpdateRole)
 			system.POST("/delete_role", system2.DeleteRole)
 		}
+		// 类型
+		{
+			system.POST("/create_type_tree", system2.CreateTypeTree)
+			system.POST("/select_type_tree", system2.SelectTypeTree)
+			system.POST("/update_type_tree", system2.UpdateTypeTree)
+			system.POST("/delete_type_tree", system2.DeleteTypeTree)
+		}
 	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)
 	if err != nil {

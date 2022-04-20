@@ -141,6 +141,10 @@ func SelectRole(ctx *gin.Context) {
 func UpdateRole(ctx *gin.Context) {
 	//var postData map[string]interface{}
 	//err := ctx.ShouldBind(&postData)
+	//if err != nil {
+	//	common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+	//	return
+	//}
 	//r, ok := postData["role"]
 	//rc, rcOK := postData["role_capabilities"]
 }

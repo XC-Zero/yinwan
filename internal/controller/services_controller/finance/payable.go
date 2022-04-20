@@ -12,16 +12,16 @@ func CreatePayable(ctx *gin.Context) {
 }
 
 func SelectPayable(ctx *gin.Context) {
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 	condition := []common.MongoCondition{
 		{},
 	}
 	op := common.SelectMongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
+		DB:         client.MongoDBClient,
 		TableModel: model.Payable{},
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, condition...)

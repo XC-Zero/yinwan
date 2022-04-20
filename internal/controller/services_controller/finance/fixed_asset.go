@@ -17,27 +17,24 @@ func CreateFixedAsset(ctx *gin.Context) {
 		return
 	}
 
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		return
-	}
-	err = bk.MysqlClient.Create(&fixedAsset).Error
-	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, fixedAsset)
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建固定资产成功！"))
 	return
 }
 
 func SelectFixedAsset(ctx *gin.Context) {
-	bk := client.HarvestClientFromGinContext(ctx)
-	if bk == nil {
-		return
-	}
+	//bk := client.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
+	//	return
+	//}
 	conditions := []common.MysqlCondition{{}}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient,
+		DB:         client.MysqlClient,
 		TableModel: model.FixedAsset{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
