@@ -3,12 +3,12 @@ package storage
 import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateStockIn(ctx *gin.Context) {
-	temp := model.StockInRecord{}
+	temp := mongo_model.StockInRecord{}
 	//bk := client.HarvestClientFromGinContext(ctx)
 	//if bk == nil {
 	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
@@ -37,7 +37,7 @@ func SelectStockIn(ctx *gin.Context) {
 	}
 	options := common.SelectMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
-		TableModel: model.StockInRecord{},
+		TableModel: mongo_model.StockInRecord{},
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, options, conditions...)
 	return

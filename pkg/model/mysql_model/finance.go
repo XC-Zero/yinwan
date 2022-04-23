@@ -1,8 +1,10 @@
-package model
+package mysql_model
+
+import "github.com/XC-Zero/yinwan/pkg/model/common"
 
 // Currency 货币
 type Currency struct {
-	BasicModel
+	common.BasicModel
 	// 货币名称
 	CurrencyName string `gorm:"type:varchar(50)"`
 	// 货币符号
@@ -13,7 +15,7 @@ type Currency struct {
 
 // Payable 应付
 type Payable struct {
-	BasicModel
+	common.BasicModel
 	//	关联凭证ID
 	CredentialID *int `gorm:"type:int" json:"credential_id,omitempty"`
 }
@@ -29,7 +31,7 @@ func (p Payable) TableName() string {
 
 // Receivable 应收
 type Receivable struct {
-	BasicModel
+	common.BasicModel
 	//	关联凭证ID
 	CredentialID *int `gorm:"type:int" json:"credential_id,omitempty"`
 }
@@ -37,7 +39,7 @@ type Receivable struct {
 // FixedAsset 固定资产
 // 固定资产类型存放于 TypeTree
 type FixedAsset struct {
-	BasicModel
+	common.BasicModel
 	FixedAssetTypeID          *int    `gorm:"type:int" json:"fixed_asset_type_id,omitempty" cn:"固定资产类型ID"`
 	FixedAssetTypeName        *string `gorm:"type:varchar(50)" json:"fixed_asset_type_name,omitempty" cn:"固定资产类型名称"`
 	DepreciationPeriod        int     `gorm:"type:int;not null" json:"depreciation_period" cn:"折旧期限（月）"`
@@ -58,7 +60,7 @@ func (m FixedAsset) TableName() string {
 
 // FixedAssetStatement 固定资产月度表
 type FixedAssetStatement struct {
-	BasicModel
+	common.BasicModel
 }
 
 func (m FixedAssetStatement) TableName() string {

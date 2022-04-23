@@ -4,16 +4,17 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateMaterial(ctx *gin.Context) {
-	var material model.Material
+	var material mysql_model.Material
 	err := ctx.ShouldBind(&material)
 	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Create(&material).Error
@@ -50,7 +51,7 @@ func SelectMaterial(ctx *gin.Context) {
 			ColumnValue: " ",
 		},
 	}
-	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: model.Material{}}
+	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: mysql_model.Material{}}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
 	return
@@ -93,7 +94,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 			ColumnValue: " ",
 		},
 	}
-	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: model.MaterialBatch{}}
+	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: mysql_model.MaterialBatch{}}
 
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 

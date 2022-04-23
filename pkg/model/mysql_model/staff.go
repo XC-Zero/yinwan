@@ -1,8 +1,9 @@
-package model
+package mysql_model
 
 import (
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/pkg/model/common"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/fwhezfwhez/errorx"
@@ -15,7 +16,7 @@ const EXPIRE_TIME = time.Hour * 2
 // Staff 职工表
 
 type Staff struct {
-	BasicModel
+	common.BasicModel
 	StaffName           string  `gorm:"type:varchar(50);not null;" json:"staff_name" form:"staff_name" cn:"职工名称"`
 	StaffAlias          *string `gorm:"type:varchar(50)" json:"staff_alias,omitempty" form:"staff_alias" cn:"职工别名"` // 职工别名
 	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  form:"staff_email" binding:"required" cn:"职工邮箱"`
@@ -80,7 +81,7 @@ func IgnoreStaffPassword(staffList []interface{}) []interface{} {
 }
 
 type Department struct {
-	BasicModel
+	common.BasicModel
 	DepartmentName        string  `gorm:"type:varchar(50)" json:"department_name" form:"department_name" binding:"required" cn:"部门名称"`
 	DepartmentLocation    *string `gorm:"type:varchar(50)" json:"department_location,omitempty" form:"department_location" cn:"部门地点"`
 	DepartmentManagerID   *int    `gorm:"type:int;index"  json:"department_manager_id,omitempty" form:"department_manager_id" cn:"部门主管ID"`

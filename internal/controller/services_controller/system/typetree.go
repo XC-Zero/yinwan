@@ -4,13 +4,13 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateTypeTree(ctx *gin.Context) {
-	var typeTree model.TypeTree
+	var typeTree mysql_model.TypeTree
 	err := ctx.ShouldBind(&typeTree)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -28,7 +28,7 @@ func CreateTypeTree(ctx *gin.Context) {
 func SelectTypeTree(ctx *gin.Context) {
 	op := common.SelectMysqlTemplateOptions{
 		DB:            nil,
-		TableModel:    model.TypeTree{},
+		TableModel:    mysql_model.TypeTree{},
 		OrderByColumn: "",
 		ResHookFunc:   nil,
 	}

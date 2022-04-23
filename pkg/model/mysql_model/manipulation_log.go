@@ -1,12 +1,13 @@
-package model
+package mysql_model
 
 import (
+	"github.com/XC-Zero/yinwan/pkg/model/common"
 	"time"
 )
 
 // ManipulationLog 操作日志
 type ManipulationLog struct {
-	BasicModel
+	common.BasicModel
 	ManipulatorID       string `gorm:"type:int"`
 	ManipulatorName     string `gorm:"type:varchar(50)"`
 	ManipulationContent string `gorm:"type:varchar(500)"`

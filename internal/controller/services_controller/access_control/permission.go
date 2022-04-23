@@ -4,7 +4,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/encode"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ import (
 // @Param  staff_email string,staff_password
 func Login(ctx *gin.Context) {
 	staffEmail, staffPassword := ctx.PostForm("staff_email"), ctx.PostForm("staff_password")
-	staff := model.Staff{
+	staff := mysql_model.Staff{
 		StaffEmail:    staffEmail,
 		StaffPassword: staffPassword,
 	}
@@ -24,10 +24,10 @@ func Login(ctx *gin.Context) {
 	if tokenPtr == nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg(errMessage)))
 	} else {
-		var rc []model.RoleCapabilities
-		role := model.Role{}
-		err1 := client.MysqlClient.Model(&model.Role{}).Where("rec_id = (select staff_role_id from staffs where staff_email = ? limit 1) ", staffEmail).Find(&role).Error
-		err2 := client.MysqlClient.Raw("select * from "+model.RoleCapabilities{}.TableName()+" where role_id = (select staff_role_id from staffs where staff_email = ? limit 1)", staffEmail).Scan(&rc).Error
+		var rc []mysql_model.RoleCapabilities
+		role := mysql_model.Role{}
+		err1 := client.MysqlClient.Model(&mysql_model.Role{}).Where("rec_id = (select staff_role_id from staffs where staff_email = ? limit 1) ", staffEmail).Find(&role).Error
+		err2 := client.MysqlClient.Raw("select * from "+mysql_model.RoleCapabilities{}.TableName()+" where role_id = (select staff_role_id from staffs where staff_email = ? limit 1)", staffEmail).Scan(&rc).Error
 
 		if err1 != nil || err2 != nil {
 			common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_SELECT_ERROR, role)
@@ -63,7 +63,7 @@ func ForgetPassword(ctx *gin.Context) {
 		return
 	}
 	if string(email) == staffEmail && staffEmail != "" && staffPass != "" {
-		err := client.MysqlClient.Model(&model.Staff{}).
+		err := client.MysqlClient.Model(&mysql_model.Staff{}).
 			Where("staff_email = ?", staffEmail).
 			Update("staff_password", staffPass).
 			Error

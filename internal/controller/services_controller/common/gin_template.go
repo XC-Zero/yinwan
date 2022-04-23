@@ -264,3 +264,11 @@ func GinPaginate(ctx *gin.Context, data []interface{}) {
 	})
 	return
 }
+
+/*
+	----------------------------------    华丽的分割线   ----------------------------------------
+*/
+
+func SelectESTableContentWithCountTemplate(ctx *gin.Context) {
+
+}

@@ -1,10 +1,13 @@
-package model
+package mysql_model
 
-import "time"
+import (
+	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"time"
+)
 
 // Warehouse 仓库
 type Warehouse struct {
-	BasicModel
+	common.BasicModel
 	WarehouseName      string  `gorm:"type:varchar(50);not null;" json:"warehouse_name" cn:"仓库名称"`
 	WarehouseLocation  *string `gorm:"type:varchar(200)" json:"warehouse_location,omitempty" cn:"仓库位置"`
 	WarehouseOwnerID   *int    `gorm:"type:int" json:"warehouse_owner_id,omitempty" cn:"仓库管理员ID"`
@@ -22,7 +25,7 @@ func (m Warehouse) TableCnName() string {
 
 // Material 原材料
 type Material struct {
-	BasicModel
+	common.BasicModel
 	MaterialName      string  `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
 	MaterialTypeID    int     `gorm:"type:int;not null;index" json:"material_type_id" cn:"原材料类型ID"`
 	MaterialTypeName  string  `gorm:"type:varchar(50);not null" json:"material_type_name" cn:"原材料类型名称"`
@@ -43,7 +46,7 @@ func (m Material) TableCnName() string {
 
 // MaterialBatch 原材料批次
 type MaterialBatch struct {
-	BasicModel
+	common.BasicModel
 	MaterialID                 int        `gorm:"type:int;not null" json:"material_id" cn:"原材料ID"`
 	MaterialName               string     `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
 	StockInRecordID            int        `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`

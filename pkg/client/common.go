@@ -5,11 +5,11 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/config"
-	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
@@ -76,7 +76,7 @@ var (
 	// BookNameMap 账套Map
 
 	RedisClient    *redis.Client
-	ESClient       *elasticsearch.Client
+	ESClient       *elastic.Client
 	MysqlClient    *gorm.DB
 	MinioClient    *minio.Client
 	InfluxDBClient *influxdb2.Client
@@ -109,10 +109,10 @@ func InitSystemStorage(config config.StorageConfig) {
 		panic(err)
 	}
 	//todo es
-	//es, err := InitElasticsearch(config.ESConfig)
-	//if err != nil {
-	//	panic(err)
-	//}
+	es, err := InitElasticsearch(config.ESConfig)
+	if err != nil {
+		panic(err)
+	}
 
 	//ESClient = es
 	RedisClient = rr

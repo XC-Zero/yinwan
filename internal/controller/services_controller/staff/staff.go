@@ -4,7 +4,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/email"
 	"github.com/XC-Zero/yinwan/pkg/utils/encode"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
@@ -22,13 +22,13 @@ import (
 // CreateStaff
 // @Param  model.Staff
 func CreateStaff(ctx *gin.Context) {
-	temp := model.Staff{}
+	temp := mysql_model.Staff{}
 	err := ctx.ShouldBind(&temp)
 	if err != nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
 		return
 	}
-	err = client.MysqlClient.Model(&model.Staff{}).Create(&temp).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Create(&temp).Error
 	if err != nil {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("创建员工失败！"))
 		return
@@ -68,8 +68,8 @@ func SelectStaff(ctx *gin.Context) {
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:          client.MysqlClient,
-		TableModel:  model.Staff{},
-		ResHookFunc: model.IgnoreStaffPassword,
+		TableModel:  mysql_model.Staff{},
+		ResHookFunc: mysql_model.IgnoreStaffPassword,
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
@@ -79,13 +79,13 @@ func SelectStaff(ctx *gin.Context) {
 
 // UpdateStaff 更新员工
 func UpdateStaff(ctx *gin.Context) {
-	var staff model.Staff
+	var staff mysql_model.Staff
 	err := ctx.ShouldBind(&staff)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&model.Staff{}).Omit("staff_password", "rec_id").Updates(staff).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Omit("staff_password", "rec_id").Updates(staff).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)
 		return
@@ -101,9 +101,9 @@ func DeleteStaff(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err := client.MysqlClient.Delete(&model.Staff{}, recID).Error
+	err := client.MysqlClient.Delete(&mysql_model.Staff{}, recID).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, model.Staff{})
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, mysql_model.Staff{})
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除职工成功！"))

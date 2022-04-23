@@ -2,7 +2,7 @@ package qrcode
 
 import (
 	"encoding/json"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/common"
 	"os"
 	"strconv"
 	"testing"
@@ -14,11 +14,11 @@ func TestName(t *testing.T) {
 	s := struct {
 		Hello string
 		Name  string
-		model.BasicModel
+		common.BasicModel
 	}{
 		"FUCK YOU !",
 		"♂ 哲学 ♂!",
-		model.BasicModel{
+		common.BasicModel{
 			RecID:     nil,
 			CreatedAt: now,
 			UpdatedAt: &now,

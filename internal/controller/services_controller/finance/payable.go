@@ -3,7 +3,7 @@ package finance
 import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +22,7 @@ func SelectPayable(ctx *gin.Context) {
 	}
 	op := common.SelectMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
-		TableModel: model.Payable{},
+		TableModel: mysql_model.Payable{},
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, condition...)
 }

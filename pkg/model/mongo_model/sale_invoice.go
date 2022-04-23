@@ -1,13 +1,14 @@
-package model
+package mongo_model
 
 import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
+	"github.com/XC-Zero/yinwan/pkg/model/common"
 )
 
 // SaleInvoice 销售订单
 type SaleInvoice struct {
-	BasicModel
+	common.BasicModel
 	SaleInvoiceOwnerID   int    `json:"sale_invoice_owner_id"`
 	SaleInvoiceOwnerName string `json:"sale_invoice_owner_name"`
 	CustomerID           int    `json:"customer_id"`

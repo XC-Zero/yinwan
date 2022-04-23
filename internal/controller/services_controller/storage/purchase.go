@@ -3,12 +3,12 @@ package storage
 import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/gin-gonic/gin"
 )
 
 func CreatePurchase(ctx *gin.Context) {
-	var purchase model.Purchase
+	var purchase mongo_model.Purchase
 	//bk := client.HarvestClientFromGinContext(ctx)
 	//if bk == nil {
 	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
@@ -21,7 +21,7 @@ func CreatePurchase(ctx *gin.Context) {
 	}
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
-		TableModel: model.Purchase{},
+		TableModel: mongo_model.Purchase{},
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
 }

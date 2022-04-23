@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
@@ -17,55 +19,61 @@ import (
 var systemMysqlMigrateList []interface{}
 var bookNameMysqlMigrateList []interface{}
 var mongoMigrateList []string
-var moduleList = model.GetModuleList()
+var moduleList = mysql_model.GetModuleList()
 
-var roleCapabilities []model.RoleCapabilities
-var departmentList []model.Department
-var allRole model.Role
-var readRole model.Role
-var readWriteRole model.Role
-var typeTreeList []model.TypeTree
+var roleCapabilities []mysql_model.RoleCapabilities
+var departmentList []mysql_model.Department
+var allRole mysql_model.Role
+var readRole mysql_model.Role
+var readWriteRole mysql_model.Role
+var typeTreeList []mysql_model.TypeTree
 
 func init() {
 	systemMysqlMigrateList = []interface{}{
-		&model.Department{},
-		&model.Role{},
-		&model.RoleCapabilities{},
-		&model.Module{},
-		&model.Staff{},
-		&model.Commodity{},
-		&model.CommodityHistoricalCost{},
-		&model.CommodityBatch{},
-		&model.Material{},
-		&model.MaterialBatch{},
-		&model.Transaction{},
-		&model.Customer{},
-		&model.Provider{},
-		&model.ManipulationLog{},
-		&model.TypeTree{},
+		&mysql_model.Role{},
+		&mysql_model.RoleCapabilities{},
+		&mysql_model.Module{},
+		&mysql_model.Department{},
+		&mysql_model.Staff{},
+		&mysql_model.Commodity{},
+		&mysql_model.CommodityHistoricalCost{},
+		&mysql_model.CommodityBatch{},
+		&mysql_model.Material{},
+		&mysql_model.MaterialBatch{},
+		&mongo_model.Transaction{},
+		&mysql_model.Customer{},
+		&mysql_model.Provider{},
+		&mysql_model.ManipulationLog{},
+		&mysql_model.TypeTree{},
+		&mysql_model.Payable{},
+		&mysql_model.Receivable{},
+		&mongo_model.Purchase{},
+		&mongo_model.FinanceCredential{},
+		&mongo_model.FinanceCredentialEvent{},
+		&mongo_model.EventItem{},
 	}
 	bookNameMysqlMigrateList = []interface{}{
-		&model.Payable{},
-		&model.Receivable{},
-		&model.Purchase{},
-		&model.FinanceCredential{},
-		&model.FinanceCredentialEvent{},
-		&model.EventItem{},
+		&mysql_model.Payable{},
+		&mysql_model.Receivable{},
+		&mongo_model.Purchase{},
+		&mongo_model.FinanceCredential{},
+		&mongo_model.FinanceCredentialEvent{},
+		&mongo_model.EventItem{},
 	}
-	allRole = model.Role{
+	allRole = mysql_model.Role{
 		RoleName: "root",
 	}
-	readRole = model.Role{RoleName: "只读账号"}
-	readWriteRole = model.Role{RoleName: "读写账号"}
-	roleCapabilities = []model.RoleCapabilities{}
+	readRole = mysql_model.Role{RoleName: "只读账号"}
+	readWriteRole = mysql_model.Role{RoleName: "读写账号"}
+	roleCapabilities = []mysql_model.RoleCapabilities{}
 	departmentManagerName, departmentManagerID, finAddr := "超级管理员", 1, "2楼205"
-	departmentList = []model.Department{
+	departmentList = []mysql_model.Department{
 		{
 			DepartmentName:        "技术部",
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            model.BasicModel{},
+			BasicModel:            common.BasicModel{},
 			DepartmentName:        "财务部",
 			DepartmentLocation:    &finAddr,
 			DepartmentManagerID:   &departmentManagerID,
@@ -91,13 +99,13 @@ func init() {
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}}
-	typeTreeList = []model.TypeTree{
-		{model.BasicModel{}, "固定资产", nil, nil},
-		{model.BasicModel{}, "产成品", nil, nil},
-		{model.BasicModel{}, "原材料", nil, nil},
-		{model.BasicModel{}, "周转材料", nil, nil},
-		{model.BasicModel{}, "低值易耗品", nil, nil},
-		{model.BasicModel{}, "其他类型 ", nil, nil},
+	typeTreeList = []mysql_model.TypeTree{
+		{common.BasicModel{}, "固定资产", nil, nil},
+		{common.BasicModel{}, "产成品", nil, nil},
+		{common.BasicModel{}, "原材料", nil, nil},
+		{common.BasicModel{}, "周转材料", nil, nil},
+		{common.BasicModel{}, "低值易耗品", nil, nil},
+		{common.BasicModel{}, "其他类型 ", nil, nil},
 	}
 }
 
@@ -138,29 +146,29 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 			}
 		}
 		// 录入系统模块
-		err := tx.Model(&model.Module{}).CreateInBatches(moduleList, mysql.CalcMysqlBatchSize(moduleList[0])).Error
+		err := tx.Model(&mysql_model.Module{}).CreateInBatches(moduleList, mysql.CalcMysqlBatchSize(moduleList[0])).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化系统模块失败！")
 			return err
 		}
 		// 初始化类型表失败
-		err = tx.Model(&model.TypeTree{}).CreateInBatches(typeTreeList, mysql.CalcMysqlBatchSize(typeTreeList[0])).Error
+		err = tx.Model(&mysql_model.TypeTree{}).CreateInBatches(typeTreeList, mysql.CalcMysqlBatchSize(typeTreeList[0])).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化类型表失败！")
 			return err
 		}
 		// 初始化角色
-		err = tx.Model(&model.Role{}).Create(&allRole).Error
+		err = tx.Model(&mysql_model.Role{}).Create(&allRole).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化系统超级管理员失败！")
 			return err
 		}
-		err = tx.Model(&model.Role{}).Create(&readWriteRole).Error
+		err = tx.Model(&mysql_model.Role{}).Create(&readWriteRole).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化系统读写角色失败！")
 			return err
 		}
-		err = tx.Model(&model.Role{}).Create(&readRole).Error
+		err = tx.Model(&mysql_model.Role{}).Create(&readRole).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化系统只读角色失败！")
 			return err
@@ -168,14 +176,14 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 
 		//初始化角色权限
 		for i := range moduleList {
-			roleCapabilities = append(roleCapabilities, model.RoleCapabilities{
+			roleCapabilities = append(roleCapabilities, mysql_model.RoleCapabilities{
 				RoleID:     *allRole.RecID,
 				ModuleID:   *moduleList[i].RecID,
 				ModuleName: moduleList[i].ModuleName,
 				CanRead:    true,
 				CanWrite:   true,
 				CanDelete:  true,
-			}, model.RoleCapabilities{
+			}, mysql_model.RoleCapabilities{
 				RoleID:     *readWriteRole.RecID,
 				ModuleID:   *moduleList[i].RecID,
 				ModuleName: moduleList[i].ModuleName,
@@ -183,7 +191,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 				CanWrite:   true,
 				CanDelete:  false,
 			},
-				model.RoleCapabilities{
+				mysql_model.RoleCapabilities{
 					RoleID:     *readRole.RecID,
 					ModuleID:   *moduleList[i].RecID,
 					ModuleName: moduleList[i].ModuleName,
@@ -192,18 +200,18 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 					CanDelete:  false,
 				})
 		}
-		err = tx.Model(&model.RoleCapabilities{}).CreateInBatches(roleCapabilities, mysql.CalcMysqlBatchSize(roleCapabilities[0])).Error
+		err = tx.Model(&mysql_model.RoleCapabilities{}).CreateInBatches(roleCapabilities, mysql.CalcMysqlBatchSize(roleCapabilities[0])).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化系统预定义角色权限失败！")
 		}
 		// 初始化部门
-		err = tx.Model(&model.Department{}).CreateInBatches(departmentList, mysql.CalcMysqlBatchSize(departmentList[0])).Error
+		err = tx.Model(&mysql_model.Department{}).CreateInBatches(departmentList, mysql.CalcMysqlBatchSize(departmentList[0])).Error
 		if err != nil {
 			logger.Error(errorx.MustWrap(err), "初始化部门列表失败！")
 		}
 		// 初始化超管
-		err = tx.Model(&model.Staff{}).Create(&model.Staff{
-			BasicModel:          model.BasicModel{},
+		err = tx.Model(&mysql_model.Staff{}).Create(&mysql_model.Staff{
+			BasicModel:          common.BasicModel{},
 			StaffName:           "超级管理员",
 			StaffAlias:          &staffAlias,
 			StaffEmail:          "645171033@qq.com",

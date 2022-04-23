@@ -1,7 +1,8 @@
-package model
+package mongo_model
 
 import (
 	"encoding/json"
+	"github.com/XC-Zero/yinwan/pkg/model/common"
 	"time"
 )
 
@@ -34,7 +35,7 @@ func (p PayType) DisPlay() string {
 }
 
 type Transaction struct {
-	BasicModel
+	common.BasicModel
 	TransactionContent string    `gorm:"type:varchar(500)"`
 	TransactionAmount  float64   `gorm:"type:decimal(20,4);not null;"`
 	PayType            *PayType  `gorm:"type:int"`

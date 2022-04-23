@@ -5,7 +5,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
@@ -23,8 +23,8 @@ func CreateRole(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	var role model.Role
-	var roleCapList []model.RoleCapabilities
+	var role mysql_model.Role
+	var roleCapList []mysql_model.RoleCapabilities
 
 	rb, _ := json.Marshal(r)
 	rcb, _ := json.Marshal(rc)
@@ -39,23 +39,23 @@ func CreateRole(ctx *gin.Context) {
 		return
 	}
 	// 补全
-	roleCapList = model.RoleCapabilitiesMerge(roleCapList)
+	roleCapList = mysql_model.RoleCapabilitiesMerge(roleCapList)
 	err = client.MysqlClient.Transaction(func(tx *gorm.DB) error {
-		err := client.MysqlClient.Model(&model.Role{}).Create(&role).Error
+		err := client.MysqlClient.Model(&mysql_model.Role{}).Create(&role).Error
 		if err != nil {
 			return err
 		}
 		for i := range roleCapList {
 			roleCapList[i].RoleID = *role.RecID
 		}
-		err = client.MysqlClient.Model(&model.RoleCapabilities{}).CreateInBatches(roleCapList, mysql.CalcMysqlBatchSize(roleCapList[0])).Error
+		err = client.MysqlClient.Model(&mysql_model.RoleCapabilities{}).CreateInBatches(roleCapList, mysql.CalcMysqlBatchSize(roleCapList[0])).Error
 		if err != nil {
 			return err
 		}
 		return nil
 	})
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, model.Role{})
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, mysql_model.Role{})
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建角色成功！"))
@@ -63,8 +63,8 @@ func CreateRole(ctx *gin.Context) {
 }
 
 type TempRole struct {
-	Role model.Role               `json:"role"`
-	Rcs  []model.RoleCapabilities `json:"role_capabilities"`
+	Role mysql_model.Role               `json:"role"`
+	Rcs  []mysql_model.RoleCapabilities `json:"role_capabilities"`
 }
 
 // SelectRole 查询角色
@@ -89,15 +89,15 @@ func SelectRole(ctx *gin.Context) {
 	role := common.SelectMysqlTableContentWithCountTemplate(ctx,
 		common.SelectMysqlTemplateOptions{
 			DB:          client.MysqlClient,
-			TableModel:  model.Role{},
+			TableModel:  mysql_model.Role{},
 			NotReturn:   true,
 			NotPaginate: true,
-		}, conditions...).([]model.Role)
+		}, conditions...).([]mysql_model.Role)
 
 	rcs := common.SelectMysqlTableContentWithCountTemplate(ctx,
 		common.SelectMysqlTemplateOptions{
 			DB:          client.MysqlClient,
-			TableModel:  model.RoleCapabilities{},
+			TableModel:  mysql_model.RoleCapabilities{},
 			NotReturn:   true,
 			NotPaginate: true,
 		},
@@ -110,7 +110,7 @@ func SelectRole(ctx *gin.Context) {
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
-		}).([]model.RoleCapabilities)
+		}).([]mysql_model.RoleCapabilities)
 
 	if role != nil && rcs != nil {
 		count := len(role)
@@ -120,7 +120,7 @@ func SelectRole(ctx *gin.Context) {
 			r := role[i]
 			tr := TempRole{
 				Role: r,
-				Rcs:  []model.RoleCapabilities{},
+				Rcs:  []mysql_model.RoleCapabilities{},
 			}
 			for j := range rcs {
 				rc := rcs[j]
@@ -133,7 +133,7 @@ func SelectRole(ctx *gin.Context) {
 		common.GinPaginate(ctx, data)
 		return
 	} else {
-		common.InternalDataBaseErrorTemplate(ctx, common.OTHER_ERROR, model.Role{})
+		common.InternalDataBaseErrorTemplate(ctx, common.OTHER_ERROR, mysql_model.Role{})
 		return
 	}
 }
@@ -155,11 +155,11 @@ func DeleteRole(ctx *gin.Context) {
 		return
 	}
 	err := client.MysqlClient.Transaction(func(tx *gorm.DB) error {
-		err := tx.Delete(&model.Role{}, recID).Error
+		err := tx.Delete(&mysql_model.Role{}, recID).Error
 		if err != nil {
 			return err
 		}
-		err = tx.Delete(&model.RoleCapabilities{}, "role_id = ?", recID).Error
+		err = tx.Delete(&mysql_model.RoleCapabilities{}, "role_id = ?", recID).Error
 		if err != nil {
 			return err
 		}

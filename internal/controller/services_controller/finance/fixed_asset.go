@@ -4,13 +4,13 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateFixedAsset(ctx *gin.Context) {
-	var fixedAsset model.FixedAsset
+	var fixedAsset mysql_model.FixedAsset
 	err := ctx.ShouldBind(&fixedAsset)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -35,7 +35,7 @@ func SelectFixedAsset(ctx *gin.Context) {
 	conditions := []common.MysqlCondition{{}}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         client.MysqlClient,
-		TableModel: model.FixedAsset{},
+		TableModel: mysql_model.FixedAsset{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 	return

@@ -3,13 +3,13 @@ package storage
 import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateProvider(ctx *gin.Context) {
-	var provider model.Provider
+	var provider mysql_model.Provider
 	err := ctx.ShouldBind(&provider)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -32,7 +32,7 @@ func SelectProvider(ctx *gin.Context) {
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         client.MysqlClient,
-		TableModel: model.Provider{},
+		TableModel: mysql_model.Provider{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 	return

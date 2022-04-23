@@ -1,9 +1,11 @@
-package model
+package mongo_model
+
+import "github.com/XC-Zero/yinwan/pkg/model/common"
 
 // StockInRecord 入库记录
 // 存 MongoDB
 type StockInRecord struct {
-	TimeOnlyModel
+	common.TimeOnlyModel
 	StockInRecordOwnerID   int                    ` json:"stock_in_record_owner_id"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" binding:"required"`
 	StockInRecordOwnerName string                 ` json:"stock_in_record_owner_name" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" binding:"required"`
 	StockInRecordType      string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
@@ -22,7 +24,7 @@ func (m StockInRecord) TableCnName() string {
 // StockOutRecord 出库记录
 // 存 MongoDB 一份
 type StockOutRecord struct {
-	TimeOnlyModel
+	common.TimeOnlyModel
 	StockOutRecordOwnerID   int                    `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
 	StockOutRecordOwnerName string                 `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
 	StockOutRecordType      string                 `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`

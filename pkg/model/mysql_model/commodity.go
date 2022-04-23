@@ -1,8 +1,10 @@
-package model
+package mysql_model
+
+import "github.com/XC-Zero/yinwan/pkg/model/common"
 
 // CommodityBatch 批次
 type CommodityBatch struct {
-	BasicModel
+	common.BasicModel
 }
 
 func (c CommodityBatch) TableCnName() string {
@@ -14,7 +16,7 @@ func (c CommodityBatch) TableName() string {
 
 // Commodity 产品
 type Commodity struct {
-	BasicModel
+	common.BasicModel
 	CommodityName      string                 `gorm:"type:varchar(200)" json:"commodity_name"`
 	CommodityType      *string                `gorm:"type:varchar(50)" json:"commodity_type,omitempty"`
 	CommodityStyle     *string                `gorm:"type:varchar(50)" json:"commodity_style,omitempty"`
@@ -33,7 +35,7 @@ func (c Commodity) TableName() string {
 
 // CommodityHistoricalCost 历史成本表
 type CommodityHistoricalCost struct {
-	BasicModel
+	common.BasicModel
 	CommodityID   int     `gorm:"type:int;index;" json:"commodity_id"`
 	CommodityName string  `gorm:"type:varchar(200)" json:"commodity_name"`
 	CommodityCost float64 `gorm:"type:decimal(20,2)" json:"commodity_cost"`

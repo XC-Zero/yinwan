@@ -1,8 +1,10 @@
-package model
+package mysql_model
+
+import "github.com/XC-Zero/yinwan/pkg/model/common"
 
 // CorrespondentCompany 往来公司
 type CorrespondentCompany struct {
-	BasicModel
+	common.BasicModel
 	CompanyName             string  `json:"company_name" gorm:"type:varchar(200);not null;" cn:"往来公司名称"`
 	CompanyLegalName        *string `json:"company_legal_name,omitempty" gorm:"type:varchar(50)" cn:"往来公司全称"`
 	CompanyAlias            *string `json:"company_alias,omitempty" gorm:"type:varchar(50)" cn:"往来公司简称"`

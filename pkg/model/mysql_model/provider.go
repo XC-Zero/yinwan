@@ -1,8 +1,10 @@
-package model
+package mysql_model
+
+import "github.com/XC-Zero/yinwan/pkg/model/common"
 
 // Provider 供应商
 type Provider struct {
-	BasicModel
+	common.BasicModel
 	ProviderName       string  `gorm:"type:varchar(200);not null" json:"provider_name" form:"provider_name" binding:"required"`
 	AccumulatedAmount  float64 `gorm:"type:decimal(20,2); " json:"accumulated_amount" form:"accumulated_amount"`
 	ProviderLogoUrl    *string `gorm:"type:varchar(500); " json:"provider_pic_url,omitempty" form:"provider_pic_url" `
