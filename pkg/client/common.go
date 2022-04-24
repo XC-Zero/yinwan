@@ -114,7 +114,7 @@ func InitSystemStorage(config config.StorageConfig) {
 		panic(err)
 	}
 
-	//ESClient = es
+	ESClient = es
 	RedisClient = rr
 	MysqlClient = msy
 	MinioClient = mClient
@@ -202,4 +202,25 @@ func HarvestClientFromGinContext(ctx *gin.Context) *BookName {
 
 		return nil
 	}
+}
+
+func ESPaginate(ctx *gin.Context, s *elastic.SearchService) *elastic.SearchService {
+	pageNumber := ctx.PostForm("page_number")
+	pageSize := ctx.PostForm("page_size")
+	log.Println(pageNumber, pageSize)
+	var n, limit int64 = 0, 0
+	if pn, err := strconv.Atoi(pageNumber); err != nil {
+		n = 1
+	} else {
+		n = int64(pn)
+	}
+	if ps, err := strconv.Atoi(pageSize); err != nil {
+		limit = 10
+	} else {
+		limit = int64(ps)
+	}
+	offset := (n - 1) * limit
+	s.From(int(offset)).Size(int(limit))
+
+	return s
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -36,6 +37,9 @@ type MongoCondition struct {
 	ColumnValue interface{}
 }
 
+type EsCondition struct {
+}
+
 // SelectMysqlTemplateOptions MySQL 搜索模板配置
 type SelectMysqlTemplateOptions struct {
 	DB            *gorm.DB
@@ -52,6 +56,15 @@ type SelectMongoDBTemplateOptions struct {
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
 	ResHookFunc   func(data []interface{}) []interface{}
+}
+
+// SelectESTemplateOptions ElasticSearch 搜索模板配置
+type SelectESTemplateOptions struct {
+	DB           *elastic.Client
+	TableModel   _interface.EsTabler
+	Scripts      string
+	NotHighLight bool
+	ResHookFunc  func(data []interface{}) []interface{}
 }
 
 // CreateMysqlTemplateOptions MySQL 创建模板配置
@@ -269,6 +282,19 @@ func GinPaginate(ctx *gin.Context, data []interface{}) {
 	----------------------------------    华丽的分割线   ----------------------------------------
 */
 
-func SelectESTableContentWithCountTemplate(ctx *gin.Context) {
+func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplateOptions) {
+	query := make(map[string]interface{}, 0)
+
+	if op.DB == nil {
+		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
+		return
+	}
+	do, err := client.ESPaginate(ctx,
+		op.DB.Search(op.TableModel.TableName()).Query(elastic.NewQueryStringQuery())).
+		Pretty(true).
+		Do(context.Background())
+	if err != nil {
+		return
+	}
 
 }

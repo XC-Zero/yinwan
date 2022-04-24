@@ -36,14 +36,14 @@ func InitElasticsearch(config cfg.ESConfig) (*elastic.Client, error) {
 	return esClient, nil
 }
 
-func CreateIndex(indexName string, mapping ElasticSearchMapping) error {
+func CreateIndex(indexName string, mapping string) error {
 	exists, err := ESClient.IndexExists(indexName).Do(context.Background())
 	if err != nil {
 		return err
 	}
 	if !exists {
 		_, err := ESClient.CreateIndex(indexName).
-			BodyJson(mapping).
+			BodyString(mapping).
 			IncludeTypeName(true).
 			Do(context.Background())
 		if err != nil {
@@ -66,16 +66,4 @@ func PutIntoIndex(tabler _interface.ChineseTabler) error {
 		return err
 	}
 	return nil
-}
-
-func GetDataFromIndex(tabler _interface.ChineseTabler, queryString string) *elastic.SearchResult {
-	query := elastic.NewTermQuery()
-	do, err := ESClient.Search().Index(tabler.TableName()).Query().
-		Sort().
-		From().
-		Size().
-		Pretty(true).Do()
-	if err != nil {
-		return nil
-	}
 }
