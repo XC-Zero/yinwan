@@ -283,19 +283,19 @@ func GinPaginate(ctx *gin.Context, data []interface{}) {
 */
 
 func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplateOptions) {
-	query := make(map[string]interface{}, 0)
-
-	if op.DB == nil {
-		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-		return
-	}
-	do, err := client.ESPaginate(ctx,
-		op.DB.Search(op.TableModel.TableName()).Query(elastic.NewQueryStringQuery())).
-		Pretty(true).
-		Do(context.Background())
-	if err != nil {
-		return
-	}
+	//query := make(map[string]interface{}, 0)
+	//
+	//if op.DB == nil {
+	//	InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
+	//	return
+	//}
+	//do, err := client.ESPaginate(ctx,
+	//	op.DB.Search(op.TableModel.TableName()).Query(elastic.NewQueryStringQuery())).
+	//	Pretty(true).
+	//	Do(context.Background())
+	//if err != nil {
+	//	return
+	//}
 
 }
 func HarvestClientFromGinContext(ctx *gin.Context) *client.BookName {
