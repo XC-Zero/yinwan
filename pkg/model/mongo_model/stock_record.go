@@ -1,6 +1,8 @@
 package mongo_model
 
-import "github.com/XC-Zero/yinwan/pkg/model/common"
+import (
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
+)
 
 // StockInRecord 入库记录
 // 存 MongoDB

@@ -7,5 +7,5 @@ type ChineseTabler interface {
 
 type EsTabler interface {
 	ChineseTabler
-	Mapping() string
+	Mapping() map[string]interface{}
 }

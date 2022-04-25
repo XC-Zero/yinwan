@@ -1,7 +1,7 @@
 package mongo_model
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"time"
 )
 

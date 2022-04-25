@@ -6,6 +6,7 @@ import (
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
+	"reflect"
 )
 
 // InitElasticsearch ...
@@ -36,15 +37,14 @@ func InitElasticsearch(config cfg.ESConfig) (*elastic.Client, error) {
 	return esClient, nil
 }
 
-func CreateIndex(indexName string, mapping string) error {
-	exists, err := ESClient.IndexExists(indexName).Do(context.Background())
+func CreateIndex(model _interface.EsTabler) error {
+	exists, err := ESClient.IndexExists(model.TableName()).Do(context.Background())
 	if err != nil {
 		return err
 	}
 	if !exists {
-		_, err := ESClient.CreateIndex(indexName).
-			BodyString(mapping).
-			IncludeTypeName(true).
+		_, err := ESClient.CreateIndex(model.TableName()).
+			BodyJson(model.Mapping()).
 			Do(context.Background())
 		if err != nil {
 			return err
@@ -66,4 +66,20 @@ func PutIntoIndex(tabler _interface.ChineseTabler) error {
 		return err
 	}
 	return nil
+}
+
+func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int) (list []interface{}, count int64, err error) {
+	res, err := ESClient.Search().
+		Index(tabler.TableName()).
+		From(from).Size(size).
+		Query(query).
+		Do(context.Background())
+	if err != nil {
+		return nil, 0, err
+	}
+	count = res.TotalHits()
+
+	list = res.Each(reflect.TypeOf(tabler))
+
+	return
 }

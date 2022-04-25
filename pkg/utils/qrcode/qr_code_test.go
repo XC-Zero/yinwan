@@ -2,7 +2,7 @@ package qrcode
 
 import (
 	"encoding/json"
-	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"os"
 	"strconv"
 	"testing"

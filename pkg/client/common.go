@@ -3,7 +3,6 @@ package client
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
-	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
@@ -187,21 +186,6 @@ func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.Find
 	options.Limit = &limit
 	options.Skip = &offset
 	return options
-}
-
-func HarvestClientFromGinContext(ctx *gin.Context) *BookName {
-	bookName := ctx.PostForm("book_name")
-	if bookName == "" {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-		return nil
-	}
-	if book, ok := ReadBookMap(bookName); ok {
-		return &book
-	} else {
-		common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-
-		return nil
-	}
 }
 
 func ESPaginate(ctx *gin.Context, s *elastic.SearchService) *elastic.SearchService {

@@ -3,7 +3,7 @@ package mongo_model
 import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 )
 
 // SaleInvoice 销售订单

@@ -298,3 +298,17 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 	}
 
 }
+func HarvestClientFromGinContext(ctx *gin.Context) *client.BookName {
+	bookName := ctx.PostForm("book_name")
+	if bookName == "" {
+		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
+		return nil
+	}
+	if book, ok := client.ReadBookMap(bookName); ok {
+		return &book
+	} else {
+		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
+
+		return nil
+	}
+}

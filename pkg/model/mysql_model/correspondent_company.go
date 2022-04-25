@@ -1,6 +1,8 @@
 package mysql_model
 
-import "github.com/XC-Zero/yinwan/pkg/model/common"
+import (
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
+)
 
 // CorrespondentCompany 往来公司
 type CorrespondentCompany struct {

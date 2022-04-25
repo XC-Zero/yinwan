@@ -3,7 +3,7 @@ package mysql_model
 import (
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
 	"github.com/fwhezfwhez/errorx"
