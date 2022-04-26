@@ -133,6 +133,10 @@ func Starter() {
 			system.POST("/update_type_tree", system2.UpdateTypeTree)
 			system.POST("/delete_type_tree", system2.DeleteTypeTree)
 		}
+		{
+			system.POST("/select_material", system2.SelectMaterial)
+		}
+
 	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)
 	if err != nil {

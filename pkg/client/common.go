@@ -121,8 +121,8 @@ func InitSystemStorage(config config.StorageConfig) {
 	//KafkaClient = kk
 }
 
-// Paginate 分页函数 纯 gorm 时在 scope 里调用
-func Paginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
+// MysqlScopePaginate 分页函数 纯 gorm 时在 scope 里调用
+func MysqlScopePaginate(ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		pageNumber := ctx.PostForm("page_number")
 		pageSize := ctx.PostForm("page_size")
@@ -188,23 +188,22 @@ func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.Find
 	return options
 }
 
-func ESPaginate(ctx *gin.Context, s *elastic.SearchService) *elastic.SearchService {
+func Paginate(ctx *gin.Context) (int, int) {
 	pageNumber := ctx.PostForm("page_number")
 	pageSize := ctx.PostForm("page_size")
 	log.Println(pageNumber, pageSize)
-	var n, limit int64 = 0, 0
+	var n, limit = 0, 0
 	if pn, err := strconv.Atoi(pageNumber); err != nil {
 		n = 1
 	} else {
-		n = int64(pn)
+		n = pn
 	}
 	if ps, err := strconv.Atoi(pageSize); err != nil {
 		limit = 10
 	} else {
-		limit = int64(ps)
+		limit = ps
 	}
 	offset := (n - 1) * limit
-	s.From(int(offset)).Size(int(limit))
 
-	return s
+	return offset, limit
 }

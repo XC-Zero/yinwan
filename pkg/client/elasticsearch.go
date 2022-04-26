@@ -6,7 +6,13 @@ import (
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
+	"log"
 	"reflect"
+)
+
+const (
+	PRE_TAG  = "<hl>"
+	POST_TAG = "</hl>"
 )
 
 // InitElasticsearch ...
@@ -68,17 +74,33 @@ func PutIntoIndex(tabler _interface.ChineseTabler) error {
 	return nil
 }
 
-func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int) (list []interface{}, count int64, err error) {
+func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int, highlightFields ...string) (list []interface{}, count int64, err error) {
+	highlight := elastic.NewHighlight()
+
+	for _, s := range highlightFields {
+		highlight.Field(s)
+	}
+	highlight = highlight.PreTags(PRE_TAG).PostTags(POST_TAG)
+
+	log.Println(highlight.Source())
 	res, err := ESClient.Search().
 		Index(tabler.TableName()).
 		From(from).Size(size).
 		Query(query).
+		Highlight(highlight).
+		Pretty(true).
 		Do(context.Background())
 	if err != nil {
 		return nil, 0, err
 	}
+
 	count = res.TotalHits()
 
+	// TODO WTF? Why can not highlight keyword ?????
+	for i := range res.Hits.Hits {
+		log.Println(*res.Hits.Hits[i])
+
+	}
 	list = res.Each(reflect.TypeOf(tabler))
 
 	return

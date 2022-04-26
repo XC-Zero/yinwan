@@ -19,7 +19,7 @@ func (m Material) Mapping() map[string]interface{} {
 		"mappings": mapping{
 			"properties": mapping{
 				"rec_id": mapping{
-					"type": "integer",
+					"type": "keyword",
 				},
 				"material_name": mapping{
 					"type":            "text",   //字符串类型且进行分词, 允许模糊匹配

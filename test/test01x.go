@@ -26,17 +26,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	material := es_model.Material{
-		RecID:        1,
-		MaterialName: "test01x",
-		Remark:       "这他喵是测试的！！！",
-	}
-	err = client.PutIntoIndex(material)
-	if err != nil {
-		panic(err)
-	}
-	q := elastic.NewMatchQuery("material_name", "test01x")
-	data, count, err := client.GetFromIndex(material, q, 0, 10)
+	//material := es_model.Material{
+	//	RecID:        89764,
+	//	MaterialName: "他喵???",
+	//	Remark:       "这他喵又不是测试的？？？？？？",
+	//}
+	//err = client.PutIntoIndex(material)
+	//if err != nil {
+	//	panic(err)
+	//}
+	query := elastic.NewMultiMatchQuery("89764", "rec_id^999", "remark^2", "material_name^10").Operator("or")
+
+	data, count, err := client.GetFromIndex(es_model.Material{}, query, 0, 2, "remark", "material_name")
 	if err != nil {
 		panic(err)
 	}

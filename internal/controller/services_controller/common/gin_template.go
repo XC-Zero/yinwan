@@ -60,11 +60,10 @@ type SelectMongoDBTemplateOptions struct {
 
 // SelectESTemplateOptions ElasticSearch 搜索模板配置
 type SelectESTemplateOptions struct {
-	DB           *elastic.Client
-	TableModel   _interface.EsTabler
-	Scripts      string
-	NotHighLight bool
-	ResHookFunc  func(data []interface{}) []interface{}
+	TableModel  _interface.EsTabler
+	Query       elastic.Query
+	Scripts     string
+	ResHookFunc func(data []interface{}) []interface{}
 }
 
 // CreateMysqlTemplateOptions MySQL 创建模板配置
@@ -283,19 +282,17 @@ func GinPaginate(ctx *gin.Context, data []interface{}) {
 */
 
 func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplateOptions) {
-	//query := make(map[string]interface{}, 0)
-	//
-	//if op.DB == nil {
-	//	InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-	//	return
-	//}
-	//do, err := client.ESPaginate(ctx,
-	//	op.DB.Search(op.TableModel.TableName()).Query(elastic.NewQueryStringQuery())).
-	//	Pretty(true).
-	//	Do(context.Background())
-	//if err != nil {
-	//	return
-	//}
+	offset, limit := client.Paginate(ctx)
+	list, count, err := client.GetFromIndex(op.TableModel, op.Query, offset, limit)
+	if err != nil {
+		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
+		return
+	}
+	ctx.JSON(_const.OK, gin.H{
+		"count": count,
+		"list":  list,
+	})
+	return
 
 }
 func HarvestClientFromGinContext(ctx *gin.Context) *client.BookName {
