@@ -35,9 +35,9 @@ func main() {
 	//if err != nil {
 	//	panic(err)
 	//}
-	query := elastic.NewMultiMatchQuery("89764", "rec_id^999", "remark^2", "material_name^10").Operator("or")
+	query := elastic.NewMultiMatchQuery("他喵", "rec_id^999", "remark^2", "material_name^10").Operator("or")
 
-	data, count, err := client.GetFromIndex(es_model.Material{}, query, 0, 2, "remark", "material_name")
+	data, count, err := client.GetFromIndex(es_model.Material{}, query, 0, 2)
 	if err != nil {
 		panic(err)
 	}

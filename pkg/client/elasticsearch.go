@@ -2,12 +2,13 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
 	"log"
-	"reflect"
+	"strings"
 )
 
 const (
@@ -74,20 +75,18 @@ func PutIntoIndex(tabler _interface.ChineseTabler) error {
 	return nil
 }
 
-func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int, highlightFields ...string) (list []interface{}, count int64, err error) {
+func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int) (list []interface{}, count int64, err error) {
 	highlight := elastic.NewHighlight()
 
-	for _, s := range highlightFields {
-		highlight.Field(s)
-	}
-	highlight = highlight.PreTags(PRE_TAG).PostTags(POST_TAG)
+	highlight = highlight.Field("*").PreTags(PRE_TAG).PostTags(POST_TAG)
 
 	log.Println(highlight.Source())
 	res, err := ESClient.Search().
 		Index(tabler.TableName()).
 		From(from).Size(size).
-		Query(query).
 		Highlight(highlight).
+		Query(query).
+		RestTotalHitsAsInt(true).
 		Pretty(true).
 		Do(context.Background())
 	if err != nil {
@@ -96,12 +95,27 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 
 	count = res.TotalHits()
 
-	// TODO WTF? Why can not highlight keyword ?????
-	for i := range res.Hits.Hits {
-		log.Println(*res.Hits.Hits[i])
-
+	hit := res.Hits.Hits
+	for i := range hit {
+		var m map[string]interface{}
+		hl := hit[i].Highlight
+		err = json.Unmarshal(hit[i].Source, &m)
+		if err != nil {
+			continue
+		}
+		for s, strList := range hl {
+			m[s] = strings.Join(strList, "")
+		}
+		list = append(list, m)
 	}
-	list = res.Each(reflect.TypeOf(tabler))
 
 	return
+}
+
+func DeleteIndex(tabler _interface.EsTabler) bool {
+	do, err := ESClient.DeleteIndex(tabler.TableName()).Do(context.Background())
+	if err != nil {
+		return false
+	}
+	return do.Acknowledged
 }
