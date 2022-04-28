@@ -183,3 +183,51 @@ func (p FixedAsset) Mapping() map[string]interface{} {
 	}
 	return m
 }
+
+type Credential struct {
+	RecID             int    `json:"rec_id"`
+	CredentialContent string `json:"credential_content"`
+	CredentialOwner   string `json:"credential_owner"`
+	Remark            string `json:"remark"`
+	CreateAt          string `json:"create_at"`
+}
+
+func (p Credential) TableCnName() string {
+	return "凭证"
+}
+func (p Credential) TableName() string {
+	return "credentials"
+
+}
+func (p Credential) Mapping() map[string]interface{} {
+	m := mapping{
+		"settings": mapping{},
+		"mappings": mapping{
+			"properties": mapping{
+				"rec_id": mapping{
+					"type": "integer",
+				},
+				"credential_content": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
+
+				"credential_owner": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
+				"remark": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
+				"create_at": mapping{
+					"type": "text",
+				},
+			},
+		},
+	}
+	return m
+}
