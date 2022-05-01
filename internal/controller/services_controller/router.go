@@ -135,6 +135,9 @@ func Starter() {
 		}
 		{
 			system.POST("/select_material", system2.SelectMaterial)
+			system.POST("/select_payable", system2.SelectPayable)
+			system.POST("/select_receivable", system2.SelectReceivable)
+
 		}
 
 	}

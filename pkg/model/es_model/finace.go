@@ -47,9 +47,7 @@ func (p Payable) Mapping() map[string]interface{} {
 					"search_analyzer": IK_SMART,
 				},
 				"payable_amount": mapping{
-					"type":            "text",
-					"analyzer":        IK_SMART,
-					"search_analyzer": IK_SMART,
+					"type": "keyword",
 				},
 				"remark": mapping{
 					"type":            "text",
@@ -112,9 +110,7 @@ func (p Receivable) Mapping() map[string]interface{} {
 					"search_analyzer": IK_SMART,
 				},
 				"receivable_amount": mapping{
-					"type":            "text",
-					"analyzer":        IK_SMART,
-					"search_analyzer": IK_SMART,
+					"type": "keyword",
 				},
 				"remark": mapping{
 					"type":            "text",
