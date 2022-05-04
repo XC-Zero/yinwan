@@ -1,20 +1,39 @@
 package main
 
 import (
+	"github.com/XC-Zero/yinwan/pkg/client"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model/es_model"
+	m "github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	es "github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 )
 
 var esIndexes []_interface.EsTabler
 
 func init() {
 	esIndexes = append(esIndexes,
-		es_model.Material{},
-		es_model.Commodity{},
-		es_model.Payable{},
-		es_model.Receivable{},
-		es_model.StockOutRecord{},
-		es_model.StockInRecord{},
-		es_model.FixedAsset{},
+		&es.Material{},
+		&es.Commodity{},
+		&es.Payable{},
+		&es.Receivable{},
+		&es.FixedAsset{},
+		&m.StockOutRecord{},
+		&m.StockInRecord{},
 	)
+
+}
+
+func GenerateESIndex() {
+	for _, index := range esIndexes {
+		err := client.CreateIndex(index)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func DropESIndex() {
+	for _, index := range esIndexes {
+		client.DeleteIndex(index)
+
+	}
 }

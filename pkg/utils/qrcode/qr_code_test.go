@@ -2,7 +2,7 @@ package qrcode
 
 import (
 	"encoding/json"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"os"
 	"strconv"
 	"testing"
@@ -14,11 +14,11 @@ func TestName(t *testing.T) {
 	s := struct {
 		Hello string
 		Name  string
-		common.BasicModel
+		mysql_model.BasicModel
 	}{
 		"FUCK YOU !",
 		"♂ 哲学 ♂!",
-		common.BasicModel{
+		mysql_model.BasicModel{
 			RecID:     nil,
 			CreatedAt: now,
 			UpdatedAt: &now,

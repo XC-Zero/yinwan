@@ -284,7 +284,10 @@ func GinPaginate(ctx *gin.Context, data []interface{}) {
 func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplateOptions) {
 	offset, limit := client.Paginate(ctx)
 	list, count, err := client.GetFromIndex(op.TableModel, op.Query, offset, limit)
+	log.Println(op.Query.Source())
+
 	if err != nil {
+		log.Println(err)
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
@@ -295,17 +298,19 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 	return
 
 }
-func HarvestClientFromGinContext(ctx *gin.Context) *client.BookName {
-	bookName := ctx.PostForm("book_name")
+
+// HarvestClientFromGinContext 从请求头里读取账套信息
+func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
+	bookName := ctx.Request.Header.Get("book_name")
+	_ = ctx.Request.Header.Get("book_name_id")
 	if bookName == "" {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-		return nil
+		return nil, ""
 	}
 	if book, ok := client.ReadBookMap(bookName); ok {
-		return &book
+		return &book, bookName
 	} else {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-
-		return nil
+		return nil, ""
 	}
 }

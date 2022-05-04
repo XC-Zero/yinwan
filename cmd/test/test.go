@@ -2,14 +2,13 @@ package main
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 )
 
 func main() {
 	var dataList []interface{}
 	dataList = append(dataList, mysql_model.Staff{
-		BasicModel:          common.BasicModel{},
+		BasicModel:          mysql_model.BasicModel{},
 		StaffName:           "",
 		StaffAlias:          nil,
 		StaffEmail:          "",

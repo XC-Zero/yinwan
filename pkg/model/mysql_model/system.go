@@ -3,7 +3,6 @@ package mysql_model
 import (
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"github.com/pkg/errors"
 	"gorm.io/gorm/schema"
 	"reflect"
@@ -12,7 +11,7 @@ import (
 
 // TypeTree 类型表
 type TypeTree struct {
-	common.BasicModel
+	BasicModel
 	TypeName     string  `gorm:"type:varchar(50);not null;" json:"type_name"`
 	ParentTypeID *int    `gorm:"int;index" json:"parent_type_id,omitempty"`
 	Remark       *string `gorm:"type:varchar(200)" json:"remark,omitempty"`
@@ -27,7 +26,7 @@ func (m TypeTree) TableCnName() string {
 
 // QRCodeMapping 二维码映射表
 type QRCodeMapping struct {
-	common.TimeOnlyModel
+	TimeOnlyModel
 	QRCodeMD5  string `gorm:"type:varchar(100);index" json:"qr_code_md5"`
 	contentSql string `gorm:"type:varchar(500)" `
 }

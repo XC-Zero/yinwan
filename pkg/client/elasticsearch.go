@@ -7,7 +7,9 @@ import (
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
+	"github.com/pkg/errors"
 	"log"
+	"reflect"
 	"strings"
 )
 
@@ -60,10 +62,10 @@ func CreateIndex(model _interface.EsTabler) error {
 	return nil
 }
 
-func PutIntoIndex(tabler _interface.ChineseTabler) error {
+func PutIntoIndex(tabler _interface.EsTabler) error {
 	_, err := ESClient.Index().
 		Index(tabler.TableName()).
-		BodyJson(tabler).
+		BodyJson(tabler.ToESDoc()).
 		Do(context.Background())
 	if err != nil {
 		return err
@@ -94,7 +96,8 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	}
 
 	count = res.TotalHits()
-
+	l := res.Each(reflect.TypeOf(tabler))
+	log.Printf("%+v", l)
 	hit := res.Hits.Hits
 	for i := range hit {
 		var m map[string]interface{}
@@ -112,10 +115,33 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	return
 }
 
+func DeleteFromIndex(tabler _interface.EsTabler, recID *int) error {
+	if recID == nil {
+		return errors.New("缺少主键！")
+	}
+	do, err := ESClient.DeleteByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	log.Println(do.Total)
+	return nil
+}
 func DeleteIndex(tabler _interface.EsTabler) bool {
 	do, err := ESClient.DeleteIndex(tabler.TableName()).Do(context.Background())
 	if err != nil {
 		return false
 	}
 	return do.Acknowledged
+}
+
+func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, script *elastic.Script) error {
+	if recID == nil {
+		return errors.New("缺少主键！")
+	}
+	do, err := ESClient.UpdateByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Script(script).Refresh("true").Do(context.Background())
+	if err != nil {
+		return err
+	}
+	log.Println(do.Total)
+	return nil
 }

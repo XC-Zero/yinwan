@@ -1,12 +1,8 @@
 package mysql_model
 
-import (
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
-)
-
 // Customer 客户
 type Customer struct {
-	common.BasicModel
+	BasicModel
 	CustomerName             string  `json:"customer_name" gorm:"type:varchar(200);not null;" cn:"客户名称"`
 	CustomerLegalName        *string `json:"customer_legal_name" gorm:"type:varchar(50)" cn:"客户公司全称"`
 	CustomerAlias            *string `json:"customer_alias" gorm:"type:varchar(50)" cn:"客户简称"`

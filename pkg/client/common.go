@@ -29,19 +29,24 @@ import (
 //    return instance
 //}
 var bk *bookNameMap
-var once sync.Once
 
 type bookNameMap struct {
 	sync.RWMutex
 	bookNameMap map[string]BookName
 }
 
+func initBookName() {
+	bk = &bookNameMap{bookNameMap: make(map[string]BookName, 0)}
+	bk.bookNameMap["basic"] = BookName{
+		BookName:      "basic",
+		StorageName:   "basic",
+		MysqlClient:   MysqlClient,
+		MongoDBClient: MongoDBClient,
+		MinioClient:   MinioClient,
+	}
+	log.Printf("basic mysql is %p", bk.bookNameMap["basic"].MysqlClient)
+}
 func GetBookNameInstance() *bookNameMap {
-	once.Do(func() {
-		bk.Lock()
-		bk = &bookNameMap{bookNameMap: make(map[string]BookName, 0)}
-		bk.Unlock()
-	})
 	return bk
 }
 func ReadBookMap(key string) (value BookName, ok bool) {
@@ -68,7 +73,22 @@ func GetAllBookMap() []BookName {
 		bkList = append(bkList, bk[key])
 	}
 	return bkList
+}
 
+// FindBookNameByGorm Deprecated 弃用
+func FindBookNameByGorm(db *gorm.DB) (id, name string) {
+	log.Printf("find basic mysql is %p", bk.bookNameMap["basic"].MysqlClient)
+	GetBookNameInstance().Lock()
+	defer GetBookNameInstance().Unlock()
+	bk := GetBookNameInstance().bookNameMap
+	for key := range bk {
+		log.Println(key)
+		log.Printf("bk is  %p and create db is %p", bk[key].MysqlClient, db)
+		if bk[key].MysqlClient == db {
+			return bk[key].StorageName, bk[key].BookName
+		}
+	}
+	return
 }
 
 var (
@@ -119,6 +139,7 @@ func InitSystemStorage(config config.StorageConfig) {
 	MinioClient = mClient
 	MongoDBClient = mgClient
 	//KafkaClient = kk
+	initBookName()
 }
 
 // MysqlScopePaginate 分页函数 纯 gorm 时在 scope 里调用

@@ -116,8 +116,12 @@ func Starter() {
 	}
 	system := services.Group("/system")
 	{
-		system.POST("create_book_name", system2.CreateBookName)
-		system.POST("select_all_book_name", system2.SelectAllBookName)
+		// 账套
+		{
+			system.POST("create_book_name", system2.CreateBookName)
+			system.POST("select_all_book_name", system2.SelectAllBookName)
+		}
+
 		system.POST("select_module", system2.SelectModule)
 		// 角色
 		{
@@ -133,11 +137,16 @@ func Starter() {
 			system.POST("/update_type_tree", system2.UpdateTypeTree)
 			system.POST("/delete_type_tree", system2.DeleteTypeTree)
 		}
+
+		// es 搜索框
 		{
 			system.POST("/select_material", system2.SelectMaterial)
+			system.POST("/select_commodity", system2.SelectCommodity)
 			system.POST("/select_payable", system2.SelectPayable)
 			system.POST("/select_receivable", system2.SelectReceivable)
-
+			system.POST("/select_stock_out_record", system2.SelectStockOutRecord)
+			system.POST("/select_stock_in_record", system2.SelectStockInRecord)
+			system.POST("/select_fixed_asset", system2.SelectFixedAsset)
 		}
 
 	}

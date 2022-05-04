@@ -3,12 +3,12 @@ package mongo_model
 import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 )
 
 // FinanceCredential 财务凭证
 type FinanceCredential struct {
-	common.BasicModel
+	mysql_model.BasicModel
 	// 凭证标题
 	FinanceCredentialLabel string
 	// 凭证责任人ID

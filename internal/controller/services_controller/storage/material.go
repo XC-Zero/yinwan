@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -8,17 +9,24 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
+// CreateMaterial 创建原材料
 func CreateMaterial(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	var material mysql_model.Material
 	err := ctx.ShouldBind(&material)
 	if err != nil {
+		log.Println(err)
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Create(&material).Error
+
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&material).Error
 	if err != nil {
+		log.Println(err)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, material)
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建原材料成功！"))
@@ -28,6 +36,7 @@ func CreateMaterial(ctx *gin.Context) {
 
 // SelectMaterial 原材料
 func SelectMaterial(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
 
 	conditions := []common.MysqlCondition{
 		{
@@ -51,7 +60,10 @@ func SelectMaterial(ctx *gin.Context) {
 			ColumnValue: " ",
 		},
 	}
-	op := common.SelectMysqlTemplateOptions{DB: client.MysqlClient, TableModel: mysql_model.Material{}}
+	op := common.SelectMysqlTemplateOptions{
+		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		TableModel: mysql_model.Material{},
+	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
 	return

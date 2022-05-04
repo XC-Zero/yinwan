@@ -8,4 +8,5 @@ type ChineseTabler interface {
 type EsTabler interface {
 	ChineseTabler
 	Mapping() map[string]interface{}
+	ToESDoc() map[string]interface{}
 }

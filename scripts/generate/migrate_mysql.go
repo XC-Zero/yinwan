@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
@@ -28,7 +26,7 @@ var readRole mysql_model.Role
 var readWriteRole mysql_model.Role
 var typeTreeList []mysql_model.TypeTree
 
-func init() {
+func InitMysqlList() {
 	systemMysqlMigrateList = []interface{}{
 		&mysql_model.Role{},
 		&mysql_model.RoleCapabilities{},
@@ -40,25 +38,25 @@ func init() {
 		&mysql_model.CommodityBatch{},
 		&mysql_model.Material{},
 		&mysql_model.MaterialBatch{},
-		&mongo_model.Transaction{},
 		&mysql_model.Customer{},
 		&mysql_model.Provider{},
 		&mysql_model.ManipulationLog{},
 		&mysql_model.TypeTree{},
 		&mysql_model.Payable{},
 		&mysql_model.Receivable{},
-		&mongo_model.Purchase{},
-		&mongo_model.FinanceCredential{},
-		&mongo_model.FinanceCredentialEvent{},
-		&mongo_model.EventItem{},
+		//&mongo_model.Transaction{},
+		//&mongo_model.Purchase{},
+		//&mongo_model.FinanceCredential{},
+		//&mongo_model.FinanceCredentialEvent{},
+		//&mongo_model.EventItem{},
 	}
 	bookNameMysqlMigrateList = []interface{}{
 		&mysql_model.Payable{},
 		&mysql_model.Receivable{},
-		&mongo_model.Purchase{},
-		&mongo_model.FinanceCredential{},
-		&mongo_model.FinanceCredentialEvent{},
-		&mongo_model.EventItem{},
+		//&mongo_model.Purchase{},
+		//&mongo_model.FinanceCredential{},
+		//&mongo_model.FinanceCredentialEvent{},
+		//&mongo_model.EventItem{},
 	}
 	allRole = mysql_model.Role{
 		RoleName: "root",
@@ -73,7 +71,7 @@ func init() {
 			DepartmentManagerID:   &departmentManagerID,
 			DepartmentManagerName: &departmentManagerName,
 		}, {
-			BasicModel:            common.BasicModel{},
+			BasicModel:            mysql_model.BasicModel{},
 			DepartmentName:        "财务部",
 			DepartmentLocation:    &finAddr,
 			DepartmentManagerID:   &departmentManagerID,
@@ -100,12 +98,12 @@ func init() {
 			DepartmentManagerName: &departmentManagerName,
 		}}
 	typeTreeList = []mysql_model.TypeTree{
-		{common.BasicModel{}, "固定资产", nil, nil},
-		{common.BasicModel{}, "产成品", nil, nil},
-		{common.BasicModel{}, "原材料", nil, nil},
-		{common.BasicModel{}, "周转材料", nil, nil},
-		{common.BasicModel{}, "低值易耗品", nil, nil},
-		{common.BasicModel{}, "其他类型 ", nil, nil},
+		{mysql_model.BasicModel{}, "固定资产", nil, nil},
+		{mysql_model.BasicModel{}, "产成品", nil, nil},
+		{mysql_model.BasicModel{}, "原材料", nil, nil},
+		{mysql_model.BasicModel{}, "周转材料", nil, nil},
+		{mysql_model.BasicModel{}, "低值易耗品", nil, nil},
+		{mysql_model.BasicModel{}, "其他类型 ", nil, nil},
 	}
 }
 
@@ -211,7 +209,7 @@ func GenerateSystemMysqlTables(db *gorm.DB) error {
 		}
 		// 初始化超管
 		err = tx.Model(&mysql_model.Staff{}).Create(&mysql_model.Staff{
-			BasicModel:          common.BasicModel{},
+			BasicModel:          mysql_model.BasicModel{},
 			StaffName:           "超级管理员",
 			StaffAlias:          &staffAlias,
 			StaffEmail:          "645171033@qq.com",

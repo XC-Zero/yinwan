@@ -2,7 +2,7 @@ package mongo_model
 
 import (
 	"encoding/json"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model/common"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"time"
 )
 
@@ -35,7 +35,7 @@ func (p PayType) DisPlay() string {
 }
 
 type Transaction struct {
-	common.BasicModel
+	mysql_model.BasicModel
 	TransactionContent string    `gorm:"type:varchar(500)"`
 	TransactionAmount  float64   `gorm:"type:decimal(20,4);not null;"`
 	PayType            *PayType  `gorm:"type:int"`

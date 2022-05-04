@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model/es_model"
-	"github.com/olivere/elastic/v7"
 	"log"
 )
 
@@ -22,25 +20,27 @@ func main() {
 	for _, index := range indexes {
 		log.Println(index.Index)
 	}
-	err = client.CreateIndex(es_model.Material{})
-	if err != nil {
-		panic(err)
-	}
-	//material := es_model.Material{
-	//	RecID:        89764,
-	//	MaterialName: "他喵???",
-	//	Remark:       "这他喵又不是测试的？？？？？？",
-	//}
-	//err = client.PutIntoIndex(material)
+	//err = client.CreateIndex(&es.Commodity{})
 	//if err != nil {
 	//	panic(err)
 	//}
-	query := elastic.NewMultiMatchQuery("他喵", "rec_id^999", "remark^2", "material_name^10").Operator("or")
-
-	data, count, err := client.GetFromIndex(es_model.Material{}, query, 0, 2)
-	if err != nil {
-		panic(err)
-	}
-	log.Println(count)
-	log.Printf("%T  \n %+v", data, data)
+	//var a = 89764
+	//var r = "这他喵又不是测试的？？？？？？"
+	//material := es.Material{
+	//	BasicModel:   es.BasicModel{RecID: &a},
+	//	MaterialName: "他喵???",
+	//	Remark:       &r,
+	//}
+	//err = client.PutIntoIndex(&material)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//query := elastic.NewMultiMatchQuery("他喵", "rec_id^999", "remark^2", "material_name^10").Operator("or")
+	//
+	//data, count, err := client.GetFromIndex(common.Material{}, query, 0, 2)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//log.Println(count)
+	//log.Printf("%T  \n %+v", data, data)
 }

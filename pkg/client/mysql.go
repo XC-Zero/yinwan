@@ -28,7 +28,8 @@ func InitMysqlGormV2(config config2.MysqlConfig) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(url), &gorm.Config{
 		Logger: log,
 	})
-
+	// TODO 添加普罗米修斯!
+	//db.Use()
 	if err != nil {
 		return nil, err
 	}
