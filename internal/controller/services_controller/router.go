@@ -118,8 +118,8 @@ func Starter() {
 	{
 		// 账套
 		{
-			system.POST("create_book_name", system2.CreateBookName)
-			system.POST("select_all_book_name", system2.SelectAllBookName)
+			system.POST("/create_book_name", system2.CreateBookName)
+			system.POST("/select_all_book_name", system2.SelectAllBookName)
 		}
 
 		system.POST("select_module", system2.SelectModule)

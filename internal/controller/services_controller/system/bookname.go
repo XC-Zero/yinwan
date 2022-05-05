@@ -23,26 +23,39 @@ type CreateBookNameRequest struct {
 	BookName string `json:"book_name" binding:"required"`
 }
 
+// CreateBookName 创建账套
 func CreateBookName(ctx *gin.Context) {
-	var req CreateBookNameRequest
-	err := ctx.BindJSON(&req)
-	if err != nil {
+	BookName := ctx.PostForm("book_name")
+	if BookName == "" {
 		ctx.JSON(_const.EXPECTATION_FAILED_ERROR, errs.CreateWebErrorMsg("请输入账套名称哦"))
 		return
 	} else {
-		if AddBookName(req.BookName) {
-			ctx.JSON(_const.OK, nil)
+		if AddBookName(BookName) {
+			ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建账套成功!"))
 			return
 		}
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("创建账套失败！"))
 	}
 }
 
+type tempResponse struct {
+	BookNameID string `json:"book_name_id" form:"book_name_id"`
+	BookName   string `json:"book_name" form:"book_name"`
+}
+
+// SelectAllBookName 查询所有账套
 func SelectAllBookName(ctx *gin.Context) {
 	bookNameList := client.GetAllBookMap()
+	var list = make([]tempResponse, 0, len(bookNameList))
+	for i := range bookNameList {
+		list = append(list, tempResponse{
+			BookNameID: bookNameList[i].StorageName,
+			BookName:   bookNameList[i].BookName,
+		})
+	}
 	ctx.JSON(_const.OK, gin.H{
-		"count": len(bookNameList),
-		"list":  bookNameList,
+		"count": len(list),
+		"list":  list,
 	})
 	return
 }

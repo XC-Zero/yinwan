@@ -94,7 +94,7 @@ func UpdateStaff(ctx *gin.Context) {
 	return
 }
 
-// DeleteStaff todo  !!!
+// DeleteStaff 删除员工
 func DeleteStaff(ctx *gin.Context) {
 	recID := ctx.PostForm("staff_id")
 	if recID == "" {

@@ -44,7 +44,6 @@ func initBookName() {
 		MongoDBClient: MongoDBClient,
 		MinioClient:   MinioClient,
 	}
-	log.Printf("basic mysql is %p", bk.bookNameMap["basic"].MysqlClient)
 }
 func GetBookNameInstance() *bookNameMap {
 	return bk
@@ -77,13 +76,10 @@ func GetAllBookMap() []BookName {
 
 // FindBookNameByGorm Deprecated 弃用
 func FindBookNameByGorm(db *gorm.DB) (id, name string) {
-	log.Printf("find basic mysql is %p", bk.bookNameMap["basic"].MysqlClient)
 	GetBookNameInstance().Lock()
 	defer GetBookNameInstance().Unlock()
 	bk := GetBookNameInstance().bookNameMap
 	for key := range bk {
-		log.Println(key)
-		log.Printf("bk is  %p and create db is %p", bk[key].MysqlClient, db)
 		if bk[key].MysqlClient == db {
 			return bk[key].StorageName, bk[key].BookName
 		}
@@ -105,7 +101,8 @@ var (
 
 // InitSystemStorage 初始化系统配置
 func InitSystemStorage(config config.StorageConfig) {
-	log.Println("????")
+	log.Println("Start init system config!")
+	defer log.Println("Init system config finish!")
 	msy, err := InitMysqlGormV2(config.MysqlConfig)
 	if err != nil {
 		panic(err)
