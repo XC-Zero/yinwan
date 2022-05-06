@@ -15,6 +15,9 @@ import (
 // CreateMaterial 创建原材料
 func CreateMaterial(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	var material mysql_model.Material
 	err := ctx.ShouldBind(&material)
 	if err != nil {
@@ -37,7 +40,9 @@ func CreateMaterial(ctx *gin.Context) {
 // SelectMaterial 原材料
 func SelectMaterial(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
-
+	if bk == nil {
+		return
+	}
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.LIKE,
@@ -70,20 +75,32 @@ func SelectMaterial(ctx *gin.Context) {
 }
 
 func UpdateMaterial(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }
 
 func DeleteMaterial(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }
 
 func CreateMaterialBatch(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }
 
 // SelectMaterialDetail 原材料批次信息
 func SelectMaterialDetail(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,

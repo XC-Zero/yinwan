@@ -9,6 +9,7 @@ import (
 // SaleInvoice 销售订单
 type SaleInvoice struct {
 	mysql_model.BasicModel
+	BookNameInfo
 	SaleInvoiceOwnerID   int                    `json:"sale_invoice_owner_id"`
 	SaleInvoiceOwnerName string                 `json:"sale_invoice_owner_name"`
 	SaleInvoiceContent   map[string]interface{} `json:"sale_invoice_content"`

@@ -77,6 +77,7 @@ func PutIntoIndex(tabler _interface.EsTabler) error {
 	return nil
 }
 
+// GetFromIndex 获取数据， 所有字段均带高亮（指定字段失败）
 func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size int) (list []interface{}, count int64, err error) {
 	highlight := elastic.NewHighlight()
 
@@ -115,6 +116,7 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	return
 }
 
+// DeleteFromIndex 删除数据
 func DeleteFromIndex(tabler _interface.EsTabler, recID *int) error {
 	if recID == nil {
 		return errors.New("缺少主键！")
@@ -126,6 +128,8 @@ func DeleteFromIndex(tabler _interface.EsTabler, recID *int) error {
 	log.Println(do.Total)
 	return nil
 }
+
+// DeleteIndex 删除索引！！！ 谨慎使用
 func DeleteIndex(tabler _interface.EsTabler) bool {
 	do, err := ESClient.DeleteIndex(tabler.TableName()).Do(context.Background())
 	if err != nil {

@@ -8,15 +8,17 @@ import (
 )
 
 func CreatePayable(ctx *gin.Context) {
-
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }
 
 func SelectPayable(ctx *gin.Context) {
-	//bk := client.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-	//	return
-	//}
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	condition := []common.MongoCondition{
 		{},
 	}
@@ -28,9 +30,15 @@ func SelectPayable(ctx *gin.Context) {
 }
 
 func UpdatePayable(ctx *gin.Context) {
-
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }
 
 func DeletePayable(ctx *gin.Context) {
-
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 }

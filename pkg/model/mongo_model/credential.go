@@ -9,6 +9,7 @@ import (
 // FinanceCredential 财务凭证
 type FinanceCredential struct {
 	mysql_model.BasicModel
+	BookNameInfo
 	// 凭证标题
 	FinanceCredentialLabel string
 	// 凭证责任人ID

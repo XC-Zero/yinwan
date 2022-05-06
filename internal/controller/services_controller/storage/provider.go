@@ -9,6 +9,10 @@ import (
 )
 
 func CreateProvider(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	var provider mysql_model.Provider
 	err := ctx.ShouldBind(&provider)
 	if err != nil {
@@ -23,6 +27,10 @@ func CreateProvider(ctx *gin.Context) {
 	return
 }
 func SelectProvider(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.NULL,
@@ -38,8 +46,16 @@ func SelectProvider(ctx *gin.Context) {
 	return
 }
 func UpdateProvider(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	return
 }
 func DeleteProvider(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	return
 }

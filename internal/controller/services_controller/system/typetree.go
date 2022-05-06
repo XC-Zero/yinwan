@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateTypeTree 创建类型
 func CreateTypeTree(ctx *gin.Context) {
 	var typeTree mysql_model.TypeTree
 	err := ctx.ShouldBind(&typeTree)
@@ -25,6 +26,7 @@ func CreateTypeTree(ctx *gin.Context) {
 	return
 }
 
+// SelectTypeTree 类型
 func SelectTypeTree(ctx *gin.Context) {
 	op := common.SelectMysqlTemplateOptions{
 		DB:            nil,

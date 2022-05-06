@@ -2,6 +2,7 @@ package mongo_model
 
 import (
 	"encoding/json"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"log"
 )
 
@@ -13,6 +14,7 @@ const (
 )
 
 type mapping map[string]interface{}
+type BookNameInfo mysql_model.BookNameInfo
 
 func (m mapping) ToString() string {
 	marshal, err := json.Marshal(m)

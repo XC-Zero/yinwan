@@ -8,12 +8,12 @@ import (
 )
 
 func CreateStockIn(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	temp := mongo_model.StockInRecord{}
-	//bk := client.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-	//	return
-	//}
+
 	err := ctx.ShouldBind(&temp)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -23,11 +23,11 @@ func CreateStockIn(ctx *gin.Context) {
 }
 
 func SelectStockIn(ctx *gin.Context) {
-	//bk := client.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-	//	return
-	//}
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
 	conditions := []common.MongoCondition{
 		{
 			Symbol:      "",
@@ -44,18 +44,18 @@ func SelectStockIn(ctx *gin.Context) {
 
 }
 func UpdateStockIn(ctx *gin.Context) {
-	//bk := client.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-	//	return
-	//}
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
 }
 func DeleteStockIn(ctx *gin.Context) {
-	//bk := client.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	common.RequestParamErrorTemplate(ctx, common.BOOK_NAME_LACK_ERROR)
-	//	return
-	//}
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
 	//res, err := client.MongoDBClient.Collection(model.StockInRecord{}.TableName()).DeleteOne()
 	//if err != nil {
 	//	return
