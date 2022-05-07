@@ -96,23 +96,43 @@ func Starter() {
 
 	finance := services.Group("/finance")
 	{
+		// 凭证
 		{
 			finance.POST("/select_credential", finance3.SelectCredential)
 			finance.POST("/create_credential", finance3.CreateCredential)
 			finance.POST("/update_credential", finance3.UpdateCredential)
 			finance.POST("/delete_credential", finance3.DeleteCredential)
 		}
+		// 固定资产
 		{
 			finance.POST("/select_fixed_asset", finance3.SelectFixedAsset)
 			finance.POST("/create_fixed_asset", finance3.CreateFixedAsset)
 			finance.POST("/update_fixed_asset", finance3.UpdateFixedAsset)
 			finance.POST("/delete_fixed_asset", finance3.DeleteFixedAsset)
 		}
+		// 应收
+		{
+			finance.POST("/create_receivable", finance3.CreateReceivable)
+			finance.POST("/select_receivable", finance3.SelectReceivable)
+			finance.POST("/update_receivable", finance3.UpdateReceivable)
+			finance.POST("/delete_receivable", finance3.DeleteReceivable)
+		}
+		//应付
+		{
+			finance.POST("/create_payable", finance3.CreatePayable)
+			finance.POST("/select_payable", finance3.SelectPayable)
+			finance.POST("/update_payable", finance3.UpdatePayable)
+			finance.POST("/delete_payable", finance3.DeletePayable)
+		}
 	}
 
 	transaction := services.Group("/transaction")
 	{
-		transaction.POST("")
+		// 销售
+		{
+			transaction.POST("")
+
+		}
 	}
 	system := services.Group("/system")
 	{
@@ -122,7 +142,6 @@ func Starter() {
 			system.POST("/select_all_book_name", system2.SelectAllBookName)
 		}
 
-		system.POST("select_module", system2.SelectModule)
 		// 角色
 		{
 			system.POST("/create_role", system2.CreateRole)
@@ -148,6 +167,7 @@ func Starter() {
 			system.POST("/select_stock_in_record", system2.SelectStockInRecord)
 			system.POST("/select_fixed_asset", system2.SelectFixedAsset)
 		}
+		system.POST("select_module", system2.SelectModule)
 
 	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)

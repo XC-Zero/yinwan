@@ -138,15 +138,34 @@ func SelectRole(ctx *gin.Context) {
 	}
 }
 
+type updateRoleRequest struct {
+	Role             mysql_model.Role               `form:"role" json:"role"  binding:"required"`
+	RoleCapabilities []mysql_model.RoleCapabilities `form:"role_capabilities" json:"role_capabilities" binding:"required"`
+}
+
 func UpdateRole(ctx *gin.Context) {
-	//var postData map[string]interface{}
-	//err := ctx.ShouldBind(&postData)
-	//if err != nil {
-	//	common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
-	//	return
-	//}
-	//r, ok := postData["role"]
-	//rc, rcOK := postData["role_capabilities"]
+	var postData updateRoleRequest
+	err := ctx.ShouldBind(&postData)
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	roleCapList := mysql_model.RoleCapabilitiesMerge(postData.RoleCapabilities)
+
+	client.MysqlClient.Transaction(func(tx *gorm.DB) error {
+		err2 := tx.Updates(postData.Role).Error
+		if err2 != nil {
+			return err2
+		}
+		for i := range roleCapList {
+			err2 := tx.Updates(roleCapList[i]).Error
+			if err2 != nil {
+				return err2
+			}
+		}
+		return err2
+	})
+
 }
 
 func DeleteRole(ctx *gin.Context) {
