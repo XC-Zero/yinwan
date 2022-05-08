@@ -24,6 +24,7 @@ type Staff struct {
 	StaffPosition       *string `gorm:"type:varchar(50)" json:"staff_position,omitempty"  form:"staff_position"`
 	StaffDepartmentID   *int    `json:"staff_department_id,omitempty"  form:"staff_department_id"`
 	StaffDepartmentName *string `gorm:"type:varchar(50)" json:"staff_department_name,omitempty" form:"staff_department_name"  cn:"职工部门名称"`
+	StaffPicUrl         *string `gorm:"type:varchar(500)" json:"staff_pic_url,omitempty" form:"staff_pic_url,omitempty" cn:"员工头像"`
 	StaffRoleID         int     `gorm:"type:int" json:"staff_role_id" form:"staff_role_id" `
 	StaffRoleName       string  `gorm:"type:varchar(50)" json:"staff_role_name" form:"staff_role_name"  `
 }

@@ -93,8 +93,8 @@ func (p FixedAsset) ToESDoc() map[string]interface{} {
 		"fixed_asset_name":   p.FixedAssetName,
 	}
 }
-func (p *FixedAsset) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func (p *FixedAsset) AfterCreate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
@@ -109,8 +109,8 @@ func (p *FixedAsset) AfterCreate(db *gorm.DB) error {
 }
 
 // AfterUpdate todo !!!
-func (p *FixedAsset) AfterUpdate(_ *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID,
+func (p *FixedAsset) AfterUpdate(tx *gorm.DB) error {
+	err := client.UpdateIntoIndex(p, p.RecID, tx,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(p.ToESDoc()))
 	if err != nil {
@@ -118,8 +118,8 @@ func (p *FixedAsset) AfterUpdate(_ *gorm.DB) error {
 	}
 	return nil
 }
-func (p *FixedAsset) AfterDelete(_ *gorm.DB) error {
-	err := client.DeleteFromIndex(p, p.RecID)
+func (p *FixedAsset) AfterDelete(tx *gorm.DB) error {
+	err := client.DeleteFromIndex(p, p.RecID, tx)
 	if err != nil {
 		return err
 	}

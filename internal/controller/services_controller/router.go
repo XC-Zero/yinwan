@@ -167,7 +167,8 @@ func Starter() {
 			system.POST("/select_stock_in_record", system2.SelectStockInRecord)
 			system.POST("/select_fixed_asset", system2.SelectFixedAsset)
 		}
-		system.POST("select_module", system2.SelectModule)
+		system.POST("/select_module", system2.SelectModule)
+		system.POST("/save_pic", system2.SavePic)
 
 	}
 	err := router.Run(":" + config.CONFIG.ServiceConfig.Port)

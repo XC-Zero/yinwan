@@ -81,8 +81,8 @@ func (p Payable) Mapping() map[string]interface{} {
 	}
 	return m
 }
-func (p *Payable) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func (p *Payable) AfterCreate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
@@ -97,8 +97,9 @@ func (p *Payable) AfterCreate(db *gorm.DB) error {
 }
 
 // AfterUpdate todo !!!
-func (p *Payable) AfterUpdate(_ *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID,
+func (p *Payable) AfterUpdate(tx *gorm.DB) error {
+
+	err := client.UpdateIntoIndex(p, p.RecID, tx,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(p.ToESDoc()))
 	if err != nil {
@@ -106,8 +107,9 @@ func (p *Payable) AfterUpdate(_ *gorm.DB) error {
 	}
 	return nil
 }
-func (p *Payable) AfterDelete(_ *gorm.DB) error {
-	err := client.DeleteFromIndex(p, p.RecID)
+func (p *Payable) AfterDelete(tx *gorm.DB) error {
+
+	err := client.DeleteFromIndex(p, p.RecID, tx)
 	if err != nil {
 		return err
 	}

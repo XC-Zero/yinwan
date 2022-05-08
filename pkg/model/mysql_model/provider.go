@@ -3,21 +3,26 @@ package mysql_model
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/olivere/elastic/v7"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 // Provider 供应商
 type Provider struct {
 	BasicModel
-	ProviderName       string  `gorm:"type:varchar(200);not null" json:"provider_name" form:"provider_name" binding:"required"`
-	ProviderAlias      *string `gorm:"type:varchar(200);not null" form:"provider_alias" json:"provider_alias,omitempty" binding:"required"`
-	AccumulatedAmount  float64 `gorm:"type:decimal(20,2); " json:"accumulated_amount" form:"accumulated_amount"`
-	ProviderLogoUrl    *string `gorm:"type:varchar(500); " json:"provider_pic_url,omitempty" form:"provider_pic_url" `
-	ProviderOwner      *string `gorm:"type:varchar(50);" json:"provider_owner" form:"provider_owner"`
-	ProviderOwnerPhone *string `gorm:"type:varchar(50);"  json:"provider_owner_phone" form:"provider_owner_phone"`
-	OurOwnerID         *int    `json:"our_owner_id,omitempty" form:"our_owner_id"`
-	OurOwnerName       *string `gorm:"type:varchar(50);"  json:"our_owner_name" form:"our_owner_name"`
-	Remark             *string `form:"remark" json:"remark,omitempty" gorm:"type:varchar(200)"  cn:"备注"`
+	BookNameInfo
+	ProviderName             string  `form:"provider_name" json:"provider_name" gorm:"type:varchar(200);not null;" cn:"客户名称"`
+	ProviderLegalName        *string `form:"provider_legal_name" json:"provider_legal_name,omitempty" gorm:"type:varchar(50)" cn:"客户公司全称"`
+	ProviderAlias            *string `form:"provider_alias" json:"provider_alias,omitempty" gorm:"type:varchar(50)" cn:"客户简称"`
+	ProviderLogoUrl          *string `gorm:"type:varchar(500); " form:"provider_logo_url" json:"provider_logo_url,omitempty" cn:"客户头像地址"`
+	ProviderAddress          *string `form:"provider_address" json:"provider_address,omitempty"  gorm:"type:varchar(500);" cn:"客户地址"`
+	ProviderSocialCreditCode *string `form:"provider_social_credit_code" json:"provider_social_credit_code,omitempty" gorm:"type:varchar(50)" cn:"社会信用代码"`
+	ProviderContact          *string `form:"provider_contact" json:"provider_contact,omitempty" gorm:"type:varchar(50)" cn:"客户方联系人"`
+	ProviderContactPhone     *string `form:"provider_contact_phone" json:"provider_contact_phone,omitempty" gorm:"type:varchar(20)" cn:"联系人电话"`
+	ProviderContactWechat    *string `form:"provider_contact_wechat" json:"provider_contact_wechat,omitempty" gorm:"type:varchar(50)" cn:"联系人微信"`
+	ProviderOwnerID          *int    `form:"provider_owner_id" json:"provider_owner_id,omitempty" gorm:"type:varchar(50)" cn:"客户负责人ID"`
+	ProviderOwnerName        *string `form:"provider_owner_name" json:"provider_owner_name,omitempty" gorm:"type:varchar(50)" cn:"客户负责人名称"`
+	Remark                   *string `form:"remark" json:"remark,omitempty" gorm:"type:varchar(200)"  cn:"备注"`
 }
 
 func (p Provider) TableCnName() string {
@@ -85,19 +90,19 @@ func (p Provider) ToESDoc() map[string]interface{} {
 		"remark":           p.Remark,
 		"created_at":       p.CreatedAt,
 		"provider_pic_url": p.ProviderLogoUrl,
-		"customer_name":    p.CustomerName,
-		"customer_contact": p.CustomerContact,
+		"provider_name":    p.ProviderName,
+		"customer_contact": p.ProviderContact,
 	}
 }
-func (p *Provider) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func (p *Provider) AfterCreate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
 	}
-	c.BookNameID = bk.StorageName
-	c.BookName = bk.BookName
-	err := client.PutIntoIndex(c)
+	p.BookNameID = bk.StorageName
+	p.BookName = bk.BookName
+	err := client.PutIntoIndex(p)
 	if err != nil {
 		return err
 	}
@@ -105,17 +110,18 @@ func (p *Provider) AfterCreate(db *gorm.DB) error {
 }
 
 // AfterUpdate todo !!!
-func (p *Provider) AfterUpdate(_ *gorm.DB) error {
-	err := client.UpdateIntoIndex(c, c.RecID,
+func (p *Provider) AfterUpdate(tx *gorm.DB) error {
+	err := client.UpdateIntoIndex(p, p.RecID, tx,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(c.ToESDoc()))
+			Params(p.ToESDoc()))
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (p *Provider) AfterDelete(_ *gorm.DB) error {
-	err := client.DeleteFromIndex(c, c.RecID)
+func (p *Provider) AfterDelete(tx *gorm.DB) error {
+
+	err := client.DeleteFromIndex(p, p.RecID, tx)
 	if err != nil {
 		return err
 	}

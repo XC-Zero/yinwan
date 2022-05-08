@@ -81,8 +81,8 @@ func (p Receivable) ToESDoc() map[string]interface{} {
 		//"payable_enterprise":p
 	}
 }
-func (p *Receivable) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func (p *Receivable) AfterCreate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
@@ -97,8 +97,8 @@ func (p *Receivable) AfterCreate(db *gorm.DB) error {
 }
 
 // AfterUpdate todo !!!
-func (p *Receivable) AfterUpdate(_ *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID,
+func (p *Receivable) AfterUpdate(tx *gorm.DB) error {
+	err := client.UpdateIntoIndex(p, p.RecID, tx,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(p.ToESDoc()))
 	if err != nil {
@@ -106,8 +106,8 @@ func (p *Receivable) AfterUpdate(_ *gorm.DB) error {
 	}
 	return nil
 }
-func (p *Receivable) AfterDelete(_ *gorm.DB) error {
-	err := client.DeleteFromIndex(p, p.RecID)
+func (p *Receivable) AfterDelete(tx *gorm.DB) error {
+	err := client.DeleteFromIndex(p, p.RecID, tx)
 	if err != nil {
 		return err
 	}

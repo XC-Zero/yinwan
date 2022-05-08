@@ -96,7 +96,10 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	var count int
 	// 根据传入的类型决定创建对应类型的切片
 	var dataList = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
-
+	if op.DB == nil {
+		InternalDataBaseErrorTemplate(ctx, OTHER_ERROR, op.TableModel)
+		return nil
+	}
 	if op.OrderByColumn == "" {
 		op.OrderByColumn = "rec_id"
 	}

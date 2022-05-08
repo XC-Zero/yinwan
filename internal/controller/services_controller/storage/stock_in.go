@@ -8,7 +8,7 @@ import (
 )
 
 func CreateStockIn(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -23,7 +23,7 @@ func CreateStockIn(ctx *gin.Context) {
 }
 
 func SelectStockIn(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -44,14 +44,14 @@ func SelectStockIn(ctx *gin.Context) {
 
 }
 func UpdateStockIn(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
 }
 func DeleteStockIn(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}

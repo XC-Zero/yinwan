@@ -23,8 +23,8 @@ type Material struct {
 	Remark            *string `gorm:"type:varchar(200)" json:"remark,omitempty" form:"remark,omitempty" cn:"原材料备注"`
 }
 
-func (m *Material) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func (m *Material) AfterCreate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
@@ -39,8 +39,8 @@ func (m *Material) AfterCreate(db *gorm.DB) error {
 }
 
 // AfterUpdate todo !!!
-func (m *Material) AfterUpdate(db *gorm.DB) error {
-	err := client.UpdateIntoIndex(m, m.RecID,
+func (m *Material) AfterUpdate(tx *gorm.DB) error {
+	err := client.UpdateIntoIndex(m, m.RecID, tx,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(m.ToESDoc()))
 	if err != nil {
@@ -48,8 +48,8 @@ func (m *Material) AfterUpdate(db *gorm.DB) error {
 	}
 	return nil
 }
-func (m *Material) AfterDelete(db *gorm.DB) error {
-	err := client.DeleteFromIndex(m, m.RecID)
+func (m *Material) AfterDelete(tx *gorm.DB) error {
+	err := client.DeleteFromIndex(m, m.RecID, tx)
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,7 @@ func CreateProvider(ctx *gin.Context) {
 		return
 	}
 	op := common.CreateMysqlTemplateOptions{
-		DB:         client.MysqlClient,
+		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
 		TableModel: provider,
 	}
 	common.CreateOneMysqlRecordTemplate(ctx, op)
@@ -33,13 +33,28 @@ func SelectProvider(ctx *gin.Context) {
 	}
 	conditions := []common.MysqlCondition{
 		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "provider_name",
+			ColumnValue: ctx.PostForm("provider_name"),
+		},
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "rec_id",
+			ColumnValue: ctx.PostForm("provider_id"),
+		},
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "provider_type_id",
+			ColumnValue: ctx.PostForm("provider_type_id"),
+		},
+		{
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         client.MysqlClient,
+		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
 		TableModel: mysql_model.Provider{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -50,6 +65,7 @@ func UpdateProvider(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
+	bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName))
 	return
 }
 func DeleteProvider(ctx *gin.Context) {
@@ -57,5 +73,6 @@ func DeleteProvider(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
+	bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName))
 	return
 }

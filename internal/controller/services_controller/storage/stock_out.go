@@ -6,28 +6,28 @@ import (
 )
 
 func CreateStockOut(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
 }
 func SelectStockOut(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
 }
 func UpdateStockOut(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
 }
 func DeleteStockOut(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}

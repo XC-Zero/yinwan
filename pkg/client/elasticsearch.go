@@ -8,6 +8,7 @@ import (
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"log"
 	"reflect"
 	"strings"
@@ -62,6 +63,7 @@ func CreateIndex(model _interface.EsTabler) error {
 	return nil
 }
 
+// PutIntoIndex 添加数据
 func PutIntoIndex(tabler _interface.EsTabler) error {
 	_, err := ESClient.Index().
 		Index(tabler.TableName()).
@@ -116,9 +118,15 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	return
 }
 
-// DeleteFromIndex 删除数据
-func DeleteFromIndex(tabler _interface.EsTabler, recID *int) error {
-	if recID == nil {
+// DeleteFromIndex 删除数据 TODO  添加bookNameID
+func DeleteFromIndex(tabler _interface.EsTabler, recID *int, db *gorm.DB) error {
+	bookName := db.Statement.Context.Value("book_name").(string)
+	b, ok := ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+
+	if recID == nil || b.StorageName == "" {
 		return errors.New("缺少主键！")
 	}
 	do, err := ESClient.DeleteByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Do(context.Background())
@@ -138,7 +146,18 @@ func DeleteIndex(tabler _interface.EsTabler) bool {
 	return do.Acknowledged
 }
 
-func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, script *elastic.Script) error {
+// UpdateIntoIndex TODO  添加 bookNameID
+func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, db *gorm.DB, script *elastic.Script) error {
+	bookName := db.Statement.Context.Value("book_name").(string)
+	b, ok := ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+
+	if recID == nil || b.StorageName == "" {
+		return errors.New("缺少主键！")
+	}
+
 	if recID == nil {
 		return errors.New("缺少主键！")
 	}

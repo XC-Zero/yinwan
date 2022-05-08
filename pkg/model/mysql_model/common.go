@@ -22,7 +22,7 @@ type TimeOnlyModel struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" bson:"deleted_at" json:"deleted_at" cn:"删除时间"`
 }
 
-// BookNameInfo 给ES记录账套用的字段
+// BookNameInfo 给ES记录账套用的字段,并不存在mysql里,特意加上了
 type BookNameInfo struct {
 	BookNameID string `gorm:"-" sql:"-" json:"book_name_id"`
 	BookName   string `gorm:"-" sql:"-" json:"book_name"`

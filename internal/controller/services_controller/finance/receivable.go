@@ -6,28 +6,28 @@ import (
 )
 
 func CreateReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 }
 
 func SelectReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 }
 
 func UpdateReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 }
 
 func DeleteReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}

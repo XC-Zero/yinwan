@@ -57,7 +57,7 @@ func UpdateFixedAsset(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	//bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).Updates()
+	bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n))
 }
 
 func DeleteFixedAsset(ctx *gin.Context) {

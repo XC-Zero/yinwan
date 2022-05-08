@@ -8,14 +8,14 @@ import (
 )
 
 func CreatePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 }
 
 func SelectPayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -30,14 +30,14 @@ func SelectPayable(ctx *gin.Context) {
 }
 
 func UpdatePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 }
 
 func DeletePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}

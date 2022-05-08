@@ -50,7 +50,7 @@ func SelectMaterial(ctx *gin.Context) {
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "material_id",
+			ColumnName:  "rec_id",
 			ColumnValue: ctx.PostForm("material_id"),
 		},
 		{
