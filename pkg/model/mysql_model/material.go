@@ -2,7 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/olivere/elastic/v7"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"time"
@@ -38,16 +38,16 @@ func (m *Material) AfterCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate todo !!!
+// AfterUpdate 同步更新原材料  TODO FLAG!!!
 func (m *Material) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(m, m.RecID, tx,
-		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(m.ToESDoc()))
+	err := client.UpdateIntoIndex(m, m.RecID, tx, es_tool.ESDocToUpdateScript(m.ToESDoc()))
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
+// AfterDelete 同步删除原材料
 func (m *Material) AfterDelete(tx *gorm.DB) error {
 	err := client.DeleteFromIndex(m, m.RecID, tx)
 	if err != nil {

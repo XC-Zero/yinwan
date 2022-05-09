@@ -59,8 +59,13 @@ func SavePic(ctx *gin.Context) {
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("存储图片时发生错误! "))
 		return
 	}
+
+	url := config2.CONFIG.StorageConfig.MinioConfig.EndPoint + "/images/" + info.Key
+	if !strings.Contains(url, "http://") {
+		url = "http://" + url
+	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("上传图片成功!!", map[string]interface{}{
-		"url": config2.CONFIG.StorageConfig.MinioConfig.EndPoint + "/images/" + info.Key,
+		"url": url,
 	}))
 	return
 

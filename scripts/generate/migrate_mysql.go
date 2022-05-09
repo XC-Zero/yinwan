@@ -33,17 +33,7 @@ func InitMysqlList() {
 		//&mysql_model.Module{},
 		//&mysql_model.Department{},
 		&mysql_model.Staff{},
-		//&mysql_model.Commodity{},
-		//&mysql_model.CommodityHistoricalCost{},
-		//&mysql_model.CommodityBatch{},
-		//&mysql_model.Material{},
-		//&mysql_model.MaterialBatch{},
-		//&mysql_model.Customer{},
-		//&mysql_model.Provider{},
-		//&mysql_model.ManipulationLog{},
-		//&mysql_model.TypeTree{},
-		//&mysql_model.Payable{},
-		//&mysql_model.Receivable{},
+
 		//&mongo_model.Transaction{},
 		//&mongo_model.Purchase{},
 		//&mongo_model.FinanceCredential{},
@@ -51,6 +41,17 @@ func InitMysqlList() {
 		//&mongo_model.EventItem{},
 	}
 	bookNameMysqlMigrateList = []interface{}{
+		&mysql_model.Payable{},
+		&mysql_model.Receivable{},
+		&mysql_model.Commodity{},
+		&mysql_model.CommodityHistoricalCost{},
+		&mysql_model.CommodityBatch{},
+		&mysql_model.Material{},
+		&mysql_model.MaterialBatch{},
+		&mysql_model.Customer{},
+		&mysql_model.Provider{},
+		&mysql_model.ManipulationLog{},
+		&mysql_model.TypeTree{},
 		&mysql_model.Payable{},
 		&mysql_model.Receivable{},
 		//&mongo_model.Purchase{},
@@ -242,10 +243,10 @@ func MigrateMongo(db *mongo.Database) error {
 	return errs.ErrorListToError(errorList)
 }
 
-func MigrateMinio() {
-
-}
-
-func Fate() {
-
+func MigrateBookNameTables(db *gorm.DB) error {
+	err := db.AutoMigrate(bookNameMysqlMigrateList...)
+	if err != nil {
+		return err
+	}
+	return nil
 }

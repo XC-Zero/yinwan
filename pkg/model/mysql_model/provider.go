@@ -2,7 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/olivere/elastic/v7"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -91,7 +91,7 @@ func (p Provider) ToESDoc() map[string]interface{} {
 		"created_at":       p.CreatedAt,
 		"provider_pic_url": p.ProviderLogoUrl,
 		"provider_name":    p.ProviderName,
-		"customer_contact": p.ProviderContact,
+		"provider_contact": p.ProviderContact,
 	}
 }
 func (p *Provider) AfterCreate(tx *gorm.DB) error {
@@ -109,11 +109,10 @@ func (p *Provider) AfterCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate todo !!!
+// AfterUpdate 同步更新
 func (p *Provider) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID, tx,
-		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(p.ToESDoc()))
+	err := client.UpdateIntoIndex(p, p.RecID, tx, es_tool.ESDocToUpdateScript(p.ToESDoc()))
+
 	if err != nil {
 		return err
 	}

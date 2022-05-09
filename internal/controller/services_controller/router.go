@@ -31,7 +31,7 @@ func Starter() {
 			staff.POST("/select_staff", staff3.SelectStaff)
 			staff.POST("/update_staff", staff3.UpdateStaff)
 			staff.POST("/delete_staff", staff3.DeleteStaff)
-			staff.POST("/update_password", staff3.UpdatePassword)
+			staff.POST("/update_my_info", staff3.UpdatePersonalInfo)
 		}
 		{
 			staff.POST("/create_department", staff3.CreateDepartment)

@@ -85,7 +85,7 @@ func UpdateStaff(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&mysql_model.Staff{}).Omit("staff_password", "rec_id").Updates(staff).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Updates(staff).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)
 		return
@@ -109,7 +109,9 @@ func DeleteStaff(ctx *gin.Context) {
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除职工成功！"))
 	return
 }
-func UpdatePassword(ctx *gin.Context) {
+
+// UpdatePersonalInfo TODO 读请求头验证是不是本人
+func UpdatePersonalInfo(ctx *gin.Context) {
 
 }
 

@@ -6,6 +6,8 @@ import (
 	config2 "github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/config"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"log"
 
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
@@ -18,6 +20,22 @@ import (
 	"strings"
 	"time"
 )
+
+var bookNameMysqlMigrateList = []interface{}{
+	&mysql_model.Payable{},
+	&mysql_model.Receivable{},
+	&mysql_model.Commodity{},
+	&mysql_model.CommodityHistoricalCost{},
+	&mysql_model.CommodityBatch{},
+	&mysql_model.Material{},
+	&mysql_model.MaterialBatch{},
+	&mysql_model.Customer{},
+	&mysql_model.Provider{},
+	&mysql_model.ManipulationLog{},
+	&mysql_model.TypeTree{},
+	&mysql_model.Payable{},
+	&mysql_model.Receivable{},
+}
 
 type CreateBookNameRequest struct {
 	BookName string `json:"book_name" binding:"required"`
@@ -84,6 +102,7 @@ func InitBookMap(configs []config.BookConfig) error {
 		})
 
 	}
+
 	return errs.ErrorListToError(errorList)
 }
 
@@ -97,7 +116,12 @@ func AddBookName(bookName string) (status bool) {
 	var mysqlCfg = storage.MysqlConfig
 	var minioCfg = storage.MinioConfig
 	var mongoCfg = storage.MongoDBConfig
-	var name = fmt.Sprintf("%s-%s-%d", Translate(bookName), time.Now().Format("2006-01-02"), rand.Int63n(1000000))
+	t := Translate(bookName)
+	if t == "" {
+		t = bookName
+	}
+	var name = fmt.Sprintf("%s-%s-%d", t, time.Now().Format("2006-01-02"), rand.Int63n(1000000))
+	log.Println("Create bookname storage name is ", name)
 	mysqlCfg.DBName, minioCfg.Bucket, mongoCfg.DBName = name, name, name
 	cfg := config.BookConfig{
 		BookName:      bookName,
@@ -119,6 +143,7 @@ func AddBookName(bookName string) (status bool) {
 	if err != nil {
 		return false
 	}
+
 	// MongoDB 的 database并不需要创建，直接用就完了
 
 	//创建 minio bucket
@@ -138,6 +163,14 @@ func AddBookName(bookName string) (status bool) {
 	err = InitBookMap(config2.CONFIG.BookNameConfig)
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("初始化账套 (%s) 客户端失败! ", cfg.BookName))
+	}
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return false
+	}
+	err = bk.MysqlClient.AutoMigrate(bookNameMysqlMigrateList)
+	if err != nil {
+		return false
 	}
 	return true
 }
