@@ -7,6 +7,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"gorm.io/gorm"
 	"log"
 
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -168,10 +169,20 @@ func AddBookName(bookName string) (status bool) {
 	if !ok {
 		return false
 	}
-	err = bk.MysqlClient.AutoMigrate(bookNameMysqlMigrateList)
+
+	err = bk.MysqlClient.Transaction(func(tx *gorm.DB) error {
+		for i := range bookNameMysqlMigrateList {
+			err = bk.MysqlClient.AutoMigrate(bookNameMysqlMigrateList[i])
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 	if err != nil {
 		return false
 	}
+
 	return true
 }
 

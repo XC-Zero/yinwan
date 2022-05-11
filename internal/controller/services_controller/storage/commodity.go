@@ -11,6 +11,8 @@ import (
 	"log"
 )
 
+//TODO 打死也要写完库存相关的
+
 // CreateCommodity 创建产品
 func CreateCommodity(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)

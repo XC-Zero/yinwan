@@ -81,11 +81,12 @@ func SelectStaff(ctx *gin.Context) {
 func UpdateStaff(ctx *gin.Context) {
 	var staff mysql_model.Staff
 	err := ctx.ShouldBind(&staff)
+	staff.StaffPassword = ""
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&mysql_model.Staff{}).Updates(staff).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Updates(staff).Omit("staff_email", "staff_password").Where("rec_id", staff.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)
 		return

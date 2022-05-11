@@ -2,7 +2,7 @@
 
 source_path=./cmd/services
 go_file=main.go
-image_name=hsh
+image_name=yinwan
 build_output=hsh
 version=0.0.1
 

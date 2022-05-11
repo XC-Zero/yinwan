@@ -152,7 +152,7 @@ func UpdateRole(ctx *gin.Context) {
 	}
 	roleCapList := mysql_model.RoleCapabilitiesMerge(postData.RoleCapabilities)
 
-	client.MysqlClient.Transaction(func(tx *gorm.DB) error {
+	err = client.MysqlClient.Transaction(func(tx *gorm.DB) error {
 		err2 := tx.Updates(postData.Role).Error
 		if err2 != nil {
 			return err2
@@ -165,7 +165,11 @@ func UpdateRole(ctx *gin.Context) {
 		}
 		return err2
 	})
-
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, mysql_model.Role{})
+		return
+	}
+	return
 }
 
 func DeleteRole(ctx *gin.Context) {

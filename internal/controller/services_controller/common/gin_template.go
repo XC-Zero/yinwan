@@ -80,6 +80,14 @@ type CreateMongoDBTemplateOptions struct {
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 }
 
+// UpdateMongoDBTemplateOptions MongoDB 创建模板配置
+type UpdateMongoDBTemplateOptions struct {
+	DB         *mongo.Database
+	RecID      int
+	TableModel _interface.ChineseTabler
+	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
+}
+
 // UpdateMysqlTemplateOptions Mysql 更新模板配置
 type UpdateMysqlTemplateOptions struct {
 	CreateMysqlTemplateOptions
@@ -225,6 +233,25 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)))
+	return
+}
+
+// UpdateOneMongoDBRecordByIDTemplate MongoDB 按REC_ID更新模板
+func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op UpdateMongoDBTemplateOptions) {
+	var data = op.TableModel
+	if op.PreFunc != nil {
+		data = op.PreFunc(data)
+	}
+	filter := bson.D{}
+
+	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
+
+	err := op.DB.Collection(op.TableModel.TableName()).FindOneAndUpdate(context.TODO(), filter, op.TableModel)
+	if err != nil {
+		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
 }
 
