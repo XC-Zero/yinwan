@@ -9,8 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var mongoClient *mongo.Client
-
 // InitMongoDB ...
 func InitMongoDB(config cfg.MongoDBConfig) (*mongo.Database, error) {
 	// 设置客户端连接配置
@@ -25,10 +23,5 @@ func InitMongoDB(config cfg.MongoDBConfig) (*mongo.Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	mongoClient = client
 	return client.Database(config.DBName), nil
-}
-
-func GetMongoClient() *mongo.Client {
-	return mongoClient
 }

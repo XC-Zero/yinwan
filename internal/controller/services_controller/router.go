@@ -55,6 +55,21 @@ func Starter() {
 			storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
 
 		}
+
+		// 产品
+		{
+			storage.POST("/create_commodity", storage3.CreateCommodity)
+			storage.POST("/select_commodity", storage3.SelectCommodity)
+			storage.POST("/update_commodity", storage3.UpdateCommodity)
+			storage.POST("/delete_commodity", storage3.DeleteCommodity)
+		}
+		// 产品批次
+		{
+			storage.POST("/create_commodity_detail", storage3.CreateCommodityBatch)
+			storage.POST("/select_commodity_detail", storage3.SelectCommodityDetail)
+			storage.POST("/delete_commodity_detail", storage3.DeleteCommodityDetail)
+
+		}
 		// 供应商
 		{
 			storage.POST("/create_provider", storage3.CreateProvider)

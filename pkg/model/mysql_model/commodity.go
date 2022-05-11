@@ -2,7 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/olivere/elastic/v7"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -11,15 +11,16 @@ import (
 type Commodity struct {
 	BasicModel
 	BookNameInfo
-	CommodityName      string  `gorm:"type:varchar(200)" json:"commodity_name"`
-	CommodityType      *string `gorm:"type:varchar(50)" json:"commodity_type,omitempty"`
-	CommodityStyle     *string `gorm:"type:varchar(50)" json:"commodity_style,omitempty"`
-	CommodityOwnerID   int     `gorm:"type:int" json:"commodity_owner_id"`
-	CommodityOwnerName string  `gorm:"type:varchar(50)" json:"commodity_owner_name"`
-	CommodityRemark    *string `gorm:"type:varchar(200)" json:"commodity_remark,omitempty"`
-	CommodityAttribute string  `gorm:"type:varchar(500)" json:"commodity_attribute"`
-	CommodityPicUrl    *string `gorm:"type:varchar(500)" json:"commodity_pic_url,omitempty" cn:"产品展示图"`
-	Remark             *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"产品备注"`
+	CommodityName             string  `gorm:"type:varchar(200)" json:"commodity_name" cn:"产品名称"`
+	CommodityTypeID           *int    `form:"commodity_type_id" json:"commodity_type_id,omitempty" cn:"产品类型ID"`
+	CommodityType             *string `gorm:"type:varchar(50)" json:"commodity_type,omitempty" cn:"产品类型"`
+	CommodityStyle            *string `gorm:"type:varchar(50)" json:"commodity_style,omitempty" cn:"产品规格"`
+	CommodityOwnerID          int     `gorm:"type:int" json:"commodity_owner_id" cn:"产品负责人ID"`
+	CommodityOwnerName        string  `gorm:"type:varchar(50)" json:"commodity_owner_name" cn:"产品负责人"`
+	CommodityAverageCostPrice string  `gorm:"type:varchar(50)" form:"commodity_average_cost_price" json:"commodity_average_cost_price" cn:"平均成本价"`
+	CommodityPrice            string  `gorm:"type:varchar(50)" form:"commodity_price" json:"commodity_price" cn:"产品定价"`
+	CommodityPicUrl           *string `gorm:"type:varchar(500)" json:"commodity_pic_url,omitempty" cn:"产品展示图"`
+	Remark                    *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"产品备注"`
 }
 
 func (c Commodity) TableCnName() string {
@@ -40,10 +41,10 @@ func (c Commodity) Mapping() map[string]interface{} {
 					"type": "text",
 				},
 				"commodity_name": mapping{
-					"type":            "text",   //字符串类型且进行分词, 允许模糊匹配
-					"analyzer":        IK_SMART, //设置分词工具
+					"type":            "text",
+					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
-					"fields": mapping{ //当需要对模糊匹配的字符串也允许进行精确匹配时假如此配置
+					"fields": mapping{
 						"keyword": mapping{
 							"type":         "keyword",
 							"ignore_above": 256,
@@ -96,11 +97,10 @@ func (c *Commodity) AfterCreate(db *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate todo !!!
+// AfterUpdate 同步更新
 func (c *Commodity) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(c, c.RecID, tx,
-		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(c.ToESDoc()))
+	err := client.UpdateIntoIndex(c, c.RecID, tx, es_tool.ESDocToUpdateScript(c.ToESDoc()))
+
 	if err != nil {
 		return err
 	}

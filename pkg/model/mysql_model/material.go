@@ -12,15 +12,16 @@ import (
 type Material struct {
 	BasicModel
 	BookNameInfo
-	MaterialName      string  `gorm:"type:varchar(50);not null" json:"material_name"  form:"material_name" cn:"原材料名称"`
-	MaterialTypeID    int     `gorm:"type:int;not null;index" json:"material_type_id" form:"material_type_id" cn:"原材料类型ID"`
-	MaterialTypeName  string  `gorm:"type:varchar(50);not null" json:"material_type_name" form:"material_type_name" cn:"原材料类型名称"`
-	MaterialStyle     string  `gorm:"type:varchar(50);not null" json:"material_style" form:"material_style" cn:"原材料规格"`
-	MaterialOwnerID   *int    `gorm:"type:int" json:"material_owner_id,omitempty" form:"material_owner_id,omitempty" cn:"原材料负责人ID"`
-	MaterialOwnerName *string `gorm:"type:varchar(50)" json:"material_owner_name,omitempty" form:"material_owner_name" cn:"原材料负责人名称"`
-	AverageUnitPrice  *string `gorm:"type:varchar(50)" json:"average_unit_price,omitempty" form:"average_unit_price,omitempty" cn:"原材料平均价格"`
-	MaterialPicUrl    *string `gorm:"type:varchar(500)" json:"material_pic_url,omitempty" form:"material_pic_url,omitempty" cn:"原材料展示图"`
-	Remark            *string `gorm:"type:varchar(200)" json:"remark,omitempty" form:"remark,omitempty" cn:"原材料备注"`
+	MaterialName         string  `gorm:"type:varchar(50);not null" json:"material_name"  form:"material_name" cn:"原材料名称"`
+	MaterialTypeID       int     `gorm:"type:int;not null;index" json:"material_type_id" form:"material_type_id" cn:"原材料类型ID"`
+	MaterialTypeName     string  `gorm:"type:varchar(50);not null" json:"material_type_name" form:"material_type_name" cn:"原材料类型名称"`
+	MaterialStyle        string  `gorm:"type:varchar(50);not null" json:"material_style" form:"material_style" cn:"原材料规格"`
+	MaterialOwnerID      *int    `gorm:"type:int" json:"material_owner_id,omitempty" form:"material_owner_id,omitempty" cn:"原材料负责人ID"`
+	MaterialOwnerName    *string `gorm:"type:varchar(50)" json:"material_owner_name,omitempty" form:"material_owner_name" cn:"原材料负责人名称"`
+	AverageUnitPrice     *string `gorm:"type:varchar(50)" json:"average_unit_price,omitempty" form:"average_unit_price,omitempty" cn:"原材料平均价格"`
+	MaterialPresentCount int     `form:"material_present_count" json:"material_present_count" cn:"当前余量"`
+	MaterialPicUrl       *string `gorm:"type:varchar(500)" json:"material_pic_url,omitempty" form:"material_pic_url,omitempty" cn:"原材料展示图"`
+	Remark               *string `gorm:"type:varchar(200)" json:"remark,omitempty" form:"remark,omitempty" cn:"原材料备注"`
 }
 
 func (m *Material) AfterCreate(tx *gorm.DB) error {

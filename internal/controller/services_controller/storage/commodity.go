@@ -11,33 +11,33 @@ import (
 	"log"
 )
 
-// CreateMaterial 创建原材料
-func CreateMaterial(ctx *gin.Context) {
+// CreateCommodity 创建产品
+func CreateCommodity(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var material mysql_model.Material
-	err := ctx.ShouldBind(&material)
+	var commodity mysql_model.Commodity
+	err := ctx.ShouldBind(&commodity)
 	if err != nil {
 		log.Println(err)
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&material).Error
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&commodity).Error
 	if err != nil {
 		log.Println(err)
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, material)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodity)
 		return
 	}
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建原材料成功！"))
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建产品成功！"))
 	return
 
 }
 
-// SelectMaterial 原材料
-func SelectMaterial(ctx *gin.Context) {
+// SelectCommodity 产品
+func SelectCommodity(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
@@ -45,18 +45,18 @@ func SelectMaterial(ctx *gin.Context) {
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.LIKE,
-			ColumnName:  "material_name",
-			ColumnValue: ctx.PostForm("material_name"),
+			ColumnName:  "commodity_name",
+			ColumnValue: ctx.PostForm("commodity_name"),
 		},
 		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("material_id"),
+			ColumnValue: ctx.PostForm("commodity_id"),
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "material_type_id",
-			ColumnValue: ctx.PostForm("material_type_id"),
+			ColumnName:  "commodity_type_id",
+			ColumnValue: ctx.PostForm("commodity_type_id"),
 		},
 		{
 			Symbol:      mysql.NULL,
@@ -66,79 +66,79 @@ func SelectMaterial(ctx *gin.Context) {
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: mysql_model.Material{},
+		TableModel: mysql_model.Commodity{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 
 	return
 }
 
-func UpdateMaterial(ctx *gin.Context) {
+func UpdateCommodity(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	material := mysql_model.Material{}
-	err := ctx.ShouldBind(&material)
+	commodity := mysql_model.Commodity{}
+	err := ctx.ShouldBind(&commodity)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Updates(material).Error
+		Updates(commodity).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, material)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodity)
 		return
 	}
 	return
 }
 
-// DeleteMaterial 删除原材料
-func DeleteMaterial(ctx *gin.Context) {
+// DeleteCommodity 删除产品
+func DeleteCommodity(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	material := mysql_model.Material{}
-	id := ctx.PostForm("material_id")
+	commodity := mysql_model.Commodity{}
+	id := ctx.PostForm("commodity_id")
 	if id == "" {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err := bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(material, id).Error
+		Delete(commodity, id).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, material)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodity)
 		return
 	}
 	return
 }
 
-// CreateMaterialBatch  创建原材料批次
+// CreateCommodityBatch  创建产品批次
 //	(预留的,正常不应该有的,正常都应该走入库)
-func CreateMaterialBatch(ctx *gin.Context) {
+func CreateCommodityBatch(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
-	var materialBatch mysql_model.MaterialBatch
-	err := ctx.ShouldBind(&materialBatch)
+	var commodityBatch mysql_model.CommodityBatch
+	err := ctx.ShouldBind(&commodityBatch)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Create(materialBatch).Error
+		Create(commodityBatch).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, materialBatch)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodityBatch)
 		return
 	}
 	return
 }
 
-// SelectMaterialDetail 原材料批次信息
-func SelectMaterialDetail(ctx *gin.Context) {
+// SelectCommodityDetail 产品批次信息
+func SelectCommodityDetail(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
@@ -151,13 +151,13 @@ func SelectMaterialDetail(ctx *gin.Context) {
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "material_id",
-			ColumnValue: ctx.PostForm("material_id"),
+			ColumnName:  "commodity_id",
+			ColumnValue: ctx.PostForm("commodity_id"),
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "material_type_id",
-			ColumnValue: ctx.PostForm("material_type_id"),
+			ColumnName:  "commodity_type_id",
+			ColumnValue: ctx.PostForm("commodity_type_id"),
 		},
 		{
 			Symbol:      mysql.NULL,
@@ -167,7 +167,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: mysql_model.MaterialBatch{},
+		TableModel: mysql_model.CommodityBatch{},
 	}
 
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -175,7 +175,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 	return
 }
 
-// DeleteMaterialDetail 删除原材料批次信息
-func DeleteMaterialDetail(ctx *gin.Context) {
+// DeleteCommodityDetail 删除产品批次信息
+func DeleteCommodityDetail(ctx *gin.Context) {
 
 }
