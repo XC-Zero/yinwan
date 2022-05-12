@@ -50,7 +50,7 @@ func UpdateCredential(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.UpdateMongoDBTemplateOptions{
+	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		RecID:      0,
 		TableModel: credential,
@@ -62,8 +62,23 @@ func UpdateCredential(ctx *gin.Context) {
 
 // DeleteCredential 删除凭证
 func DeleteCredential(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
+	var credential mongo_model.FinanceCredential
+	err := ctx.ShouldBind(&credential)
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+
+	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
+		DB:         bk.MongoDBClient,
+		RecID:      0,
+		TableModel: credential,
+		PreFunc:    nil,
+		Context:    context.WithValue(context.Background(), "book_name", n),
+	})
+	return
 }

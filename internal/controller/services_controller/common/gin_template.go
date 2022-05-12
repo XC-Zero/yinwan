@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -10,6 +11,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
+	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
@@ -50,14 +52,6 @@ type SelectMysqlTemplateOptions struct {
 	NotPaginate   bool
 }
 
-// SelectMongoDBTemplateOptions MongoDB 搜索模板配置
-type SelectMongoDBTemplateOptions struct {
-	DB            *mongo.Database
-	TableModel    _interface.ChineseTabler
-	OrderByColumn string
-	ResHookFunc   func(data []interface{}) []interface{}
-}
-
 // SelectESTemplateOptions ElasticSearch 搜索模板配置
 type SelectESTemplateOptions struct {
 	TableModel  _interface.EsTabler
@@ -73,7 +67,14 @@ type CreateMysqlTemplateOptions struct {
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 }
 
-// CreateMongoDBTemplateOptions MongoDB 创建模板配置
+// SelectMongoDBTemplateOptions MongoDB 搜索模板配置
+type SelectMongoDBTemplateOptions struct {
+	DB            *mongo.Database
+	TableModel    _interface.ChineseTabler
+	OrderByColumn string
+	ResHookFunc   func(data []interface{}) []interface{}
+}
+
 type CreateMongoDBTemplateOptions struct {
 	DB         *mongo.Database
 	Context    context.Context
@@ -81,18 +82,20 @@ type CreateMongoDBTemplateOptions struct {
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 }
 
-// UpdateMongoDBTemplateOptions MongoDB 创建模板配置
-type UpdateMongoDBTemplateOptions struct {
+// MongoDBTemplateOptions MongoDB 模板配置
+type MongoDBTemplateOptions struct {
 	DB         *mongo.Database
 	Context    context.Context
-	RecID      int
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
+	RecID      int
+	OmitList   []string
 }
 
 // UpdateMysqlTemplateOptions Mysql 更新模板配置
 type UpdateMysqlTemplateOptions struct {
 	CreateMysqlTemplateOptions
+	RecID      int
 	OmitColumn []string
 }
 
@@ -239,16 +242,50 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 }
 
 // UpdateOneMongoDBRecordByIDTemplate MongoDB 按REC_ID更新模板
-func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op UpdateMongoDBTemplateOptions) {
+func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOptions) {
+	var data = op.TableModel
+	if op.PreFunc != nil {
+		data = op.PreFunc(data)
+	}
+	filter, update := bson.D{}, bson.D{}
+	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
+	objV, objT := reflect.ValueOf(data), reflect.TypeOf(data)
+	omitMap := tools.StringSliceToMap(op.OmitList)
+	for i := 0; i < objT.NumField(); i++ {
+		nowValue := objV.Field(i)
+		if !nowValue.IsZero() {
+			v, ok := objT.Field(i).Tag.Lookup("bson")
+			if !ok {
+				continue
+			}
+			if _, omit := omitMap[v]; omit {
+				continue
+			}
+			update = append(update, bson.E{Key: v, Value: nowValue.Interface()})
+		}
+	}
+	err := op.DB.Collection(op.TableModel.TableName()).FindOneAndUpdate(context.TODO(), filter, bson.D{{"$set", update}})
+	if err != nil {
+		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
+	return
+}
+
+// DeleteOneMongoDBRecordByIDTemplate MongoDB 按REC_ID更新模板
+func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOptions) {
 	var data = op.TableModel
 	if op.PreFunc != nil {
 		data = op.PreFunc(data)
 	}
 	filter := bson.D{}
-
 	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
 
-	err := op.DB.Collection(op.TableModel.TableName()).FindOneAndUpdate(context.TODO(), filter, op.TableModel)
+	_, err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
+		Valid: true,
+		Time:  time.Now(),
+	})}}})
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
