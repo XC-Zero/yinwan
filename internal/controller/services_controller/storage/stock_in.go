@@ -75,11 +75,11 @@ func UpdateStockIn(ctx *gin.Context) {
 		return
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		bk.MongoDBClient,
-		context.WithValue(context.Background(), "book_name", n),
-		*temp.RecID,
-		temp,
-		nil,
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
+		RecID:      *temp.RecID,
+		TableModel: temp,
+		PreFunc:    nil,
 	})
 	return
 }
