@@ -76,6 +76,7 @@ type CreateMysqlTemplateOptions struct {
 // CreateMongoDBTemplateOptions MongoDB 创建模板配置
 type CreateMongoDBTemplateOptions struct {
 	DB         *mongo.Database
+	Context    context.Context
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 }
@@ -83,6 +84,7 @@ type CreateMongoDBTemplateOptions struct {
 // UpdateMongoDBTemplateOptions MongoDB 创建模板配置
 type UpdateMongoDBTemplateOptions struct {
 	DB         *mongo.Database
+	Context    context.Context
 	RecID      int
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler

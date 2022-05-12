@@ -19,7 +19,7 @@ func CreateStockIn(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-
+	//common.CreateOneMongoDBRecordTemplate()
 }
 
 func SelectStockIn(ctx *gin.Context) {
