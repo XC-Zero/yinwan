@@ -98,7 +98,7 @@ func (p *Receivable) AfterCreate(tx *gorm.DB) error {
 
 // AfterUpdate 同步更新
 func (p *Receivable) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID, tx, es_tool.ESDocToUpdateScript(p.ToESDoc()))
+	err := client.UpdateIntoIndex(p, p.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(p.ToESDoc()))
 
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (p *Receivable) AfterUpdate(tx *gorm.DB) error {
 	return nil
 }
 func (p *Receivable) AfterDelete(tx *gorm.DB) error {
-	err := client.DeleteFromIndex(p, p.RecID, tx)
+	err := client.DeleteFromIndex(p, p.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
 	}

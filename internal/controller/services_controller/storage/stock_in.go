@@ -7,6 +7,7 @@ import (
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"strconv"
 )
 
 func CreateStockIn(ctx *gin.Context) {
@@ -29,7 +30,6 @@ func CreateStockIn(ctx *gin.Context) {
 	})
 	return
 }
-
 func SelectStockIn(ctx *gin.Context) {
 	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -81,6 +81,7 @@ func UpdateStockIn(ctx *gin.Context) {
 		TableModel: temp,
 		PreFunc:    nil,
 	})
+
 	return
 }
 func DeleteStockIn(ctx *gin.Context) {
@@ -88,19 +89,17 @@ func DeleteStockIn(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-
-	temp := mongo_model.StockInRecord{}
-
-	err := ctx.ShouldBind(&temp)
-	if err != nil || temp.RecID == nil {
+	var stockOutRecord mongo_model.StockInRecord
+	recID, err := strconv.Atoi(ctx.PostForm("stock_in_record_id"))
+	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		RecID:      *temp.RecID,
-		TableModel: temp,
+		RecID:      recID,
+		TableModel: stockOutRecord,
 		PreFunc:    nil,
 	})
 	return

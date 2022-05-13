@@ -99,7 +99,7 @@ func (c *Commodity) AfterCreate(db *gorm.DB) error {
 
 // AfterUpdate 同步更新
 func (c *Commodity) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(c, c.RecID, tx, es_tool.ESDocToUpdateScript(c.ToESDoc()))
+	err := client.UpdateIntoIndex(c, c.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(c.ToESDoc()))
 
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (c *Commodity) AfterUpdate(tx *gorm.DB) error {
 	return nil
 }
 func (c *Commodity) AfterDelete(tx *gorm.DB) error {
-	err := client.DeleteFromIndex(c, c.RecID, tx)
+	err := client.DeleteFromIndex(c, c.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
 	}

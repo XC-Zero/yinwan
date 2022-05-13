@@ -106,9 +106,9 @@ func (c *Customer) AfterCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate todo !!!
+// AfterUpdate 同步更新
 func (c *Customer) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(c, c.RecID, tx,
+	err := client.UpdateIntoIndex(c, c.RecID, tx.Statement.Context,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(c.ToESDoc()))
 	if err != nil {
@@ -117,7 +117,7 @@ func (c *Customer) AfterUpdate(tx *gorm.DB) error {
 	return nil
 }
 func (c *Customer) AfterDelete(tx *gorm.DB) error {
-	err := client.DeleteFromIndex(c, c.RecID, tx)
+	err := client.DeleteFromIndex(c, c.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
 	}

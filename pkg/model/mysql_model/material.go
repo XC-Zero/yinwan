@@ -41,7 +41,7 @@ func (m *Material) AfterCreate(tx *gorm.DB) error {
 
 // AfterUpdate 同步更新原材料  TODO FLAG!!!
 func (m *Material) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(m, m.RecID, tx, es_tool.ESDocToUpdateScript(m.ToESDoc()))
+	err := client.UpdateIntoIndex(m, m.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(m.ToESDoc()))
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (m *Material) AfterUpdate(tx *gorm.DB) error {
 
 // AfterDelete 同步删除原材料
 func (m *Material) AfterDelete(tx *gorm.DB) error {
-	err := client.DeleteFromIndex(m, m.RecID, tx)
+	err := client.DeleteFromIndex(m, m.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
 	}

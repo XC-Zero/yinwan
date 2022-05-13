@@ -108,9 +108,9 @@ func (p *FixedAsset) AfterCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate todo !!!
+// AfterUpdate 同步更新
 func (p *FixedAsset) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID, tx,
+	err := client.UpdateIntoIndex(p, p.RecID, tx.Statement.Context,
 		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
 			Params(p.ToESDoc()))
 	if err != nil {
@@ -119,7 +119,7 @@ func (p *FixedAsset) AfterUpdate(tx *gorm.DB) error {
 	return nil
 }
 func (p *FixedAsset) AfterDelete(tx *gorm.DB) error {
-	err := client.DeleteFromIndex(p, p.RecID, tx)
+	err := client.DeleteFromIndex(p, p.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
 	}

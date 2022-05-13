@@ -9,6 +9,7 @@ import (
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/XC-Zero/yinwan/pkg/utils/tools"
@@ -237,6 +238,14 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, op.TableModel)
 		return
 	}
+	v, ok := op.TableModel.(_interface.EsTabler)
+	if ok {
+		err := client.PutIntoIndex(v)
+		if err != nil {
+			InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, data)
+			return
+		}
+	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)))
 	return
 }
@@ -250,6 +259,10 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	filter, update := bson.D{}, bson.D{}
 	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
 	objV, objT := reflect.ValueOf(data), reflect.TypeOf(data)
+	if objV.IsZero() {
+		ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
+		return
+	}
 	omitMap := tools.StringSliceToMap(op.OmitList)
 	for i := 0; i < objT.NumField(); i++ {
 		nowValue := objV.Field(i)
@@ -269,6 +282,15 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
 	}
+	v, ok := op.TableModel.(_interface.EsTabler)
+	if ok {
+		err := client.UpdateIntoIndex(v, &op.RecID, op.Context, es_tool.ESDocToUpdateScript(v.ToESDoc()))
+		if err != nil {
+			InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
+			return
+		}
+	}
+
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
 }
@@ -289,6 +311,14 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
+	}
+	v, ok := op.TableModel.(_interface.EsTabler)
+	if ok {
+		err := client.DeleteFromIndex(v, &op.RecID, op.Context)
+		if err != nil {
+			InternalDataBaseErrorTemplate(ctx, DATABASE_DELETE_ERROR, data)
+			return
+		}
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return

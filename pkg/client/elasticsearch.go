@@ -8,7 +8,6 @@ import (
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
-	"gorm.io/gorm"
 	"log"
 	"reflect"
 	"strings"
@@ -118,9 +117,9 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	return
 }
 
-// DeleteFromIndex 删除数据 TODO  添加bookNameID
-func DeleteFromIndex(tabler _interface.EsTabler, recID *int, db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+// DeleteFromIndex 删除数据
+func DeleteFromIndex(tabler _interface.EsTabler, recID *int, ctx context.Context) error {
+	bookName := ctx.Value("book_name").(string)
 	b, ok := ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")
@@ -147,8 +146,8 @@ func DeleteIndex(tabler _interface.EsTabler) bool {
 }
 
 // UpdateIntoIndex TODO  添加 bookNameID
-func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, db *gorm.DB, script *elastic.Script) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
+func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, ctx context.Context, script *elastic.Script) error {
+	bookName := ctx.Value("book_name").(string)
 	b, ok := ReadBookMap(bookName)
 	if !ok {
 		return errors.New("There is no book name!")

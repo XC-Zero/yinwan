@@ -25,21 +25,6 @@ func (m StockInRecord) ToESDoc() map[string]interface{} {
 	panic("implement me")
 }
 
-func (m *StockInRecord) AfterCreate(db *gorm.DB) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m *StockInRecord) AfterUpdate(db *gorm.DB) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m *StockInRecord) AfterDelete(db *gorm.DB) error {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (m StockInRecord) TableName() string {
 	return "stock_in_records"
 }
