@@ -47,10 +47,10 @@ type Transaction struct {
 	TransactionRemark  *string   `gorm:"type:varchar(200)"`
 }
 
-func (c Transaction) TableCnName() string {
+func (t Transaction) TableCnName() string {
 	return "交易"
 }
-func (c Transaction) TableName() string {
+func (t Transaction) TableName() string {
 	return "transactions"
 }
 

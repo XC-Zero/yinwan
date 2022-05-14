@@ -82,12 +82,12 @@ func UpdateCommodity(ctx *gin.Context) {
 	}
 	commodity := mysql_model.Commodity{}
 	err := ctx.ShouldBind(&commodity)
-	if err != nil {
+	if err != nil || commodity.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Updates(commodity).Error
+		Updates(&commodity).Where("rec_id", *commodity.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodity)
 		return

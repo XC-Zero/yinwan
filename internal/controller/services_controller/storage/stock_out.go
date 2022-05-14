@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
@@ -103,5 +104,10 @@ func DeleteStockOut(ctx *gin.Context) {
 		TableModel: stockOutRecord,
 		PreFunc:    nil,
 	})
+	return
+}
+
+func SelectStockOutType(ctx *gin.Context) {
+	common.SelectSuccessTemplate(ctx, int64(len(_const.StockOutTypeList)), _const.StockInTypeList)
 	return
 }

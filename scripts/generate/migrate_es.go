@@ -11,13 +11,16 @@ var esIndexes []_interface.EsTabler
 
 func init() {
 	esIndexes = append(esIndexes,
-		&es.Material{},
-		&es.Commodity{},
-		&es.Payable{},
-		&es.Receivable{},
-		&es.FixedAsset{},
-		&m.StockOutRecord{},
-		&m.StockInRecord{},
+		//&es.Material{},
+		//&es.Commodity{},
+		//&es.Payable{},
+		//&es.Receivable{},
+		//&es.FixedAsset{},
+		&es.Provider{},
+		&es.Customer{},
+		&m.FinanceCredential{},
+		//&m.StockOutRecord{},
+		//&m.StockInRecord{},
 	)
 
 }

@@ -1,4 +1,4 @@
-package storage
+package transaction
 
 import (
 	"context"
@@ -8,25 +8,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateProvider(ctx *gin.Context) {
+func CreateCustomer(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var provider mysql_model.Provider
-	err := ctx.ShouldBind(&provider)
+	var customer mysql_model.Customer
+	err := ctx.ShouldBind(&customer)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	op := common.CreateMysqlTemplateOptions{
 		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: provider,
+		TableModel: customer,
 	}
 	common.CreateOneMysqlRecordTemplate(ctx, op)
 	return
 }
-func SelectProvider(ctx *gin.Context) {
+func SelectCustomer(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
@@ -34,18 +34,18 @@ func SelectProvider(ctx *gin.Context) {
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.LIKE,
-			ColumnName:  "provider_name",
-			ColumnValue: ctx.PostForm("provider_name"),
+			ColumnName:  "customer_name",
+			ColumnValue: ctx.PostForm("customer_name"),
 		},
 		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("provider_id"),
+			ColumnValue: ctx.PostForm("customer_id"),
 		},
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "provider_social_credit_code",
-			ColumnValue: ctx.PostForm("provider_social_credit_code"),
+			ColumnName:  "customer_social_credit_code",
+			ColumnValue: ctx.PostForm("customer_social_credit_code"),
 		},
 		{
 			Symbol:      mysql.NULL,
@@ -55,46 +55,47 @@ func SelectProvider(ctx *gin.Context) {
 	}
 	op := common.SelectMysqlTemplateOptions{
 		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: mysql_model.Provider{},
+		TableModel: mysql_model.Customer{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 	return
 }
-func UpdateProvider(ctx *gin.Context) {
+
+func UpdateCustomer(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var provider mysql_model.Provider
-	err := ctx.ShouldBind(&provider)
-	if err != nil || provider.RecID == nil {
+	var customer mysql_model.Customer
+	err := ctx.ShouldBind(&customer)
+	if err != nil || customer.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Updates(&provider).Where("rec_id", *provider.RecID).Error
+		Updates(&customer).Where("rec_id", *customer.RecID).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, provider)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, customer)
 		return
 	}
 	return
 }
-func DeleteProvider(ctx *gin.Context) {
+func DeleteCustomer(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var provider mysql_model.Provider
-	var recID = ctx.PostForm("provider_id")
+	var customer mysql_model.Customer
+	var recID = ctx.PostForm("customer_id")
 	if recID == "" {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err := bk.MysqlClient.WithContext(
 		context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(&provider, recID).Error
+		Delete(&customer, recID).Error
 	if err != nil {
-		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, provider)
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, customer)
 		return
 	}
 	return

@@ -80,12 +80,12 @@ func UpdateMaterial(ctx *gin.Context) {
 	}
 	material := mysql_model.Material{}
 	err := ctx.ShouldBind(&material)
-	if err != nil {
+	if err != nil || material.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Updates(material).Error
+		Updates(&material).Where("rec_id", *material.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, material)
 		return
@@ -106,7 +106,7 @@ func DeleteMaterial(ctx *gin.Context) {
 		return
 	}
 	err := bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(material, id).Error
+		Delete(&material, id).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, material)
 		return

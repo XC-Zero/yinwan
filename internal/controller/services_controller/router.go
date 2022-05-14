@@ -7,6 +7,8 @@ import (
 	staff3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/staff"
 	storage3 "github.com/XC-Zero/yinwan/internal/controller/services_controller/storage"
 	system2 "github.com/XC-Zero/yinwan/internal/controller/services_controller/system"
+	transaction2 "github.com/XC-Zero/yinwan/internal/controller/services_controller/transaction"
+
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/token"
@@ -90,6 +92,7 @@ func Starter() {
 			storage.POST("/select_stock_in", storage3.SelectStockIn)
 			storage.POST("/update_stock_in", storage3.UpdateStockIn)
 			storage.POST("/delete_stock_in", storage3.DeleteStockIn)
+			storage.POST("/select_stock_in_type", storage3.SelectStockInType)
 
 		}
 		// 出库
@@ -98,7 +101,7 @@ func Starter() {
 			storage.POST("/select_stock_out", storage3.SelectStockOut)
 			storage.POST("/update_stock_out", storage3.UpdateStockOut)
 			storage.POST("/delete_stock_out", storage3.DeleteStockOut)
-
+			storage.POST("/select_stock_out_type", storage3.SelectStockOutType)
 		}
 		//扫码 小程序用
 		{
@@ -148,6 +151,14 @@ func Starter() {
 			transaction.POST("")
 
 		}
+		// 客户
+		{
+			transaction.POST("/create_customer", transaction2.CreateCustomer)
+			transaction.POST("/select_customer", transaction2.SelectCustomer)
+			transaction.POST("/update_customer", transaction2.UpdateCustomer)
+			transaction.POST("/delete_customer", transaction2.DeleteCustomer)
+		}
+
 	}
 	system := services.Group("/system")
 	{

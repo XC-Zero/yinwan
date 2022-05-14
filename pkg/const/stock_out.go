@@ -2,6 +2,18 @@ package _const
 
 type StockOutType int
 
+var StockOutTypeList = []map[string]interface{}{
+	{
+		"stock_out_type": LOSS.Display(),
+	}, {
+		"stock_out_type": SALE.Display(),
+	}, {
+		"stock_out_type": ASSEMBLE.Display(),
+	}, {
+		"stock_out_type": "未知",
+	},
+}
+
 const (
 	LOSS StockOutType = iota + 770001
 	SALE

@@ -39,7 +39,7 @@ func (m *Material) AfterCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// AfterUpdate 同步更新原材料  TODO FLAG!!!
+// AfterUpdate 同步更新原材料
 func (m *Material) AfterUpdate(tx *gorm.DB) error {
 	err := client.UpdateIntoIndex(m, m.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(m.ToESDoc()))
 	if err != nil {

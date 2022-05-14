@@ -1,10 +1,7 @@
 package mongo_model
 
 import (
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 )
 
 // StockInRecord 入库记录
@@ -18,11 +15,6 @@ type StockInRecord struct {
 	StockInRecordContent   map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
 	RelatePurchaseID       *int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty"`
 	Remark                 *string                ` json:"remark,omitempty" form:"remark" bson:"remark"`
-}
-
-func (m StockInRecord) ToESDoc() map[string]interface{} {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (m StockInRecord) TableName() string {
@@ -55,6 +47,9 @@ func (m StockInRecord) Mapping() map[string]interface{} {
 						},
 					},
 				},
+				"stock_in_record_type": mapping{
+					"type": "keyword",
+				},
 				"remark": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
@@ -74,6 +69,18 @@ func (m StockInRecord) Mapping() map[string]interface{} {
 	}
 	return ma
 }
+func (m StockInRecord) ToESDoc() map[string]interface{} {
+	return map[string]interface{}{
+		"rec_id":               m.RecID,
+		"created_at":           m.CreatedAt,
+		"remark":               m.Remark,
+		"stock_in_content":     m.StockInRecordContent,
+		"stock_in_record_type": m.StockInRecordType,
+		"stock_in_owner":       m.StockInRecordOwnerName,
+		"book_name":            m.BookName,
+		"book_name_id":         m.BookNameID,
+	}
+}
 
 // StockOutRecord 出库记录
 // 存 MongoDB 一份
@@ -88,33 +95,16 @@ type StockOutRecord struct {
 }
 
 func (m StockOutRecord) ToESDoc() map[string]interface{} {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m *StockOutRecord) AfterCreate(db *gorm.DB) error {
-	bookName := db.Statement.Context.Value("book_name").(string)
-	bk, ok := client.ReadBookMap(bookName)
-	if !ok {
-		return errors.New("There is no book name!")
+	return map[string]interface{}{
+		"rec_id":                m.RecID,
+		"created_at":            m.CreatedAt,
+		"remark":                m.Remark,
+		"stock_out_content":     m.StockOutRecordContent,
+		"stock_out_record_type": m.StockOutRecordType,
+		"stock_out_owner":       m.StockOutRecordOwnerName,
+		"book_name":             m.BookName,
+		"book_name_id":          m.BookNameID,
 	}
-	m.BookNameID = bk.StorageName
-	m.BookName = bk.BookName
-	//err := client.PutIntoIndex(m)
-	//if err != nil {
-	//	return err
-	//}
-	return nil
-}
-
-func (m *StockOutRecord) AfterUpdate(db *gorm.DB) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m *StockOutRecord) AfterDelete(db *gorm.DB) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (m StockOutRecord) TableName() string {
@@ -135,6 +125,9 @@ func (m StockOutRecord) Mapping() map[string]interface{} {
 					"type":            "text",   //字符串类型且进行分词, 允许模糊匹配
 					"analyzer":        IK_SMART, //设置分词工具
 					"search_analyzer": IK_SMART,
+				},
+				"stock_out_record_type": mapping{
+					"type": "keyword",
 				},
 				"stock_out_owner": mapping{
 					"type":            "text",   //字符串类型且进行分词, 允许模糊匹配
