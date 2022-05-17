@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/fwhezfwhez/errorx"
 	"log"
 	"time"
 )
@@ -45,23 +44,16 @@ type Logger struct {
 }
 
 // Fatal 慎用，会导致程序退出！
-func Fatal(err errorx.Error, mes string) {
+func Fatal(err error, mes string) {
 
-	sprintf := fmt.Sprintf("程序退出！ %s %s \n fatal error is %s %s", SPLIT_LINE, mes, err.E, SPLIT_LINE)
+	sprintf := fmt.Sprintf("程序退出！ %s %s \n fatal error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 
-	Logger{
-		message:   sprintf,
-		stackInfo: err.StackTraces,
-		logType:   FATAL,
-		logHeader: FATAL_HEADER,
-		time:      time.Now(),
-	}.sendLogger()
 	log.Fatalln(sprintf)
 }
 
 // Error 打印错误信息
-func Error(err errorx.Error, mes string) {
-	sprintf := fmt.Sprintf("%s %s \n error is %s %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+func Error(err error, mes string) {
+	sprintf := fmt.Sprintf("%s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 	log.Println(sprintf)
 	//Logger{
 	//	message:   sprintf,
@@ -73,8 +65,8 @@ func Error(err errorx.Error, mes string) {
 }
 
 // Waring 打印警告信息
-func Waring(err errorx.Error, mes string) {
-	sprintf := fmt.Sprintf("%s %s \n error is %s %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+func Waring(err error, mes string) {
+	sprintf := fmt.Sprintf("%s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 	log.Println(sprintf)
 
 	//Logger{

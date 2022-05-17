@@ -6,6 +6,7 @@ import (
 	config2 "github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/config"
+	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"gorm.io/gorm"
 	"log"
@@ -23,8 +24,8 @@ import (
 )
 
 var bookNameMysqlMigrateList = []interface{}{
-	&mysql_model.Payable{},
-	&mysql_model.Receivable{},
+	&mongo_model.Payable{},
+	&mongo_model.Receivable{},
 	&mysql_model.Commodity{},
 	&mysql_model.CommodityHistoricalCost{},
 	&mysql_model.CommodityBatch{},
@@ -34,8 +35,8 @@ var bookNameMysqlMigrateList = []interface{}{
 	&mysql_model.Provider{},
 	&mysql_model.ManipulationLog{},
 	&mysql_model.TypeTree{},
-	&mysql_model.Payable{},
-	&mysql_model.Receivable{},
+	&mongo_model.Payable{},
+	&mongo_model.Receivable{},
 }
 
 type CreateBookNameRequest struct {

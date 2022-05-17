@@ -177,7 +177,17 @@ func SelectCommodityDetail(ctx *gin.Context) {
 	return
 }
 
-// DeleteCommodityDetail 删除产品批次信息
+// DeleteCommodityDetail 删除产品批次信息 todo!!!!
 func DeleteCommodityDetail(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	var recID = ctx.PostForm("commodity_batch_id")
+	err := bk.MysqlClient.
+		WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Delete(mysql_model.CommodityBatch{}, recID).Error
+	if err != nil {
+		return
+	}
 }

@@ -1,7 +1,8 @@
-package mysql_model
+package mongo_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -9,7 +10,8 @@ import (
 
 // Receivable 应收
 type Receivable struct {
-	BasicModel
+	mysql_model.BasicModel
+
 	BookNameInfo
 	//	关联凭证ID
 	CredentialID *int    `gorm:"type:int" json:"credential_id,omitempty"`

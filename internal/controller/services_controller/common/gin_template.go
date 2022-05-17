@@ -10,12 +10,14 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,6 +27,8 @@ import (
 	"strconv"
 	"time"
 )
+
+const MONGO_COUNT_MAX_TIME = 5 * time.Second
 
 // MysqlCondition MySQL 搜索条件
 type MysqlCondition struct {
@@ -111,7 +115,8 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	// 根据传入的类型决定创建对应类型的切片
 	var dataList = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
 	if op.DB == nil {
-		InternalDataBaseErrorTemplate(ctx, OTHER_ERROR, op.TableModel)
+		logger.Error(errors.New("gorm client is nil"), "表名为:"+op.TableModel.TableName())
+		InternalDataBaseErrorTemplate(ctx, BOOK_NAME_LACK_ERROR, op.TableModel)
 		return nil
 	}
 	if op.OrderByColumn == "" {
@@ -136,12 +141,13 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 	err := op.DB.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-
+		logger.Error(errors.WithStack(err), "Mysql 查询时错误!表名为: "+op.TableModel.TableName())
 		return nil
 	}
 	err = op.DB.Raw(countSql).Scan(&count).Error
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
+		logger.Error(errors.WithStack(err), "Mysql 查询总数时错误!表名为: "+op.TableModel.TableName())
 		return nil
 	}
 
@@ -153,7 +159,7 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 				res = op.ResHookFunc(slice)
 			}
 		}
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "Mysql 执行Hook函数错误!表名为: "+op.TableModel.TableName())
 	}
 
 	if !op.NotReturn {
@@ -167,16 +173,18 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongoDBTemplateOptions, conditionList ...MongoCondition) {
 	// 分页参数
 	var findOptions = client.MongoPaginate(ctx, &options.FindOptions{})
-	var countOptions = options.Count().SetMaxTime(3 * time.Second)
+	var countOptions = options.Count().SetMaxTime(MONGO_COUNT_MAX_TIME)
 	var filter = bson.D{}
 	var list []_interface.ChineseTabler
 
 	if op.DB == nil {
+		logger.Error(errors.New("mongo client is nil"), "表名为:"+op.TableModel.TableName())
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return
 	}
 	var tx = op.DB.Collection(op.TableModel.TableName())
 	if tx == nil {
+		logger.Error(errors.New("mongo.Collection is nil! "), fmt.Sprintf("Mongo查询时没有该表或创建失败!(%s)", op.TableModel.TableName()))
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return
 	}
@@ -186,16 +194,20 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	findOptions.Sort = bson.D{{op.OrderByColumn, 1}}
 	data, err := tx.Find(context.TODO(), filter, findOptions)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "Mongo查询时错误!表名为: "+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
 	err = data.Decode(&list)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
+
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
 	count, err := tx.CountDocuments(context.TODO(), filter, countOptions)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "Mongo查询总数时错误!表名为: "+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
 		return
 	}
@@ -205,7 +217,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		if err == nil {
 			res = op.ResHookFunc(sliceConvert.([]interface{}))
 		}
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "Mongo执行Hook函数错误!表名为: "+op.TableModel.TableName())
 	}
 	SelectSuccessTemplate(ctx, count, res)
 	return
@@ -222,7 +234,9 @@ func CreateOneMysqlRecordTemplate(ctx *gin.Context, op CreateMysqlTemplateOption
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, data)
 		return
 	}
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("新建%s成功", data.TableCnName())))
+	mes := fmt.Sprintf("新建%s成功", data.TableCnName())
+	logger.Info(mes)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
 
@@ -235,6 +249,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	res, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(context.TODO(), data)
 
 	if err != nil {
+		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, op.TableModel)
 		return
 	}
@@ -242,11 +257,14 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	if ok {
 		err := client.PutIntoIndex(v)
 		if err != nil {
+			logger.Error(errors.WithStack(err), "Mongo 数据同步插入 ES Data 失败!表:"+op.TableModel.TableName())
 			InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, data)
 			return
 		}
 	}
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)))
+	mes := fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)
+	logger.Info(mes)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
 
@@ -260,6 +278,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
 	objV, objT := reflect.ValueOf(data), reflect.TypeOf(data)
 	if objV.IsZero() {
+		logger.Waring(errors.New("This struct is empty! "), "这里尝试更新,但空结构体~")
 		ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 		return
 	}
@@ -286,18 +305,21 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	if ok {
 		err := client.UpdateIntoIndex(v, &op.RecID, op.Context, es_tool.ESDocToUpdateScript(v.ToESDoc()))
 		if err != nil {
+			logger.Error(errors.WithStack(err), "Mongo 同步更新 es 失败!")
 			InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 			return
 		}
 	}
-
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
+	mes := fmt.Sprintf("更新%s信息成功！", data.TableCnName())
+	logger.Info(mes)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
 
 // DeleteOneMongoDBRecordByIDTemplate MongoDB 按REC_ID更新模板
 func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOptions) {
 	var data = op.TableModel
+	var en = op.TableModel.TableName()
 	if op.PreFunc != nil {
 		data = op.PreFunc(data)
 	}
@@ -309,6 +331,7 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		Time:  time.Now(),
 	})}}})
 	if err != nil {
+		logger.Error(errors.WithStack(err), "Mongo 软删除失败! 表:"+en)
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
 	}
@@ -316,11 +339,15 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	if ok {
 		err := client.DeleteFromIndex(v, &op.RecID, op.Context)
 		if err != nil {
+			logger.Error(errors.WithStack(err), "Mongo 同步删除es 失败! 表:"+en)
+
 			InternalDataBaseErrorTemplate(ctx, DATABASE_DELETE_ERROR, data)
 			return
 		}
 	}
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
+	mes := fmt.Sprintf("更新%s信息成功！", data.TableCnName())
+	logger.Info(mes)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
 
@@ -386,7 +413,7 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 	log.Println(op.Query.Source())
 
 	if err != nil {
-		log.Println(err)
+		log.Println(errors.WithStack(err))
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}

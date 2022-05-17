@@ -50,6 +50,10 @@ func (c Customer) Mapping() map[string]interface{} {
 						},
 					},
 				},
+				"provider_social_credit_code": mapping{
+					"type":         "keyword",
+					"ignore_above": 256,
+				},
 
 				"customer_contact": mapping{
 					"type":            "text",
@@ -83,12 +87,13 @@ func (c Customer) Mapping() map[string]interface{} {
 }
 func (c Customer) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
-		"rec_id":           c.RecID,
-		"remark":           c.Remark,
-		"created_at":       c.CreatedAt,
-		"customer_alias":   c.CustomerAlias,
-		"customer_name":    c.CustomerName,
-		"customer_contact": c.CustomerContact,
+		"rec_id":                      c.RecID,
+		"remark":                      c.Remark,
+		"created_at":                  c.CreatedAt,
+		"provider_social_credit_code": c.CustomerSocialCreditCode,
+		"customer_alias":              c.CustomerAlias,
+		"customer_name":               c.CustomerName,
+		"customer_contact":            c.CustomerContact,
 	}
 }
 func (c *Customer) AfterCreate(tx *gorm.DB) error {

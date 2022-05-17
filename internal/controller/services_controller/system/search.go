@@ -47,7 +47,7 @@ func SelectPayable(ctx *gin.Context) {
 		"payable_enterprise^10")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &es.Payable{},
+		TableModel:  &m.Payable{},
 		Query:       query,
 		ResHookFunc: nil,
 	}
@@ -66,7 +66,7 @@ func SelectReceivable(ctx *gin.Context) {
 		"receivable_enterprise^10")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &es.Receivable{},
+		TableModel:  &m.Receivable{},
 		Query:       query,
 		ResHookFunc: nil,
 	}
@@ -126,4 +126,52 @@ func SelectStockOutRecord(ctx *gin.Context) {
 	}
 	common.SelectESTableContentWithCountTemplate(ctx, op)
 	return
+}
+
+func SelectProvider(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"provider_name.keyword^500",
+		"provider_name^15",
+		"provider_social_credit_code^500",
+		"remark^10",
+		"provider_contact^8",
+		"provider_alias^5")
+
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.StockOutRecord{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
+}
+
+func SelectCustomer(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"customer_name.keyword^500",
+		"customer_name^15",
+		"customer_social_credit_code^500",
+		"remark^10",
+		"customer_contact^8",
+		"customer_alias^5")
+
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.StockOutRecord{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
+}
+
+func SelectSale(ctx *gin.Context) {
+
+}
+
+func SelectReturn(ctx *gin.Context) {
+
 }
