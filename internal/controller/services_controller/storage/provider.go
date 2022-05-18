@@ -10,6 +10,8 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
+	"strconv"
 )
 
 func CreateProvider(ctx *gin.Context) {
@@ -92,18 +94,23 @@ func DeleteProvider(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var provider mysql_model.Provider
-	var recID = ctx.PostForm("provider_id")
-	if recID == "" {
+
+	recID, err := strconv.Atoi(ctx.PostForm("provider_id"))
+	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err := bk.MysqlClient.WithContext(
-		context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(&provider, recID).Error
+	var provider = mysql_model.Provider{BasicModel: mysql_model.BasicModel{
+		RecID: &recID,
+	}}
+
+	err = bk.MysqlClient.WithContext(
+		context.WithValue(context.Background(), "book_name", bookName)).Delete(&provider).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "删除供应商失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, provider)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除供应商成功!"))
 	return
 }

@@ -6,8 +6,11 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
+	"strconv"
 )
 
 func CreateCustomer(ctx *gin.Context) {
@@ -90,18 +93,23 @@ func DeleteCustomer(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var customer mysql_model.Customer
-	var recID = ctx.PostForm("customer_id")
-	if recID == "" {
+
+	recID, err := strconv.Atoi(ctx.PostForm("customer_id"))
+	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err := bk.MysqlClient.WithContext(
-		context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(&customer, recID).Error
+	var customer = mysql_model.Customer{BasicModel: mysql_model.BasicModel{
+		RecID: &recID,
+	}}
+
+	err = bk.MysqlClient.WithContext(
+		context.WithValue(context.Background(), "book_name", bookName)).Delete(&customer).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "删除客户失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, customer)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除客户成功!"))
 	return
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 // CreateMaterial 创建原材料
@@ -99,18 +100,22 @@ func DeleteMaterial(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	material := mysql_model.Material{}
-	id := ctx.PostForm("material_id")
-	if id == "" {
+
+	id, err := strconv.Atoi(ctx.PostForm("material_id"))
+	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err := bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(&material, id).Error
+	material := mysql_model.Material{BasicModel: mysql_model.BasicModel{
+		RecID: &id,
+	}}
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Delete(material, id).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, material)
 		return
 	}
+	ctx.JSON(_const.OK, "删除原材料成功!")
 	return
 }
 

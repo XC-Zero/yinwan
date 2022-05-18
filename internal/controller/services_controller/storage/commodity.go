@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 //TODO 打死也要写完库存相关的
@@ -102,18 +103,22 @@ func DeleteCommodity(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	commodity := mysql_model.Commodity{}
-	id := ctx.PostForm("commodity_id")
-	if id == "" {
+
+	id, err := strconv.Atoi(ctx.PostForm("commodity_id"))
+	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err := bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	commodity := mysql_model.Commodity{BasicModel: mysql_model.BasicModel{
+		RecID: &id,
+	}}
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Delete(commodity, id).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodity)
 		return
 	}
+	ctx.JSON(_const.OK, "删除产品成功!")
 	return
 }
 

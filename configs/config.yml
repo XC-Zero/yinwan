@@ -13,49 +13,51 @@ api_config:
     app_id: ""
     app_secret: ""
 book_name_config:
-
-service_config:
-  port: 3776
-
-
-storage_config:
-  es_config:
-    user: ""
-    host: "http://120.79.130.192:9200"
-    password: ""
-    response_header_timeout_seconds: 0
-  kafka_config:
-    addr_list:
-    - 120.79.130.192:9092
-    password: "4#U7vSa^Ud"
-    username: ""
-
+  book_name: "123"
   minio_config:
     access_key: admin
-    bucket: "hsh"
+    bucket: 123-2022-05-17-779410
     end_point: 120.79.130.192:9000
     secret_key: pQ4Jx861Mc
   mongo_db_config:
-   db_name: admin
-   url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
-#   mongo_db_config:
-#     db_name: admin
-#     url: mongodb://localhost:27017
+    db_name: 123-2022-05-17-779410
+    url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
+  mysql_config:
+    db_name: 123-2022-05-17-779410
+    host: 120.79.130.192
+    log_mode: ""
+    password: CJMcjm136466!
+    port: "3309"
+    user_name: root
+  storage_name: 123-2022-05-17-779410
+service_config:
+  port: 3776
+storage_config:
+  es_config:
+    host: http://120.79.130.192:9200
+    password: ""
+    response_header_timeout_seconds: 0
+    user: ""
+  kafka_config:
+    addr_list:
+    - 120.79.130.192:9092
+    password: 4#U7vSa^Ud
+    username: ""
+  minio_config:
+    access_key: admin
+    bucket: hsh
+    end_point: 120.79.130.192:9000
+    secret_key: pQ4Jx861Mc
+  mongo_db_config:
+    db_name: admin
+    url: mongodb://root:rXsx8pD^J*@120.79.130.192:27017
   mysql_config:
     db_name: hsh
     host: 120.79.130.192
     log_mode: ""
-    password: "CJMcjm136466!"
+    password: CJMcjm136466!
     port: "3309"
     user_name: root
-#   mysql_config:
-#     db_name: hsh
-#     host: server.natappfree.cc
-#     log_mode: ""
-#     password: "t^qzZ%VH"
-#     port: 39449
-#     user_name: root
   redis_config:
     addr_list:
     - 120.79.130.192:6379
-

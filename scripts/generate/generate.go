@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 )
 
 func main() {
@@ -18,6 +17,5 @@ func main() {
 	//}
 	//DropESIndex()
 	//GenerateESIndex()
-	client.MysqlClient.AutoMigrate(&mysql_model.Provider{})
-
+	GenerateESIndex()
 }
