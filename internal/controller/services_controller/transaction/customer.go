@@ -3,7 +3,9 @@ package transaction
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 )
@@ -19,11 +21,14 @@ func CreateCustomer(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	op := common.CreateMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: customer,
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Create(&customer).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, customer)
+		return
 	}
-	common.CreateOneMysqlRecordTemplate(ctx, op)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建客户成功!"))
+	//?common.CreateOneMysqlRecordTemplate(ctx, op)
 	return
 }
 func SelectCustomer(ctx *gin.Context) {

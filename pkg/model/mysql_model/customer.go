@@ -22,6 +22,7 @@ type Customer struct {
 	CustomerContactWechat    *string `form:"customer_contact_wechat" json:"customer_contact_wechat,omitempty" gorm:"type:varchar(50)" cn:"联系人微信"`
 	CustomerOwnerID          *int    `form:"customer_owner_id" json:"customer_owner_id,omitempty" gorm:"type:varchar(50)" cn:"客户负责人ID"`
 	CustomerOwnerName        *string `form:"customer_owner_name" json:"customer_owner_name,omitempty" gorm:"type:varchar(50)" cn:"客户负责人名称"`
+	AccumulateReceiveAmount  string  `json:"accumulate_receive_amount" form:"accumulate_receive_amount" gorm:"type:varchar(50)" cn:"累计收款"`
 	Remark                   *string `form:"remark" json:"remark,omitempty" gorm:"type:varchar(200)"  cn:"备注"`
 }
 

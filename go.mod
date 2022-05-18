@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/Shopify/sarama v1.31.1
 	github.com/dollarkillerx/urllib v1.13.16
-	github.com/elastic/go-elasticsearch/v7 v7.17.0
 	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/fwhezfwhez/errorx v1.1.0
@@ -25,6 +24,7 @@ require (
 	github.com/tealeg/xlsx v1.0.5
 	github.com/xuri/excelize/v2 v2.5.0
 	go.mongodb.org/mongo-driver v1.8.3
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	gorm.io/driver/mysql v1.2.3
 	gorm.io/gorm v1.22.5
 )
@@ -91,7 +91,6 @@ require (
 	github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.0.0-20220128200615-198e4374d7ed // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect

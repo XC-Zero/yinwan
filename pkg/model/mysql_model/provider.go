@@ -22,6 +22,7 @@ type Provider struct {
 	ProviderContactWechat    *string `form:"provider_contact_wechat" json:"provider_contact_wechat,omitempty" gorm:"type:varchar(50)" cn:"联系人微信"`
 	ProviderOwnerID          *int    `form:"provider_owner_id" json:"provider_owner_id,omitempty" gorm:"type:varchar(50)" cn:"供应商负责人ID"`
 	ProviderOwnerName        *string `form:"provider_owner_name" json:"provider_owner_name,omitempty" gorm:"type:varchar(50)" cn:"供应商负责人名称"`
+	AccumulatePayAmount      string  `json:"accumulate_pay_amount" gorm:"type:varchar(50)" cn:"累计付款"`
 	Remark                   *string `form:"remark" json:"remark,omitempty" gorm:"type:varchar(200)"  cn:"备注"`
 }
 

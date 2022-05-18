@@ -15,6 +15,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
+	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
@@ -140,6 +141,7 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 
 	err := op.DB.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
+		logger.Error(errorx.MustWrap(err), "there is any errors ! ")
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		logger.Error(errors.WithStack(err), "Mysql 查询时错误!表名为: "+op.TableModel.TableName())
 		return nil
@@ -229,8 +231,11 @@ func CreateOneMysqlRecordTemplate(ctx *gin.Context, op CreateMysqlTemplateOption
 	if op.PreFunc != nil {
 		data = op.PreFunc(op.TableModel)
 	}
-	err := op.DB.Create(op.TableModel).Error
+	err := op.DB.Create(&op.TableModel).Error
 	if err != nil {
+		log.Printf("%+v", op.TableModel)
+		log.Printf("%T", op.TableModel)
+		log.Println(err)
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, data)
 		return
 	}

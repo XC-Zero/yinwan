@@ -3,8 +3,12 @@ package storage
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
+	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,14 +20,18 @@ func CreateProvider(ctx *gin.Context) {
 	var provider mysql_model.Provider
 	err := ctx.ShouldBind(&provider)
 	if err != nil {
+		logger.Error(errorx.MustWrap(err), "provider errors ")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	op := common.CreateMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
-		TableModel: provider,
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&provider).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, provider)
+		return
 	}
-	common.CreateOneMysqlRecordTemplate(ctx, op)
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建供应商成功!"))
+
+	//common.CreateOneMysqlRecordTemplate(ctx, op)
 	return
 }
 func SelectProvider(ctx *gin.Context) {

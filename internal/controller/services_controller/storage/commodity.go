@@ -27,7 +27,8 @@ func CreateCommodity(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&commodity).Error
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Create(&commodity).Error
 	if err != nil {
 		log.Println(err)
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodity)

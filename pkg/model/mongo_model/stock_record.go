@@ -9,12 +9,14 @@ import (
 type StockInRecord struct {
 	mysql_model.BasicModel
 	BookNameInfo
-	StockInRecordOwnerID   int                    ` json:"stock_in_record_owner_id"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" binding:"required"`
-	StockInRecordOwnerName string                 ` json:"stock_in_record_owner_name" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" binding:"required"`
-	StockInRecordType      string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
-	StockInRecordContent   map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
-	RelatePurchaseID       *int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty"`
-	Remark                 *string                ` json:"remark,omitempty" form:"remark" bson:"remark"`
+	StockInRecordOwnerID      int                    ` json:"stock_in_record_owner_id"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" binding:"required"`
+	StockInRecordProviderID   *int                   `json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
+	StockInRecordProviderName *string                `json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
+	StockInRecordOwnerName    string                 ` json:"stock_in_record_owner_name" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" binding:"required"`
+	StockInRecordType         string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
+	StockInRecordContent      map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
+	RelatePurchaseID          *int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty"`
+	Remark                    *string                ` json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 
 func (m StockInRecord) TableName() string {
