@@ -3,7 +3,7 @@ package finance
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -34,7 +34,7 @@ func DeleteReceivable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var stockOutRecord mongo_model.Receivable
+	var stockOutRecord mysql_model.Receivable
 	recID, err := strconv.Atoi(ctx.PostForm("receivable_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)

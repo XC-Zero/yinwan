@@ -4,28 +4,27 @@ import (
 	"context"
 	"fmt"
 	config2 "github.com/XC-Zero/yinwan/internal/config"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/config"
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"gorm.io/gorm"
-	"log"
-
 	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/mozillazg/go-pinyin"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"math/rand"
 	"strings"
 	"time"
 )
 
 var bookNameMysqlMigrateList = []interface{}{
-	&mongo_model.Payable{},
-	&mongo_model.Receivable{},
+	&mysql_model.Payable{},
+	&mysql_model.Receivable{},
 	&mysql_model.Commodity{},
 	&mysql_model.CommodityHistoricalCost{},
 	&mysql_model.CommodityBatch{},
@@ -35,12 +34,7 @@ var bookNameMysqlMigrateList = []interface{}{
 	&mysql_model.Provider{},
 	&mysql_model.ManipulationLog{},
 	&mysql_model.TypeTree{},
-	&mongo_model.Payable{},
-	&mongo_model.Receivable{},
-}
-
-type CreateBookNameRequest struct {
-	BookName string `json:"book_name" binding:"required"`
+	&mysql_model.Warehouse{},
 }
 
 // CreateBookName 创建账套
@@ -58,11 +52,6 @@ func CreateBookName(ctx *gin.Context) {
 	}
 }
 
-type tempResponse struct {
-	BookNameID string `json:"book_name_id" form:"book_name_id"`
-	BookName   string `json:"book_name" form:"book_name"`
-}
-
 // SelectAllBookName 查询所有账套
 func SelectAllBookName(ctx *gin.Context) {
 	bookNameList := client.GetAllBookMap()
@@ -78,6 +67,36 @@ func SelectAllBookName(ctx *gin.Context) {
 		"list":  list,
 	})
 	return
+}
+
+func DeleteBookName(ctx *gin.Context) {
+	var temp tempResponse
+	err := ctx.ShouldBind(&temp)
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	client.DeleteBookMap(temp.BookName)
+	var configList = config2.CONFIG.BookNameConfig
+	for i, bookConfig := range configList {
+		if bookConfig.BookName == temp.BookName {
+			config2.CONFIG.BookNameConfig = append(config2.CONFIG.BookNameConfig[:i], config2.CONFIG.BookNameConfig[i+1:]...)
+		}
+	}
+	err = config2.SaveConfig("book_name_config", config2.CONFIG.BookNameConfig)
+	if err != nil {
+		logger.Error(errors.WithStack(err), fmt.Sprintf("删除账套时写入配置文件失败! 账套是 %s", temp.BookName))
+		ctx.JSON(_const.OK, errs.CreateWebErrorMsg("删除账套失败!"))
+		return
+	}
+
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除账套成功!"))
+	return
+}
+
+type tempResponse struct {
+	BookNameID string `json:"book_name_id" form:"book_name_id" `
+	BookName   string `json:"book_name" form:"book_name" binding:"required"`
 }
 
 func InitBookMap(configs []config.BookConfig) error {
@@ -123,7 +142,7 @@ func AddBookName(bookName string) (status bool) {
 		t = bookName
 	}
 	var name = fmt.Sprintf("%s-%s-%d", t, time.Now().Format("2006-01-02"), rand.Int63n(1000000))
-	log.Println("Create bookname storage name is ", name)
+	logger.Info(fmt.Sprintf("Create bookname storage name is %s", name))
 	mysqlCfg.DBName, minioCfg.Bucket, mongoCfg.DBName = name, name, name
 	cfg := config.BookConfig{
 		BookName:      bookName,

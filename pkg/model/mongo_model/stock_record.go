@@ -10,9 +10,12 @@ type StockInRecord struct {
 	mysql_model.BasicModel
 	BookNameInfo
 	StockInRecordOwnerID      int                    ` json:"stock_in_record_owner_id"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" binding:"required"`
-	StockInRecordProviderID   *int                   `json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
-	StockInRecordProviderName *string                `json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
+	StockInRecordProviderID   *int                   ` json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
+	StockInRecordProviderName *string                ` json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
 	StockInRecordOwnerName    string                 ` json:"stock_in_record_owner_name" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" binding:"required"`
+	StockInWarehouseID        *int                   ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
+	StockInWarehouseName      *string                ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
+	StockInDetailPosition     *string                ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
 	StockInRecordType         string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
 	StockInRecordContent      map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
 	RelatePurchaseID          *int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty"`
@@ -92,6 +95,9 @@ type StockOutRecord struct {
 	StockOutRecordOwnerID   int                    `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
 	StockOutRecordOwnerName string                 `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
 	StockOutRecordType      string                 `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
+	StockOutWarehouseID     *int                   ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
+	StockOutWarehouseName   *string                ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
+	StockOutDetailPosition  *string                ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
 	StockOutRecordContent   map[string]interface{} `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
 	Remark                  *string                `json:"remark,omitempty" form:"remark" bson:"remark"`
 }

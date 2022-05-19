@@ -16,13 +16,14 @@ type Provider struct {
 	ProviderAlias            *string `form:"provider_alias" json:"provider_alias,omitempty" gorm:"type:varchar(50)" cn:"供应商简称"`
 	ProviderLogoUrl          *string `gorm:"type:varchar(500); " form:"provider_logo_url" json:"provider_logo_url,omitempty" cn:"供应商头像地址"`
 	ProviderAddress          *string `form:"provider_address" json:"provider_address,omitempty"  gorm:"type:varchar(500);" cn:"供应商地址"`
+	ProviderDetailAddress    *string `gorm:"type:varchar(500);" json:"provider_detail_address,omitempty" form:"provider_detail_address,omitempty"`
 	ProviderSocialCreditCode *string `form:"provider_social_credit_code" json:"provider_social_credit_code,omitempty" gorm:"type:varchar(50)" cn:"社会信用代码"`
 	ProviderContact          *string `form:"provider_contact" json:"provider_contact,omitempty" gorm:"type:varchar(50)" cn:"供应商方联系人"`
 	ProviderContactPhone     *string `form:"provider_contact_phone" json:"provider_contact_phone,omitempty" gorm:"type:varchar(20)" cn:"联系人电话"`
 	ProviderContactWechat    *string `form:"provider_contact_wechat" json:"provider_contact_wechat,omitempty" gorm:"type:varchar(50)" cn:"联系人微信"`
 	ProviderOwnerID          *int    `form:"provider_owner_id" json:"provider_owner_id,omitempty" gorm:"type:varchar(50)" cn:"供应商负责人ID"`
 	ProviderOwnerName        *string `form:"provider_owner_name" json:"provider_owner_name,omitempty" gorm:"type:varchar(50)" cn:"供应商负责人名称"`
-	AccumulatePayAmount      string  `json:"accumulate_pay_amount" gorm:"type:varchar(50)" cn:"累计付款"`
+	AccumulatePayAmount      string  `json:"accumulate_pay_amount" gorm:"type:varchar(50);default:0" cn:"累计付款"`
 	Remark                   *string `form:"remark" json:"remark,omitempty" gorm:"type:varchar(200)"  cn:"备注"`
 }
 

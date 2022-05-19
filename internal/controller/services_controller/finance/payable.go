@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ func CreatePayable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	temp := mongo_model.Payable{}
+	temp := mysql_model.Payable{}
 
 	err := ctx.ShouldBind(&temp)
 	if err != nil {
@@ -49,7 +49,7 @@ func SelectPayable(ctx *gin.Context) {
 	}
 	op := common.SelectMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
-		TableModel: mongo_model.Payable{},
+		TableModel: mysql_model.Payable{},
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, condition...)
 }
@@ -66,7 +66,7 @@ func DeletePayable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var stockOutRecord mongo_model.Payable
+	var stockOutRecord mysql_model.Payable
 	recID, err := strconv.Atoi(ctx.PostForm("payable_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)

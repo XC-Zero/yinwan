@@ -142,6 +142,7 @@ func CreateCommodityBatch(ctx *gin.Context) {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodityBatch)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建产品批次成功!"))
 	return
 }
 
@@ -183,17 +184,46 @@ func SelectCommodityDetail(ctx *gin.Context) {
 	return
 }
 
-// DeleteCommodityDetail 删除产品批次信息 todo!!!!
+func UpdateCommodityDetail(ctx *gin.Context) {
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	var commodityDetail mysql_model.CommodityBatch
+	err := ctx.ShouldBind(&commodityDetail)
+	if err != nil || commodityDetail.RecID == nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Updates(&commodityDetail).Where("rec_id = ?", commodityDetail.RecID).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodityDetail)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新产品批次信息成功!"))
+	return
+}
+
+// DeleteCommodityDetail 删除产品批次信息
 func DeleteCommodityDetail(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var recID = ctx.PostForm("commodity_batch_id")
-	err := bk.MysqlClient.
-		WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(mysql_model.CommodityBatch{}, recID).Error
+	recID, err := strconv.Atoi(ctx.PostForm("commodity_batch_id"))
 	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+
+	commodityDetail := mysql_model.CommodityBatch{BasicModel: mysql_model.BasicModel{RecID: &recID}}
+	err = bk.MysqlClient.
+		WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Delete(&commodityDetail).Error
+	if err != nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodityDetail)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除产品批次成功!"))
+	return
 }

@@ -48,6 +48,13 @@ func initBookName() {
 func GetBookNameInstance() *bookNameMap {
 	return bk
 }
+
+func DeleteBookMap(key string) {
+	GetBookNameInstance().RLock()
+	delete(GetBookNameInstance().bookNameMap, key)
+	GetBookNameInstance().RUnlock()
+	return
+}
 func ReadBookMap(key string) (value BookName, ok bool) {
 	GetBookNameInstance().RLock()
 	value, ok = GetBookNameInstance().bookNameMap[key]

@@ -69,6 +69,7 @@ func Starter() {
 		{
 			storage.POST("/create_commodity_detail", storage3.CreateCommodityBatch)
 			storage.POST("/select_commodity_detail", storage3.SelectCommodityDetail)
+			storage.POST("/update_commodity_detail", storage3.UpdateCommodityDetail)
 			storage.POST("/delete_commodity_detail", storage3.DeleteCommodityDetail)
 
 		}
@@ -102,6 +103,13 @@ func Starter() {
 			storage.POST("/update_stock_out", storage3.UpdateStockOut)
 			storage.POST("/delete_stock_out", storage3.DeleteStockOut)
 			storage.POST("/select_stock_out_type", storage3.SelectStockOutType)
+		}
+		// 仓库
+		{
+			storage.POST("/create_warehouse", storage3.CreateWareHouse)
+			storage.POST("/select_warehouse", storage3.SelectWareHouse)
+			storage.POST("/update_warehouse", storage3.UpdateWareHouse)
+			storage.POST("/delete_warehouse", storage3.DeleteWareHouse)
 		}
 		//扫码 小程序用
 		{
@@ -166,6 +174,7 @@ func Starter() {
 		{
 			system.POST("/create_book_name", system2.CreateBookName)
 			system.POST("/select_all_book_name", system2.SelectAllBookName)
+			system.POST("/delete_book_name", system2.DeleteBookName)
 		}
 
 		// 角色

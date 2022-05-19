@@ -47,7 +47,7 @@ func SelectPayable(ctx *gin.Context) {
 		"payable_enterprise^10")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &m.Payable{},
+		TableModel:  &es.Payable{},
 		Query:       query,
 		ResHookFunc: nil,
 	}
@@ -66,7 +66,7 @@ func SelectReceivable(ctx *gin.Context) {
 		"receivable_enterprise^10")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &m.Receivable{},
+		TableModel:  &es.Receivable{},
 		Query:       query,
 		ResHookFunc: nil,
 	}

@@ -77,11 +77,11 @@ func SelectTypeTree(ctx *gin.Context) {
 func UpdateTypeTree(ctx *gin.Context) {
 	typeTree := mysql_model.TypeTree{}
 	err := ctx.ShouldBind(&typeTree)
-	if err != nil {
+	if err != nil || typeTree.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Updates(typeTree).Error
+	err = client.MysqlClient.Updates(&typeTree).Where("rec_id = ?", typeTree.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, typeTree)
 		return

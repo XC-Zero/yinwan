@@ -33,7 +33,6 @@ func CreateProvider(ctx *gin.Context) {
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建供应商成功!"))
 
-	//common.CreateOneMysqlRecordTemplate(ctx, op)
 	return
 }
 func SelectProvider(ctx *gin.Context) {
@@ -87,6 +86,7 @@ func UpdateProvider(ctx *gin.Context) {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, provider)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新供应商成功!"))
 	return
 }
 func DeleteProvider(ctx *gin.Context) {
