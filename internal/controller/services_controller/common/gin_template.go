@@ -268,7 +268,6 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		}
 	}
 	mes := fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)
-	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }

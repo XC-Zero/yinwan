@@ -6,9 +6,10 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
-	"log"
+	"github.com/pkg/errors"
 	"strconv"
 )
 
@@ -21,14 +22,14 @@ func CreateMaterial(ctx *gin.Context) {
 	var material mysql_model.Material
 	err := ctx.ShouldBind(&material)
 	if err != nil {
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "绑定原材料失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&material).Error
 	if err != nil {
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "创建原材料失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, material)
 		return
 	}
@@ -88,9 +89,11 @@ func UpdateMaterial(ctx *gin.Context) {
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Updates(&material).Where("rec_id", *material.RecID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "更新原材料失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, material)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新原材料成功!"))
 	return
 }
 
@@ -110,12 +113,12 @@ func DeleteMaterial(ctx *gin.Context) {
 		RecID: &id,
 	}}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(material, id).Error
+		Delete(&material).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, material)
 		return
 	}
-	ctx.JSON(_const.OK, "删除原材料成功!")
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除原材料成功!"))
 	return
 }
 
@@ -134,11 +137,12 @@ func CreateMaterialBatch(ctx *gin.Context) {
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Create(materialBatch).Error
+		Create(&materialBatch).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, materialBatch)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建批次信息成功!"))
 	return
 }
 
@@ -182,5 +186,24 @@ func SelectMaterialDetail(ctx *gin.Context) {
 
 // DeleteMaterialDetail 删除原材料批次信息
 func DeleteMaterialDetail(ctx *gin.Context) {
-
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	recID, err := strconv.Atoi(ctx.PostForm("commodity_batch_id"))
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	var materialBatch mysql_model.MaterialBatch
+	materialBatch.RecID = &recID
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Delete(&materialBatch).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "删除批次失败!")
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, materialBatch)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除批次成功!"))
+	return
 }

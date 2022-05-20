@@ -32,6 +32,7 @@ func RequestParamErrorTemplate(ctx *gin.Context, message PredefinedMessage) {
 
 // InternalDataBaseErrorTemplate 数据库异常
 func InternalDataBaseErrorTemplate(ctx *gin.Context, message PredefinedMessage, table _interface.ChineseTabler) {
+
 	ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg(fmt.Sprintf(string(message), table.TableCnName())))
 	return
 }

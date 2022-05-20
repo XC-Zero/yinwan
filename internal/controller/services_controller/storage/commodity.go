@@ -6,13 +6,13 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"log"
 	"strconv"
 )
-
-//TODO 打死也要写完库存相关的
 
 // CreateCommodity 创建产品
 func CreateCommodity(ctx *gin.Context) {
@@ -85,15 +85,18 @@ func UpdateCommodity(ctx *gin.Context) {
 	commodity := mysql_model.Commodity{}
 	err := ctx.ShouldBind(&commodity)
 	if err != nil || commodity.RecID == nil {
+		logger.Error(errors.WithStack(err), "绑定产品失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Updates(&commodity).Where("rec_id", *commodity.RecID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "更新产品失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodity)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新产品成功!"))
 	return
 }
 
@@ -113,12 +116,12 @@ func DeleteCommodity(ctx *gin.Context) {
 		RecID: &id,
 	}}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Delete(commodity, id).Error
+		Delete(&commodity).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodity)
 		return
 	}
-	ctx.JSON(_const.OK, "删除产品成功!")
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除原材料成功!"))
 	return
 }
 
@@ -137,7 +140,7 @@ func CreateCommodityBatch(ctx *gin.Context) {
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
-		Create(commodityBatch).Error
+		Create(&commodityBatch).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodityBatch)
 		return
@@ -221,6 +224,7 @@ func DeleteCommodityDetail(ctx *gin.Context) {
 		WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Delete(&commodityDetail).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "删除产品批次信息失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodityDetail)
 		return
 	}
