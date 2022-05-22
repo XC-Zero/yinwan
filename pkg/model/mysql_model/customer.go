@@ -11,11 +11,11 @@ import (
 type Customer struct {
 	BasicModel
 	BookNameInfo
-	CustomerName             string  `form:"customer_name" json:"customer_name" gorm:"type:varchar(200);not null;" cn:"客户名称"`
+	CustomerName             string  `form:"customer_name" json:"customer_name" gorm:"type:varchar(200);not null;" cn:"客户名称" binding:"required"`
 	CustomerLegalName        *string `form:"customer_legal_name" json:"customer_legal_name,omitempty" gorm:"type:varchar(50)" cn:"客户公司全称"`
 	CustomerAlias            *string `form:"customer_alias" json:"customer_alias,omitempty" gorm:"type:varchar(50)" cn:"客户简称"`
 	CustomerLogoUrl          *string `gorm:"type:varchar(500); " form:"customer_logo_url" json:"customer_logo_url,omitempty" cn:"客户头像地址"`
-	CustomerAddress          *string `form:"customer_address" json:"customer_address,omitempty"  gorm:"type:varchar(500);" cn:"客户地址"`
+	CustomerAddress          *string `form:"customer_address" json:"customer_address,omitempty"  gorm:"type:varchar(500);" cn:"客户省市区地址"`
 	CustomerDetailAddress    *string `gorm:"type:varchar(500);" json:"customer_detail_address,omitempty" form:"customer_detail_address" cn:"客户详细地址"`
 	CustomerSocialCreditCode *string `form:"customer_social_credit_code" json:"customer_social_credit_code,omitempty" gorm:"type:varchar(50)" cn:"社会信用代码"`
 	CustomerContact          *string `form:"customer_contact" json:"customer_contact,omitempty" gorm:"type:varchar(50)" cn:"客户方联系人"`
@@ -56,6 +56,11 @@ func (c Customer) Mapping() map[string]interface{} {
 					"type":         "keyword",
 					"ignore_above": 256,
 				},
+				"customer_address": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
 
 				"customer_contact": mapping{
 					"type":            "text",
@@ -88,6 +93,13 @@ func (c Customer) Mapping() map[string]interface{} {
 	return m
 }
 func (c Customer) ToESDoc() map[string]interface{} {
+	var address string
+	if c.CustomerAddress != nil {
+		address += *c.CustomerAddress
+	}
+	if c.CustomerDetailAddress != nil {
+		address += *c.CustomerDetailAddress
+	}
 	return map[string]interface{}{
 		"rec_id":                      c.RecID,
 		"remark":                      c.Remark,
@@ -96,6 +108,7 @@ func (c Customer) ToESDoc() map[string]interface{} {
 		"customer_alias":              c.CustomerAlias,
 		"customer_name":               c.CustomerName,
 		"customer_contact":            c.CustomerContact,
+		"customer_address":            address,
 	}
 }
 func (c *Customer) AfterCreate(tx *gorm.DB) error {

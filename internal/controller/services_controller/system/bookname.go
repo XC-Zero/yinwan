@@ -84,10 +84,20 @@ func DeleteBookName(ctx *gin.Context) {
 	var configList = config2.CONFIG.BookNameConfig
 	for i, bookConfig := range configList {
 		if bookConfig.BookName == temp.BookName {
+
+			if i == len(configList)-1 {
+				config2.CONFIG.BookNameConfig = config2.CONFIG.BookNameConfig[:i]
+				break
+			}
+			if i == 0 {
+				config2.CONFIG.BookNameConfig = config2.CONFIG.BookNameConfig[1:]
+				break
+			}
+
 			config2.CONFIG.BookNameConfig = append(config2.CONFIG.BookNameConfig[:i], config2.CONFIG.BookNameConfig[i+1:]...)
 		}
 	}
-	err = config2.SaveConfig("book_name_config", config2.CONFIG.BookNameConfig)
+	err = config2.SaveBookConfig(config2.CONFIG)
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("删除账套时写入配置文件失败! 账套是 %s", temp.BookName))
 		ctx.JSON(_const.OK, errs.CreateWebErrorMsg("删除账套失败!"))
@@ -151,7 +161,7 @@ func AddBookName(bookName string) (status bool) {
 
 	// 保存配置
 	config2.CONFIG.BookNameConfig = append(config2.CONFIG.BookNameConfig, cfg)
-	err = config2.SaveConfig("book_name_config", config2.CONFIG.BookNameConfig)
+	err = config2.SaveBookConfig(config2.CONFIG)
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时写入配置文件失败! "))
 		return false

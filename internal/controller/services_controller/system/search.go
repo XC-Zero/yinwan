@@ -168,10 +168,62 @@ func SelectCustomer(ctx *gin.Context) {
 	return
 }
 
-func SelectSale(ctx *gin.Context) {
+func SelectTransaction(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"customer_name.keyword^500",
+		"customer_name^15",
+		"customer_social_credit_code^500",
+		"remark^10",
+		"customer_contact^8",
+		"customer_alias^5")
 
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.Transaction{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
 }
 
 func SelectReturn(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"return_owner_name.keyword^500",
+		"return_content^15",
+		"return_owner_name^15",
+		"remark^10",
+		"receive_id^500",
+		"transaction_id^500")
 
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.Return{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
+}
+
+func SelectPurchase(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"customer_name.keyword^500",
+		"customer_name^15",
+		"customer_social_credit_code^500",
+		"remark^10",
+		"customer_contact^8",
+		"customer_alias^5")
+
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.Purchase{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
 }

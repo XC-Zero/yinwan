@@ -108,7 +108,9 @@ func GetAllBookMap() []BookName {
 	return bkList
 }
 
-// FindBookNameByGorm Deprecated 弃用
+// FindBookNameByGorm
+//
+// Deprecated: 已弃用
 func FindBookNameByGorm(db *gorm.DB) (id, name string) {
 	GetBookNameInstance().Lock()
 	defer GetBookNameInstance().Unlock()

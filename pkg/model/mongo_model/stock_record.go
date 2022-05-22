@@ -100,14 +100,14 @@ func (m StockInRecord) ToESDoc() map[string]interface{} {
 type StockOutRecord struct {
 	mysql_model.BasicModel
 	BookNameInfo
-	StockOutRecordOwnerID   int                    `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
-	StockOutRecordOwnerName string                 `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
-	StockOutRecordType      string                 `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
-	StockOutWarehouseID     *int                   ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
-	StockOutWarehouseName   *string                ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
-	StockOutDetailPosition  *string                ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
-	StockOutRecordContent   map[string]interface{} `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
-	Remark                  *string                `json:"remark,omitempty" form:"remark" bson:"remark"`
+	StockOutRecordOwnerID   int                      `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
+	StockOutRecordOwnerName string                   `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
+	StockOutRecordType      string                   `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
+	StockOutWarehouseID     *int                     ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
+	StockOutWarehouseName   *string                  ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
+	StockOutDetailPosition  *string                  ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
+	StockOutRecordContent   []map[string]interface{} `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
+	Remark                  *string                  `json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 
 func (m StockOutRecord) ToESDoc() map[string]interface{} {

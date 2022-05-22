@@ -36,16 +36,16 @@ func (p PayType) DisPlay() string {
 type Transaction struct {
 	mysql_model.BasicModel
 	BookNameInfo
-	TransactionContent      map[string]interface{} `json:"transaction_content" form:"transaction_content" bson:"transaction_content" cn:"销售详情"`
-	TransactionAmount       string                 `json:"transaction_amount" form:"transaction_amount" bson:"transaction_amount" cn:"销售金额"`
-	TransactionActualAmount string                 `json:"transaction_actual_amount" form:"transaction_actual_amount" bson:"transaction_actual_amount" cn:"实际销售金额"`
-	PayType                 *PayType               `json:"pay_type,omitempty" form:"pay_type,omitempty" bson:"pay_type" cn:"支付类型"`
-	PayerName               *string                `json:"payer_name,omitempty" form:"payer_name" bson:"payer_name" cn:"支付人姓名"`
-	TransactionOwnerID      *int                   `json:"transaction_owner_id,omitempty" form:"transaction_owner_id" bson:"transaction_owner_id" cn:"销售管理员ID"`
-	TransactionOwnerName    *string                `json:"transaction_owner_name,omitempty" form:"transaction_owner_name" bson:"transaction_owner_name" cn:"销售管理员姓名"`
-	TransactionTime         *string                `json:"transaction_time,omitempty" form:"transaction_time" bson:"transaction_time" cn:"交易时间"`
-	ReceiveID               *int                   `json:"receive_id,omitempty" form:"receive_id" bson:"receive_id" cn:"应收记录"`
-	Remark                  *string                `json:"remark,omitempty" form:"remark" bson:"remark" cn:"备注"`
+	TransactionContent      []map[string]interface{} `json:"transaction_content" form:"transaction_content" bson:"transaction_content" cn:"销售详情"`
+	TransactionAmount       string                   `json:"transaction_amount" form:"transaction_amount" bson:"transaction_amount" cn:"销售金额"`
+	TransactionActualAmount string                   `json:"transaction_actual_amount" form:"transaction_actual_amount" bson:"transaction_actual_amount" cn:"实际销售金额"`
+	PayType                 *PayType                 `json:"pay_type,omitempty" form:"pay_type,omitempty" bson:"pay_type" cn:"支付类型"`
+	PayerName               *string                  `json:"payer_name,omitempty" form:"payer_name" bson:"payer_name" cn:"支付人姓名"`
+	TransactionOwnerID      *int                     `json:"transaction_owner_id,omitempty" form:"transaction_owner_id" bson:"transaction_owner_id" cn:"销售管理员ID"`
+	TransactionOwnerName    *string                  `json:"transaction_owner_name,omitempty" form:"transaction_owner_name" bson:"transaction_owner_name" cn:"销售管理员姓名"`
+	TransactionTime         *string                  `json:"transaction_time,omitempty" form:"transaction_time" bson:"transaction_time" cn:"交易时间"`
+	ReceiveID               *int                     `json:"receive_id,omitempty" form:"receive_id" bson:"receive_id" cn:"应收记录"`
+	Remark                  *string                  `json:"remark,omitempty" form:"remark" bson:"remark" cn:"备注"`
 }
 
 func (t Transaction) Mapping() map[string]interface{} {

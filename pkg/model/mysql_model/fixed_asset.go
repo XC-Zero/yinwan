@@ -15,7 +15,7 @@ type Currency struct {
 	// 货币符号
 	CurrencySymbol string `gorm:"type:varchar(50)"`
 	// 对比人民币的汇率
-	CurrencyExchangeRate float64 `gorm:"type:decimal(20,4)"`
+	CurrencyExchangeRate string `gorm:"type:varchar(20)"`
 }
 
 // FixedAsset 固定资产
@@ -25,13 +25,13 @@ type FixedAsset struct {
 	BookNameInfo
 	FixedAssetPicUrl          *string `gorm:"type:varchar(500)" json:"fixed_asset_pic_url,omitempty" form:"fixed_asset_pic_url,omitempty" `
 	FixedAssetName            string  `gorm:"type:varchar(100);not null'" form:"fixed_asset_name" json:"fixed_asset_name"`
-	FixedAssetTypeID          *int    `gorm:"type:int;index" json:"fixed_asset_type_id,omitempty" cn:"固定资产类型ID"`
-	FixedAssetTypeName        *string `gorm:"type:varchar(50)" json:"fixed_asset_type_name,omitempty" cn:"固定资产类型名称"`
-	DepreciationPeriod        int     `gorm:"type:int;not null" json:"depreciation_period" cn:"折旧期限（月）"`
-	TotalPrice                float64 `gorm:"type:decimal(20,2);not null" json:"total_price" cn:"原价"`
-	CurrentPrice              float64 `gorm:"type:decimal(20,2);not null" json:"current_price" cn:"残值"`
-	MonthlyDepreciationAmount float64 `gorm:"type:decimal(20,2);not null" json:"monthly_depreciation_amount" cn:"每月折旧额"`
-	Remark                    *string `gorm:"type:varchar(200)" json:"remark" cn:"备注"`
+	FixedAssetTypeID          *int    `gorm:"type:int;index" json:"fixed_asset_type_id,omitempty"  form:"fixed_asset_type_id" cn:"固定资产类型ID"`
+	FixedAssetTypeName        *string `gorm:"type:varchar(50)" json:"fixed_asset_type_name,omitempty"  form:"fixed_asset_type_name" cn:"固定资产类型名称"`
+	DepreciationPeriod        int     `gorm:"type:int;not null" json:"depreciation_period"  form:"depreciation_period" cn:"折旧期限（月）"`
+	TotalPrice                *string `gorm:"type:varchar(20);not null" json:"total_price,omitempty"  form:"total_price" cn:"原价"`
+	CurrentPrice              *string `gorm:"type:varchar(20);not null" json:"current_price,omitempty"  form:"current_price" cn:"残值"`
+	MonthlyDepreciationAmount *string `gorm:"type:varchar(20);not null" json:"monthly_depreciation_amount,omitempty"  form:"monthly_depreciation_amount" cn:"每月折旧额"`
+	Remark                    *string `gorm:"type:varchar(200)" json:"remark"  form:"remark" cn:"备注"`
 }
 
 func (p FixedAsset) TableCnName() string {
@@ -119,7 +119,6 @@ func (p *FixedAsset) AfterUpdate(tx *gorm.DB) error {
 	p.BookNameID = bk.StorageName
 	p.BookName = bk.BookName
 	err := client.UpdateIntoIndex(p, p.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(p.ToESDoc()))
-
 	if err != nil {
 		return err
 	}

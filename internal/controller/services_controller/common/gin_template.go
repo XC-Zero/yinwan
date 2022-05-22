@@ -32,6 +32,11 @@ import (
 
 const MONGO_COUNT_MAX_TIME = 5 * time.Second
 
+const (
+	JSON = "application/json"
+	FORM = "application/x-www-form-urlencoded"
+)
+
 // MysqlCondition MySQL 搜索条件
 type MysqlCondition struct {
 	Symbol      mysql.OperatorSymbol
@@ -447,18 +452,24 @@ func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 
 	var bookNameJson bookNameRequest
 	var bookName string
-	err := ctx.Request.ParseForm()
-	if err != nil {
-		logger.Error(errors.WithStack(err), "")
-	}
 
-	err = ctx.ShouldBindBodyWith(&bookNameJson, binding.JSON)
-	if err == nil {
-		bookName = bookNameJson.BookName
-	} else {
+	if ctx.ContentType() == FORM {
+		err := ctx.Request.ParseForm()
+		if err != nil {
+			logger.Error(errors.WithStack(err), "")
+			RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
+			return nil, ""
+		}
 		bookName = ctx.Request.Form.Get("book_name")
+	} else {
+		err := ctx.ShouldBindBodyWith(&bookNameJson, binding.JSON)
+		if err != nil {
+			logger.Error(errors.WithStack(err), "")
+			RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
+			return nil, ""
+		}
+		bookName = bookNameJson.BookName
 	}
-
 	if book, ok := client.ReadBookMap(bookName); ok {
 		return &book, bookName
 	} else {

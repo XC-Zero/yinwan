@@ -125,9 +125,9 @@ func (c *Commodity) AfterDelete(tx *gorm.DB) error {
 // CommodityHistoricalCost 历史成本表
 type CommodityHistoricalCost struct {
 	BasicModel
-	CommodityID   int     `gorm:"type:int;index;" json:"commodity_id"`
-	CommodityName string  `gorm:"type:varchar(200)" json:"commodity_name"`
-	CommodityCost float64 `gorm:"type:decimal(20,2)" json:"commodity_cost"`
+	CommodityID   int    `gorm:"type:int;index;" json:"commodity_id" form:"commodity_id"`
+	CommodityName string `gorm:"type:varchar(200)" json:"commodity_name" form:"commodity_name"`
+	CommodityCost string `gorm:"type:varchar(20)" json:"commodity_cost" form:"commodity_cost"`
 }
 
 func (c CommodityHistoricalCost) TableCnName() string {

@@ -6,10 +6,13 @@ import (
 	config2 "github.com/XC-Zero/yinwan/pkg/config"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/fsnotify/fsnotify"
+	"github.com/ghodss/yaml"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"io"
 	"log"
+	"os"
 	"reflect"
 )
 
@@ -26,11 +29,11 @@ func init() {
 }
 
 type config struct {
-	ApiConfig      config2.ApiConfig     `json:"api_config"`
-	ServiceConfig  config2.ServiceConfig `json:"service_config"`
-	StorageConfig  config2.StorageConfig `json:"storage_config"`
-	BookNameConfig []config2.BookConfig  `json:"book_name_config"`
-	LogConfig      config2.LogConfig     `json:"log_config"`
+	ApiConfig      config2.ApiConfig     `json:"api_config" yaml:"api_config"`
+	ServiceConfig  config2.ServiceConfig `json:"service_config" yaml:"service_config"`
+	StorageConfig  config2.StorageConfig `json:"storage_config" yaml:"storage_config"`
+	BookNameConfig []config2.BookConfig  `json:"book_name_config" yaml:"book_name_config"`
+	LogConfig      config2.LogConfig     `json:"log_config" yaml:"log_config"`
 }
 
 // 设置 config 对应的结构体的 tag
@@ -68,6 +71,9 @@ func ViperMonitor() {
 
 // SaveConfig 因为 viper.set 不会自动 set json tag 中内容，
 // 所以得自己转换一遍 set 进去
+// issue: 无法将数组 set 进去
+//
+// Deprecated: 已弃用
 func SaveConfig(key string, value interface{}) error {
 	if reflect.TypeOf(value).Kind() == reflect.Slice {
 		list, _ := value.([]config2.BookConfig)
@@ -100,8 +106,39 @@ func SaveConfig(key string, value interface{}) error {
 	return err
 }
 
+func SaveBookConfig(value interface{}) error {
+	marshal, err := yaml.Marshal(value)
+	if err != nil {
+		return err
+	}
+	err = writeToFile("./configs/config.yml", marshal)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func writeToFile(fileName string, content []byte) error {
+	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	} else {
+		//// offset
+		//err := os.Truncate(fileName, 0)
+		//if err != nil {
+		//	return err
+		//} //clear
+		n, _ := f.Seek(0, io.SeekEnd)
+		_, err = f.WriteAt(content, n)
+		defer f.Close()
+	}
+	return nil
+}
+
 // UnfoldMapToProperties 展开嵌套结构体为 Properties 结构
 // 必须是结构体，否则报错！
+//
 func UnfoldMapToProperties(val interface{}, prefix string, result map[string]interface{}) error {
 	objVal, objType := reflect.ValueOf(val), reflect.TypeOf(val)
 	if objType.Kind() != reflect.Struct {

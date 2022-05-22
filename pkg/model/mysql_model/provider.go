@@ -15,8 +15,8 @@ type Provider struct {
 	ProviderLegalName        *string `form:"provider_legal_name" json:"provider_legal_name,omitempty" gorm:"type:varchar(50)" cn:"供应商公司全称"`
 	ProviderAlias            *string `form:"provider_alias" json:"provider_alias,omitempty" gorm:"type:varchar(50)" cn:"供应商简称"`
 	ProviderLogoUrl          *string `gorm:"type:varchar(500); " form:"provider_logo_url" json:"provider_logo_url,omitempty" cn:"供应商头像地址"`
-	ProviderAddress          *string `form:"provider_address" json:"provider_address,omitempty"  gorm:"type:varchar(500);" cn:"供应商地址"`
-	ProviderDetailAddress    *string `gorm:"type:varchar(500);" json:"provider_detail_address,omitempty" form:"provider_detail_address,omitempty"`
+	ProviderAddress          *string `form:"provider_address" json:"provider_address,omitempty"  gorm:"type:varchar(500);" cn:"供应商省市区"`
+	ProviderDetailAddress    *string `gorm:"type:varchar(500);" json:"provider_detail_address,omitempty" form:"provider_detail_address,omitempty" cn:"供应商详细地址"`
 	ProviderSocialCreditCode *string `form:"provider_social_credit_code" json:"provider_social_credit_code,omitempty" gorm:"type:varchar(50)" cn:"社会信用代码"`
 	ProviderContact          *string `form:"provider_contact" json:"provider_contact,omitempty" gorm:"type:varchar(50)" cn:"供应商方联系人"`
 	ProviderContactPhone     *string `form:"provider_contact_phone" json:"provider_contact_phone,omitempty" gorm:"type:varchar(20)" cn:"联系人电话"`
@@ -70,6 +70,11 @@ func (p Provider) Mapping() map[string]interface{} {
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
+				"provider_address": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
 
 				"remark": mapping{
 					"type":            "text",
@@ -91,6 +96,13 @@ func (p Provider) Mapping() map[string]interface{} {
 	return m
 }
 func (p Provider) ToESDoc() map[string]interface{} {
+	var address string
+	if p.ProviderAddress != nil {
+		address += *p.ProviderAddress
+	}
+	if p.ProviderDetailAddress != nil {
+		address += *p.ProviderDetailAddress
+	}
 	return map[string]interface{}{
 		"rec_id":                      p.RecID,
 		"remark":                      p.Remark,
@@ -99,6 +111,7 @@ func (p Provider) ToESDoc() map[string]interface{} {
 		"provider_pic_url":            p.ProviderLogoUrl,
 		"provider_name":               p.ProviderName,
 		"provider_contact":            p.ProviderContact,
+		"provider_address":            address,
 	}
 }
 func (p *Provider) AfterCreate(tx *gorm.DB) error {

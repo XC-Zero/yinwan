@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"time"
 )
@@ -53,6 +54,12 @@ func Fatal(err error, mes string) {
 // Error 打印错误信息
 func Error(err error, mes string) {
 	sprintf := fmt.Sprintf("[ERROR] %s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+	if OperateLogSocketClient != nil {
+		OperateLogSocketClient.WriteMessage(websocket.TextMessage, []byte(mes))
+	}
+	if SystemLogSocketClient != nil {
+		SystemLogSocketClient.WriteMessage(websocket.TextMessage, []byte(sprintf))
+	}
 	log.Println(sprintf)
 	//Logger{
 	//	message:   sprintf,
@@ -67,7 +74,9 @@ func Error(err error, mes string) {
 func Waring(err error, mes string) {
 	sprintf := fmt.Sprintf("[WARING] %s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 	log.Println(sprintf)
-
+	if SystemLogSocketClient != nil {
+		SystemLogSocketClient.WriteMessage(websocket.TextMessage, []byte(sprintf))
+	}
 	//Logger{
 	//	message:   sprintf,
 	//	stackInfo: err.StackTraces,
@@ -80,6 +89,9 @@ func Waring(err error, mes string) {
 // Info 打印普通信息
 func Info(mes string) {
 	log.Println("[INFO]  " + mes)
+	if SystemLogSocketClient != nil {
+		SystemLogSocketClient.WriteMessage(websocket.TextMessage, []byte(mes))
+	}
 	//Logger{
 	//	message:   mes,
 	//	logType:   INFO,
