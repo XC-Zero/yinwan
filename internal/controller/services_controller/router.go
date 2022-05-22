@@ -106,10 +106,10 @@ func Starter() {
 		}
 		// 仓库
 		{
-			storage.POST("/create_warehouse", storage3.CreateWareHouse)
-			storage.POST("/select_warehouse", storage3.SelectWareHouse)
-			storage.POST("/update_warehouse", storage3.UpdateWareHouse)
-			storage.POST("/delete_warehouse", storage3.DeleteWareHouse)
+			storage.POST("/create_warehouse", storage3.CreateWarehouse)
+			storage.POST("/select_warehouse", storage3.SelectWarehouse)
+			storage.POST("/update_warehouse", storage3.UpdateWarehouse)
+			storage.POST("/delete_warehouse", storage3.DeleteWarehouse)
 		}
 		//扫码 小程序用
 		{

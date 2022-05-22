@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"log"
 	"strconv"
@@ -21,7 +22,7 @@ func CreateCommodity(ctx *gin.Context) {
 		return
 	}
 	var commodity mysql_model.Commodity
-	err := ctx.ShouldBind(&commodity)
+	err := ctx.ShouldBindBodyWith(&commodity, binding.JSON)
 	if err != nil {
 		log.Println(err)
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -83,7 +84,7 @@ func UpdateCommodity(ctx *gin.Context) {
 		return
 	}
 	commodity := mysql_model.Commodity{}
-	err := ctx.ShouldBind(&commodity)
+	err := ctx.ShouldBindBodyWith(&commodity, binding.JSON)
 	if err != nil || commodity.RecID == nil {
 		logger.Error(errors.WithStack(err), "绑定产品失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)

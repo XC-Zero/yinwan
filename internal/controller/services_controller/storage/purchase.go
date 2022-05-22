@@ -3,28 +3,32 @@ package storage
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
+	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"strconv"
 )
 
 func CreatePurchase(ctx *gin.Context) {
-	//bk, bookName := common.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	return
-	//}
-	//var purchase mongo_model.Purchase
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	var purchase mongo_model.Purchase
 	//
-	//err := ctx.ShouldBind(&purchase)
-	//if err != nil {
-	//	common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
-	//	return
-	//}
-	//op := common.CreateMongoDBTemplateOptions{
-	//	DB:         client.MongoDBClient,
-	//	TableModel: mongo_model.Purchase{},
-	//}
-	//common.CreateOneMongoDBRecordTemplate(ctx, op)
+	err := ctx.ShouldBindBodyWith(&purchase, binding.JSON)
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	op := common.CreateMongoDBTemplateOptions{
+		DB:         client.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", bookName),
+		TableModel: mongo_model.Purchase{},
+	}
+	common.CreateOneMongoDBRecordTemplate(ctx, op)
+	return
 }
 func SelectPurchase(ctx *gin.Context) {
 	//bk, bookName := common.HarvestClientFromGinContext(ctx)

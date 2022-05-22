@@ -1,6 +1,7 @@
 package mongo_model
 
 import (
+	"encoding/json"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 )
 
@@ -9,17 +10,17 @@ import (
 type StockInRecord struct {
 	mysql_model.BasicModel
 	BookNameInfo
-	StockInRecordOwnerID      int                    ` json:"stock_in_record_owner_id"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" binding:"required"`
-	StockInRecordProviderID   *int                   ` json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
-	StockInRecordProviderName *string                ` json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
-	StockInRecordOwnerName    string                 ` json:"stock_in_record_owner_name" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" binding:"required"`
-	StockInWarehouseID        *int                   ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
-	StockInWarehouseName      *string                ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
-	StockInDetailPosition     *string                ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
-	StockInRecordType         string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
-	StockInRecordContent      map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
-	RelatePurchaseID          *int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty"`
-	Remark                    *string                ` json:"remark,omitempty" form:"remark" bson:"remark"`
+	StockInRecordOwnerID      *int                     ` json:"stock_in_record_owner_id,omitempty"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" `
+	StockInRecordOwnerName    *string                  ` json:"stock_in_record_owner_name,omitempty" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" `
+	StockInRecordProviderID   *int                     ` json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
+	StockInRecordProviderName *string                  ` json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
+	StockInWarehouseID        *int                     ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
+	StockInWarehouseName      *string                  ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
+	StockInDetailPosition     *string                  ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
+	StockInRecordType         string                   ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
+	StockInRecordContent      []map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
+	RelatePurchaseID          *int                     ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
+	Remark                    *string                  ` json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 
 func (m StockInRecord) TableName() string {
@@ -75,11 +76,18 @@ func (m StockInRecord) Mapping() map[string]interface{} {
 	return ma
 }
 func (m StockInRecord) ToESDoc() map[string]interface{} {
+	var str string
+	bytes, err := json.Marshal(m.StockInRecordContent)
+	str = string(bytes)
+	if err != nil {
+		str = ""
+	}
+
 	return map[string]interface{}{
 		"rec_id":               m.RecID,
 		"created_at":           m.CreatedAt,
 		"remark":               m.Remark,
-		"stock_in_content":     m.StockInRecordContent,
+		"stock_in_content":     str,
 		"stock_in_record_type": m.StockInRecordType,
 		"stock_in_owner":       m.StockInRecordOwnerName,
 		"book_name":            m.BookName,

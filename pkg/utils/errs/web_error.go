@@ -3,6 +3,7 @@ package errs
 import "github.com/XC-Zero/yinwan/pkg/utils/logger"
 
 func CreateWebErrorMsg(errorMsg string, otherInfo ...interface{}) map[string]interface{} {
+	logger.Waring(nil, errorMsg)
 	return map[string]interface{}{
 		"status":    "error",
 		"message":   errorMsg,

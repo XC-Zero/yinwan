@@ -41,6 +41,13 @@ func (m *Material) AfterCreate(tx *gorm.DB) error {
 
 // AfterUpdate 同步更新原材料
 func (m *Material) AfterUpdate(tx *gorm.DB) error {
+	bookName := tx.Statement.Context.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	m.BookNameID = bk.StorageName
+	m.BookName = bk.BookName
 	err := client.UpdateIntoIndex(m, m.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(m.ToESDoc()))
 	if err != nil {
 		return err

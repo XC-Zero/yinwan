@@ -5,6 +5,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // CreateCredential 创建凭证
@@ -15,7 +16,7 @@ func CreateCredential(ctx *gin.Context) {
 	}
 	var credential mongo_model.FinanceCredential
 
-	err := ctx.ShouldBind(&credential)
+	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -67,7 +68,7 @@ func DeleteCredential(ctx *gin.Context) {
 		return
 	}
 	var credential mongo_model.FinanceCredential
-	err := ctx.ShouldBind(&credential)
+	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

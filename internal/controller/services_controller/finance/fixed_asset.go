@@ -8,6 +8,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"strconv"
@@ -20,7 +21,7 @@ func CreateFixedAsset(ctx *gin.Context) {
 		return
 	}
 	var fixedAsset mysql_model.FixedAsset
-	err := ctx.ShouldBind(&fixedAsset)
+	err := ctx.ShouldBindBodyWith(&fixedAsset, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -53,6 +54,11 @@ func SelectFixedAsset(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("fixed_asset_name"),
 		},
 		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "fixed_asset_type_id",
+			ColumnValue: ctx.PostForm("fixed_asset_type_id"),
+		},
+		{
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
@@ -72,7 +78,7 @@ func UpdateFixedAsset(ctx *gin.Context) {
 		return
 	}
 	var fixedAsset mysql_model.FixedAsset
-	err := ctx.ShouldBind(&fixedAsset)
+	err := ctx.ShouldBindBodyWith(&fixedAsset, binding.JSON)
 	if err != nil || fixedAsset.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

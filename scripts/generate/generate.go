@@ -11,11 +11,11 @@ func main() {
 
 	client.InitSystemStorage(config.CONFIG.StorageConfig)
 	InitMysqlList()
-	//err := GenerateSystemMysqlTables(client.MysqlClient)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//DropESIndex()
+	err := GenerateSystemMysqlTables(client.MysqlClient)
+	if err != nil {
+		panic(err)
+	}
+	DropESIndex()
 	//GenerateESIndex()
 	GenerateESIndex()
 }

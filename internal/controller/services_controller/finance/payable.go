@@ -8,10 +8,13 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 )
+
+// todo mysql 的用啥MongoDB啊!!!
 
 func CreatePayable(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
@@ -20,7 +23,7 @@ func CreatePayable(ctx *gin.Context) {
 	}
 	temp := mysql_model.Payable{}
 
-	err := ctx.ShouldBind(&temp)
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil {
 		logger.Error(errors.WithStack(err), "绑定模型失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -55,10 +58,25 @@ func SelectPayable(ctx *gin.Context) {
 }
 
 func UpdatePayable(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
+	temp := mysql_model.Payable{}
+
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
+	if err != nil {
+		logger.Error(errors.WithStack(err), "绑定模型失败!")
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
+		TableModel: temp,
+		PreFunc:    nil,
+	})
+	return
 }
 
 func DeletePayable(ctx *gin.Context) {

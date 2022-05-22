@@ -2,7 +2,6 @@ package logger
 
 import (
 	"fmt"
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"log"
 	"time"
 )
@@ -46,14 +45,14 @@ type Logger struct {
 // Fatal 慎用，会导致程序退出！
 func Fatal(err error, mes string) {
 
-	sprintf := fmt.Sprintf("程序退出！ %s %s \n fatal error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+	sprintf := fmt.Sprintf("[PANIC] 程序退出！ %s %s \n fatal error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 
 	log.Fatalln(sprintf)
 }
 
 // Error 打印错误信息
 func Error(err error, mes string) {
-	sprintf := fmt.Sprintf("%s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+	sprintf := fmt.Sprintf("[ERROR] %s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 	log.Println(sprintf)
 	//Logger{
 	//	message:   sprintf,
@@ -66,7 +65,7 @@ func Error(err error, mes string) {
 
 // Waring 打印警告信息
 func Waring(err error, mes string) {
-	sprintf := fmt.Sprintf("%s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
+	sprintf := fmt.Sprintf("[WARING] %s %s \n error is %+v %s", SPLIT_LINE, mes, err, SPLIT_LINE)
 	log.Println(sprintf)
 
 	//Logger{
@@ -80,7 +79,7 @@ func Waring(err error, mes string) {
 
 // Info 打印普通信息
 func Info(mes string) {
-	log.Println(mes)
+	log.Println("[INFO]  " + mes)
 	//Logger{
 	//	message:   mes,
 	//	logType:   INFO,
@@ -89,9 +88,9 @@ func Info(mes string) {
 	//}.sendLogger()
 }
 
-func (l Logger) sendLogger() {
-	err := client.PushInterfaceToKafka(LOGGER_TOPIC, []interface{}{l})
-	if err != nil {
-		log.Println(err)
-	}
-}
+//func (l Logger) sendLogger() {
+//	err := client.PushInterfaceToKafka(LOGGER_TOPIC, []interface{}{l})
+//	if err != nil {
+//		log.Println(err)
+//	}
+//}

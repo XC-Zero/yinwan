@@ -9,17 +9,18 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"strconv"
 )
 
-func CreateWareHouse(ctx *gin.Context) {
+func CreateWarehouse(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 	var warehouse mysql_model.Warehouse
-	err := ctx.ShouldBind(&warehouse)
+	err := ctx.ShouldBindBodyWith(&warehouse, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -33,7 +34,7 @@ func CreateWareHouse(ctx *gin.Context) {
 	return
 }
 
-func SelectWareHouse(ctx *gin.Context) {
+func SelectWarehouse(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{})
 	if bk == nil {
@@ -69,13 +70,13 @@ func SelectWareHouse(ctx *gin.Context) {
 	return
 
 }
-func UpdateWareHouse(ctx *gin.Context) {
+func UpdateWarehouse(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 	var warehouse mysql_model.Warehouse
-	err := ctx.ShouldBind(&warehouse)
+	err := ctx.ShouldBindBodyWith(&warehouse, binding.JSON)
 	if err != nil || warehouse.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -90,7 +91,7 @@ func UpdateWareHouse(ctx *gin.Context) {
 	return
 }
 
-func DeleteWareHouse(ctx *gin.Context) {
+func DeleteWarehouse(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return

@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"strconv"
 )
@@ -19,8 +20,9 @@ func CreateCustomer(ctx *gin.Context) {
 		return
 	}
 	var customer mysql_model.Customer
-	err := ctx.ShouldBind(&customer)
+	err := ctx.ShouldBindBodyWith(&customer, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -31,7 +33,6 @@ func CreateCustomer(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建客户成功!"))
-	//?common.CreateOneMysqlRecordTemplate(ctx, op)
 	return
 }
 func SelectCustomer(ctx *gin.Context) {
@@ -75,7 +76,7 @@ func UpdateCustomer(ctx *gin.Context) {
 		return
 	}
 	var customer mysql_model.Customer
-	err := ctx.ShouldBind(&customer)
+	err := ctx.ShouldBindBodyWith(&customer, binding.JSON)
 	if err != nil || customer.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -86,6 +87,7 @@ func UpdateCustomer(ctx *gin.Context) {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, customer)
 		return
 	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("修改客户成功!"))
 	return
 }
 func DeleteCustomer(ctx *gin.Context) {

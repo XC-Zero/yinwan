@@ -2,7 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/olivere/elastic/v7"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -115,9 +115,15 @@ func (c *Customer) AfterCreate(tx *gorm.DB) error {
 
 // AfterUpdate 同步更新
 func (c *Customer) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(c, c.RecID, tx.Statement.Context,
-		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(c.ToESDoc()))
+	bookName := tx.Statement.Context.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	c.BookNameID = bk.StorageName
+	c.BookName = bk.BookName
+	err := client.UpdateIntoIndex(c, c.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(c.ToESDoc()))
+
 	if err != nil {
 		return err
 	}

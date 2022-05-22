@@ -9,6 +9,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"strconv"
 )
@@ -20,7 +21,7 @@ func CreateMaterial(ctx *gin.Context) {
 		return
 	}
 	var material mysql_model.Material
-	err := ctx.ShouldBind(&material)
+	err := ctx.ShouldBindBodyWith(&material, binding.JSON)
 	if err != nil {
 		logger.Error(errors.WithStack(err), "绑定原材料失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -81,7 +82,7 @@ func UpdateMaterial(ctx *gin.Context) {
 		return
 	}
 	material := mysql_model.Material{}
-	err := ctx.ShouldBind(&material)
+	err := ctx.ShouldBindBodyWith(&material, binding.JSON)
 	if err != nil || material.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -131,7 +132,7 @@ func CreateMaterialBatch(ctx *gin.Context) {
 	}
 
 	var materialBatch mysql_model.MaterialBatch
-	err := ctx.ShouldBind(&materialBatch)
+	err := ctx.ShouldBindBodyWith(&materialBatch, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

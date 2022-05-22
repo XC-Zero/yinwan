@@ -17,6 +17,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -191,8 +192,13 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		return
 	}
 	for _, condition := range conditionList {
+		if reflect.ValueOf(condition.ColumnValue).IsZero() {
+			continue
+		}
 		filter = append(filter, my_mongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
+	logger.Info(fmt.Sprintf("%+v", filter))
+
 	findOptions.Sort = bson.D{{op.OrderByColumn, 1}}
 	data, err := tx.Find(context.TODO(), filter, findOptions)
 	if err != nil {
@@ -251,14 +257,14 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	if op.PreFunc != nil {
 		data = op.PreFunc(op.TableModel)
 	}
-	res, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(context.TODO(), data)
+	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(context.TODO(), data)
 
 	if err != nil {
 		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, op.TableModel)
 		return
 	}
-	v, ok := op.TableModel.(_interface.EsTabler)
+	v, ok := data.(_interface.EsTabler)
 	if ok {
 		err := client.PutIntoIndex(v)
 		if err != nil {
@@ -267,7 +273,9 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 			return
 		}
 	}
-	mes := fmt.Sprintf("新建%s成功,编号为%s", data.TableCnName(), res.InsertedID)
+	id := reflect.ValueOf(data).Field(0).FieldByName("RecID").Interface().(*int)
+	mes := fmt.Sprintf("新建%s成功,编号为%d", data.TableCnName(), *id)
+	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
@@ -429,14 +437,28 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 
 }
 
+type bookNameRequest struct {
+	BookName   string `json:"book_name" form:"book_name" binding:"required"`
+	BookNameID string `json:"book_name_id" form:"book_name_id" `
+}
+
 // HarvestClientFromGinContext 从请求头里读取账套信息
 func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
-	bookName := ctx.Request.Header.Get("book_name")
-	_ = ctx.Request.Header.Get("book_name_id")
-	if bookName == "" {
-		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-		return nil, ""
+
+	var bookNameJson bookNameRequest
+	var bookName string
+	err := ctx.Request.ParseForm()
+	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 	}
+
+	err = ctx.ShouldBindBodyWith(&bookNameJson, binding.JSON)
+	if err == nil {
+		bookName = bookNameJson.BookName
+	} else {
+		bookName = ctx.Request.Form.Get("book_name")
+	}
+
 	if book, ok := client.ReadBookMap(bookName); ok {
 		return &book, bookName
 	} else {

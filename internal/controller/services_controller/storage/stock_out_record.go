@@ -7,6 +7,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 )
@@ -18,7 +19,7 @@ func CreateStockOut(ctx *gin.Context) {
 	}
 	temp := mongo_model.StockOutRecord{}
 
-	err := ctx.ShouldBind(&temp)
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -27,7 +28,6 @@ func CreateStockOut(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: temp,
-		PreFunc:    nil,
 	})
 	return
 

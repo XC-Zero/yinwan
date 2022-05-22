@@ -13,6 +13,7 @@ func CreateReceivable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
+
 }
 
 func SelectReceivable(ctx *gin.Context) {

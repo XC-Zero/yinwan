@@ -3,7 +3,9 @@ package client
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
+	config2 "github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/config"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -37,14 +39,39 @@ type bookNameMap struct {
 
 func initBookName() {
 	bk = &bookNameMap{bookNameMap: make(map[string]BookName, 0)}
-	bk.bookNameMap["basic"] = BookName{
-		BookName:      "basic",
-		StorageName:   "basic",
-		MysqlClient:   MysqlClient,
-		MongoDBClient: MongoDBClient,
-		MinioClient:   MinioClient,
+	err := InitBookMap(config2.CONFIG.BookNameConfig)
+	if err != nil {
+		panic(err)
 	}
 }
+func InitBookMap(configs []config.BookConfig) error {
+	var errorList []error
+	for _, bookConfig := range configs {
+		mi, err := InitMinio(bookConfig.MinioConfig)
+		if err != nil {
+			errorList = append(errorList, err)
+		}
+		mysql, err := InitMysqlGormV2(bookConfig.MysqlConfig)
+		if err != nil {
+			errorList = append(errorList, err)
+		}
+		db, err := InitMongoDB(bookConfig.MongoDBConfig)
+		if err != nil {
+			errorList = append(errorList, err)
+		}
+		AddBookMap(bookConfig.BookName, BookName{
+			MysqlClient:   mysql,
+			StorageName:   bookConfig.StorageName,
+			BookName:      bookConfig.BookName,
+			MongoDBClient: db,
+			MinioClient:   mi,
+		})
+
+	}
+
+	return errs.ErrorListToError(errorList)
+}
+
 func GetBookNameInstance() *bookNameMap {
 	return bk
 }

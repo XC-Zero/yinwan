@@ -2,7 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
-	"github.com/olivere/elastic/v7"
+	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -23,12 +23,13 @@ type Currency struct {
 type FixedAsset struct {
 	BasicModel
 	BookNameInfo
+	FixedAssetPicUrl          *string `gorm:"type:varchar(500)" json:"fixed_asset_pic_url,omitempty" form:"fixed_asset_pic_url,omitempty" `
 	FixedAssetName            string  `gorm:"type:varchar(100);not null'" form:"fixed_asset_name" json:"fixed_asset_name"`
-	FixedAssetTypeID          *int    `gorm:"type:int" json:"fixed_asset_type_id,omitempty" cn:"固定资产类型ID"`
+	FixedAssetTypeID          *int    `gorm:"type:int;index" json:"fixed_asset_type_id,omitempty" cn:"固定资产类型ID"`
 	FixedAssetTypeName        *string `gorm:"type:varchar(50)" json:"fixed_asset_type_name,omitempty" cn:"固定资产类型名称"`
 	DepreciationPeriod        int     `gorm:"type:int;not null" json:"depreciation_period" cn:"折旧期限（月）"`
 	TotalPrice                float64 `gorm:"type:decimal(20,2);not null" json:"total_price" cn:"原价"`
-	CurrentPrice              float64 `gorm:"type:decimal(20,2);not null" json:"current_price" cn:"现价"`
+	CurrentPrice              float64 `gorm:"type:decimal(20,2);not null" json:"current_price" cn:"残值"`
 	MonthlyDepreciationAmount float64 `gorm:"type:decimal(20,2);not null" json:"monthly_depreciation_amount" cn:"每月折旧额"`
 	Remark                    *string `gorm:"type:varchar(200)" json:"remark" cn:"备注"`
 }
@@ -110,9 +111,15 @@ func (p *FixedAsset) AfterCreate(tx *gorm.DB) error {
 
 // AfterUpdate 同步更新
 func (p *FixedAsset) AfterUpdate(tx *gorm.DB) error {
-	err := client.UpdateIntoIndex(p, p.RecID, tx.Statement.Context,
-		elastic.NewScriptInline("ctx._source.nickname=params.nickname;ctx._source.ancestral=params.ancestral").
-			Params(p.ToESDoc()))
+	bookName := tx.Statement.Context.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	p.BookNameID = bk.StorageName
+	p.BookName = bk.BookName
+	err := client.UpdateIntoIndex(p, p.RecID, tx.Statement.Context, es_tool.ESDocToUpdateScript(p.ToESDoc()))
+
 	if err != nil {
 		return err
 	}

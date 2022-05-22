@@ -33,6 +33,8 @@ func InitMysqlList() {
 		&mysql_model.Module{},
 		&mysql_model.Department{},
 		&mysql_model.Staff{},
+		&mysql_model.TypeTree{},
+		&mysql_model.ManipulationLog{},
 	}
 	allRole = mysql_model.Role{
 		RoleName: "root",

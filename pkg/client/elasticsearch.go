@@ -152,7 +152,10 @@ func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, ctx context.Context
 	if !ok {
 		return errors.New("There is no book name!")
 	}
-
+	objV := reflect.ValueOf(tabler)
+	objV.FieldByName("book_name").SetString(b.BookName)
+	objV.FieldByName("book_name_id").SetString(b.StorageName)
+	esTabler := objV.Interface().(_interface.EsTabler)
 	if recID == nil || b.StorageName == "" {
 		return errors.New("缺少主键！")
 	}
@@ -160,7 +163,7 @@ func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, ctx context.Context
 	if recID == nil {
 		return errors.New("缺少主键！")
 	}
-	do, err := ESClient.UpdateByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Script(script).Refresh("true").Do(context.Background())
+	do, err := ESClient.UpdateByQuery(esTabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Script(script).Refresh("true").Do(context.Background())
 	if err != nil {
 		return err
 	}

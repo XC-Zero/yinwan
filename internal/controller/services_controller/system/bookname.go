@@ -32,8 +32,7 @@ var bookNameMysqlMigrateList = []interface{}{
 	&mysql_model.MaterialBatch{},
 	&mysql_model.Customer{},
 	&mysql_model.Provider{},
-	&mysql_model.ManipulationLog{},
-	&mysql_model.TypeTree{},
+	&mysql_model.FixedAsset{},
 	&mysql_model.Warehouse{},
 }
 
@@ -44,6 +43,11 @@ func CreateBookName(ctx *gin.Context) {
 		ctx.JSON(_const.EXPECTATION_FAILED_ERROR, errs.CreateWebErrorMsg("请输入账套名称哦"))
 		return
 	} else {
+		if _, ok := client.ReadBookMap(BookName); ok {
+			ctx.JSON(_const.CONFLICT_ERROR, errs.CreateWebErrorMsg("同名账套已经存在了呢~"))
+			return
+		}
+
 		if AddBookName(BookName) {
 			ctx.JSON(_const.OK, errs.CreateSuccessMsg("创建账套成功!"))
 			return
@@ -97,34 +101,6 @@ func DeleteBookName(ctx *gin.Context) {
 type tempResponse struct {
 	BookNameID string `json:"book_name_id" form:"book_name_id" `
 	BookName   string `json:"book_name" form:"book_name" binding:"required"`
-}
-
-func InitBookMap(configs []config.BookConfig) error {
-	var errorList []error
-	for _, bookConfig := range configs {
-		mi, err := client.InitMinio(bookConfig.MinioConfig)
-		if err != nil {
-			errorList = append(errorList, err)
-		}
-		mysql, err := client.InitMysqlGormV2(bookConfig.MysqlConfig)
-		if err != nil {
-			errorList = append(errorList, err)
-		}
-		db, err := client.InitMongoDB(bookConfig.MongoDBConfig)
-		if err != nil {
-			errorList = append(errorList, err)
-		}
-		client.AddBookMap(bookConfig.BookName, client.BookName{
-			MysqlClient:   mysql,
-			StorageName:   bookConfig.StorageName,
-			BookName:      bookConfig.BookName,
-			MongoDBClient: db,
-			MinioClient:   mi,
-		})
-
-	}
-
-	return errs.ErrorListToError(errorList)
 }
 
 // AddBookName 新建账套
@@ -181,7 +157,7 @@ func AddBookName(bookName string) (status bool) {
 		return false
 	}
 	logger.Info(fmt.Sprintf("新建账套成功，账套名为 %s ", cfg.BookName))
-	err = InitBookMap(config2.CONFIG.BookNameConfig)
+	err = client.InitBookMap(config2.CONFIG.BookNameConfig)
 	if err != nil {
 		logger.Error(errorx.MustWrap(err), fmt.Sprintf("初始化账套 (%s) 客户端失败! ", cfg.BookName))
 	}
