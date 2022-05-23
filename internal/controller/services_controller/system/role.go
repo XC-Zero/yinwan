@@ -9,13 +9,14 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
 )
 
 // CreateRole 创建角色
 func CreateRole(ctx *gin.Context) {
 	var postData map[string]interface{}
-	err := ctx.ShouldBind(&postData)
+	err := ctx.ShouldBindBodyWith(&postData, binding.JSON)
 	r, ok := postData["role"]
 	rc, rcOK := postData["role_capabilities"]
 
@@ -139,13 +140,13 @@ func SelectRole(ctx *gin.Context) {
 }
 
 type updateRoleRequest struct {
-	Role             mysql_model.Role               `form:"role" json:"role"  binding:"required"`
-	RoleCapabilities []mysql_model.RoleCapabilities `form:"role_capabilities" json:"role_capabilities" binding:"required"`
+	Role             mysql_model.Role               `form:"role" json:"role"  `
+	RoleCapabilities []mysql_model.RoleCapabilities `form:"role_capabilities" json:"role_capabilities" `
 }
 
 func UpdateRole(ctx *gin.Context) {
 	var postData updateRoleRequest
-	err := ctx.ShouldBind(&postData)
+	err := ctx.ShouldBindBodyWith(&postData, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

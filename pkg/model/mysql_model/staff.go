@@ -18,7 +18,7 @@ type Staff struct {
 	BasicModel
 	StaffName           string  `gorm:"type:varchar(50);not null;" json:"staff_name" form:"staff_name" cn:"职工名称"`
 	StaffAlias          *string `gorm:"type:varchar(50)" json:"staff_alias,omitempty" form:"staff_alias" cn:"职工别名"` // 职工别名
-	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  form:"staff_email" binding:"required" cn:"职工邮箱"`
+	StaffEmail          string  `gorm:"type:varchar(50);not null;index;unique" json:"staff_email"  form:"staff_email"  cn:"职工邮箱"`
 	StaffPhone          *string `gorm:"type:varchar(50);index;" json:"staff_phone,omitempty" form:"staff_phone"`
 	StaffPassword       string  `gorm:"type:varchar(20)" json:"staff_password" form:"staff_password" `
 	StaffPosition       *string `gorm:"type:varchar(50)" json:"staff_position,omitempty"  form:"staff_position"`

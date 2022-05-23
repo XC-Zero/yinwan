@@ -5,7 +5,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"time"
 )
 
 // Material 原材料
@@ -56,7 +55,7 @@ func (m *Material) AfterUpdate(tx *gorm.DB) error {
 }
 
 // AfterDelete 同步删除原材料
-func (m *Material) AfterDelete(tx *gorm.DB) error {
+func (m Material) AfterDelete(tx *gorm.DB) error {
 	err := client.DeleteFromIndex(m, m.RecID, tx.Statement.Context)
 	if err != nil {
 		return err
@@ -111,7 +110,6 @@ func (m Material) Mapping() map[string]interface{} {
 	}
 	return ma
 }
-
 func (m Material) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
 		"rec_id":           m.RecID,
@@ -127,19 +125,31 @@ func (m Material) ToESDoc() map[string]interface{} {
 // MaterialBatch 原材料批次
 type MaterialBatch struct {
 	BasicModel
-	MaterialID                 int        `gorm:"type:int;not null" json:"material_id" cn:"原材料ID"`
-	MaterialName               string     `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
-	StockInRecordID            int        `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`
-	MaterialBatchOwnerID       *int       `gorm:"type:int;index" json:"material_batch_owner_id,omitempty" cn:"负责人ID"`
-	MaterialBatchOwnerName     *string    `gorm:"type:varchar(50)" json:"material_batch_owner_name,omitempty" cn:"负责人名称"`
-	MaterialBatchTotalPrice    string     `gorm:"type:varchar(50);not null" json:"material_batch_total_price" cn:"批次总价"`
-	MaterialBatchNumber        int        `gorm:"type:int;not null" json:"material_batch_number" cn:"批次原材料总数"`
-	MaterialBatchSurplusNumber int        `gorm:"type:int;not null" json:"material_batch_surplus_number" cn:"当前批次原材料剩余数量"`
-	MaterialBatchUnitPrice     string     `gorm:"type:varchar(50);not null" json:"material_batch_unit_price" cn:"单价"`
-	WarehouseID                *int       `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
-	WarehouseName              *string    `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
-	StockInTime                *time.Time `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
-	Remark                     *string    `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
+	MaterialID                 int     `gorm:"type:int;not null" json:"material_id" cn:"原材料ID"`
+	MaterialName               string  `gorm:"type:varchar(50);not null" json:"material_name" cn:"原材料名称"`
+	StockInRecordID            int     `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`
+	MaterialBatchOwnerID       *int    `gorm:"type:int;index" json:"material_batch_owner_id,omitempty" cn:"负责人ID"`
+	MaterialBatchOwnerName     *string `gorm:"type:varchar(50)" json:"material_batch_owner_name,omitempty" cn:"负责人名称"`
+	MaterialBatchTotalPrice    string  `gorm:"type:varchar(50);not null" json:"material_batch_total_price" cn:"批次总价"`
+	MaterialBatchNumber        int     `gorm:"type:int;not null" json:"material_batch_number" cn:"批次原材料总数"`
+	MaterialBatchSurplusNumber int     `gorm:"type:int;not null" json:"material_batch_surplus_number" cn:"当前批次原材料剩余数量"`
+	MaterialBatchUnitPrice     string  `gorm:"type:varchar(50);not null" json:"material_batch_unit_price" cn:"单价"`
+	WarehouseID                *int    `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
+	WarehouseName              *string `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
+	StockInTime                *string `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
+	Remark                     *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
+}
+
+// AfterCreate 同步创建历史成本
+func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
+	var cost = MaterialHistoryCost{
+		MaterialID:             0,
+		Price:                  m.MaterialBatchUnitPrice,
+		RelatedMaterialBatchID: *m.RecID,
+	}
+
+	err := tx.Create(&cost).Error
+	return err
 }
 
 func (m MaterialBatch) TableName() string {
@@ -147,4 +157,11 @@ func (m MaterialBatch) TableName() string {
 }
 func (m MaterialBatch) TableCnName() string {
 	return "原材料批次"
+}
+
+type MaterialHistoryCost struct {
+	BasicModel
+	MaterialID             int    `gorm:"type:int;not null;index" json:"material_id" form:"material_id"`
+	Price                  string `gorm:"type:varchar(20)" json:"price" form:"price"`
+	RelatedMaterialBatchID int    `gorm:"type:int;not null;index" json:"related_material_batch_id" form:"related_material_batch_id"`
 }

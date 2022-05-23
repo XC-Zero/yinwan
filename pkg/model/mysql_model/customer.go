@@ -11,7 +11,7 @@ import (
 type Customer struct {
 	BasicModel
 	BookNameInfo
-	CustomerName             string  `form:"customer_name" json:"customer_name" gorm:"type:varchar(200);not null;" cn:"客户名称" binding:"required"`
+	CustomerName             string  `form:"customer_name" json:"customer_name" gorm:"type:varchar(200);not null;" cn:"客户名称" `
 	CustomerLegalName        *string `form:"customer_legal_name" json:"customer_legal_name,omitempty" gorm:"type:varchar(50)" cn:"客户公司全称"`
 	CustomerAlias            *string `form:"customer_alias" json:"customer_alias,omitempty" gorm:"type:varchar(50)" cn:"客户简称"`
 	CustomerLogoUrl          *string `gorm:"type:varchar(500); " form:"customer_logo_url" json:"customer_logo_url,omitempty" cn:"客户头像地址"`

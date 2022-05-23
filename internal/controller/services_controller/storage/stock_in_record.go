@@ -30,6 +30,8 @@ func CreateStockIn(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	temp.RecID = &recID
+	temp.BookName = n
+	temp.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
@@ -76,7 +78,7 @@ func UpdateStockIn(ctx *gin.Context) {
 
 	temp := mongo_model.StockInRecord{}
 
-	err := ctx.ShouldBind(&temp)
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil || temp.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

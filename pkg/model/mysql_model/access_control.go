@@ -48,7 +48,7 @@ func (r Module) TableName() string {
 // Role 角色表
 type Role struct {
 	BasicModel
-	RoleName   string  `gorm:"type:varchar(50)" form:"role_name" json:"role_name"  binding:"required"`
+	RoleName   string  `gorm:"type:varchar(50)" form:"role_name" json:"role_name"  `
 	RoleRemark *string `gorm:"type:varchar(200)" form:"role_remark" json:"role_remark,omitempty"`
 }
 
@@ -64,8 +64,8 @@ func (r Role) TableName() string {
 type RoleCapabilities struct {
 	BasicModel
 	RoleID     int    `gorm:"type:int;index" form:"role_id" json:"role_id"`
-	ModuleID   int    `gorm:"type:int;index" form:"module_id" json:"module_id" binding:"required"`
-	ModuleName string `gorm:"type:varchar(50)" form:"module_name" json:"module_name" binding:"required"`
+	ModuleID   int    `gorm:"type:int;index" form:"module_id" json:"module_id" `
+	ModuleName string `gorm:"type:varchar(50)" form:"module_name" json:"module_name"`
 	CanRead    bool   `form:"can_read" json:"can_read"`
 	CanWrite   bool   `form:"can_write" json:"can_write"`
 	CanDelete  bool   `form:"can_delete" json:"can_delete"`

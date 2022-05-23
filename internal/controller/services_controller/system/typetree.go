@@ -8,12 +8,13 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // CreateTypeTree 创建类型
 func CreateTypeTree(ctx *gin.Context) {
 	var typeTree mysql_model.TypeTree
-	err := ctx.ShouldBind(&typeTree)
+	err := ctx.ShouldBindBodyWith(&typeTree, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -76,7 +77,7 @@ func SelectTypeTree(ctx *gin.Context) {
 // UpdateTypeTree 更新类型
 func UpdateTypeTree(ctx *gin.Context) {
 	typeTree := mysql_model.TypeTree{}
-	err := ctx.ShouldBind(&typeTree)
+	err := ctx.ShouldBindBodyWith(&typeTree, binding.JSON)
 	if err != nil || typeTree.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

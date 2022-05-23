@@ -84,6 +84,7 @@ func UpdateMaterial(ctx *gin.Context) {
 	material := mysql_model.Material{}
 	err := ctx.ShouldBindBodyWith(&material, binding.JSON)
 	if err != nil || material.RecID == nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -107,6 +108,7 @@ func DeleteMaterial(ctx *gin.Context) {
 
 	id, err := strconv.Atoi(ctx.PostForm("material_id"))
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -116,6 +118,7 @@ func DeleteMaterial(ctx *gin.Context) {
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Delete(&material).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, material)
 		return
 	}
@@ -134,12 +137,14 @@ func CreateMaterialBatch(ctx *gin.Context) {
 	var materialBatch mysql_model.MaterialBatch
 	err := ctx.ShouldBindBodyWith(&materialBatch, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Create(&materialBatch).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, materialBatch)
 		return
 	}
@@ -191,7 +196,7 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	recID, err := strconv.Atoi(ctx.PostForm("commodity_batch_id"))
+	recID, err := strconv.Atoi(ctx.PostForm("material_batch_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -207,4 +212,26 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除批次成功!"))
 	return
+}
+
+// SelectMaterialHistoryCost todo !!!!
+func SelectMaterialHistoryCost(ctx *gin.Context) {
+	//bk, bookName := common.HarvestClientFromGinContext(ctx)
+	//if bk == nil {
+	//	return
+	//}
+	//
+	//recID, err := strconv.Atoi()
+	//if err != nil {
+	//	common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+	//	return
+	//}
+	//common.SelectMysqlTableContentWithCountTemplate(ctx,common.SelectMysqlTemplateOptions{
+	//	DB:            nil,
+	//	TableModel:    nil,
+	//	OrderByColumn: "",
+	//	ResHookFunc:   nil,
+	//	NotReturn:     false,
+	//	NotPaginate:   false,
+	//})
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/minio/minio-go/v7"
 	"github.com/mozillazg/go-pinyin"
 	"github.com/pkg/errors"
@@ -75,7 +76,7 @@ func SelectAllBookName(ctx *gin.Context) {
 
 func DeleteBookName(ctx *gin.Context) {
 	var temp tempResponse
-	err := ctx.ShouldBind(&temp)
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -110,7 +111,7 @@ func DeleteBookName(ctx *gin.Context) {
 
 type tempResponse struct {
 	BookNameID string `json:"book_name_id" form:"book_name_id" `
-	BookName   string `json:"book_name" form:"book_name" binding:"required"`
+	BookName   string `json:"book_name" form:"book_name"  `
 }
 
 // AddBookName 新建账套

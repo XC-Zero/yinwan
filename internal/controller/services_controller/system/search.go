@@ -140,7 +140,7 @@ func SelectProvider(ctx *gin.Context) {
 		"provider_alias^5")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &m.StockOutRecord{},
+		TableModel:  &es.Provider{},
 		Query:       query,
 		ResHookFunc: nil,
 	}
@@ -160,7 +160,7 @@ func SelectCustomer(ctx *gin.Context) {
 		"customer_alias^5")
 
 	op := common.SelectESTemplateOptions{
-		TableModel:  &m.StockOutRecord{},
+		TableModel:  &es.Customer{},
 		Query:       query,
 		ResHookFunc: nil,
 	}

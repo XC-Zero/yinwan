@@ -17,8 +17,8 @@ type StockInRecord struct {
 	StockInWarehouseID        *int                     ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
 	StockInWarehouseName      *string                  ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
 	StockInDetailPosition     *string                  ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
-	StockInRecordType         string                   ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" binding:"required"`
-	StockInRecordContent      []map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" binding:"required"`
+	StockInRecordType         string                   ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" `
+	StockInRecordContent      []map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
 	RelatePurchaseID          *int                     ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
 	Remark                    *string                  ` json:"remark,omitempty" form:"remark" bson:"remark"`
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
-	"log"
 	"strconv"
 )
 
@@ -24,7 +23,7 @@ func CreateCommodity(ctx *gin.Context) {
 	var commodity mysql_model.Commodity
 	err := ctx.ShouldBindBodyWith(&commodity, binding.JSON)
 	if err != nil {
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -32,7 +31,7 @@ func CreateCommodity(ctx *gin.Context) {
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Create(&commodity).Error
 	if err != nil {
-		log.Println(err)
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodity)
 		return
 	}
@@ -110,6 +109,7 @@ func DeleteCommodity(ctx *gin.Context) {
 
 	id, err := strconv.Atoi(ctx.PostForm("commodity_id"))
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -119,6 +119,7 @@ func DeleteCommodity(ctx *gin.Context) {
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
 		Delete(&commodity).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, commodity)
 		return
 	}
@@ -135,8 +136,9 @@ func CreateCommodityBatch(ctx *gin.Context) {
 	}
 
 	var commodityBatch mysql_model.CommodityBatch
-	err := ctx.ShouldBind(&commodityBatch)
+	err := ctx.ShouldBindBodyWith(&commodityBatch, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -194,13 +196,15 @@ func UpdateCommodityDetail(ctx *gin.Context) {
 		return
 	}
 	var commodityDetail mysql_model.CommodityBatch
-	err := ctx.ShouldBind(&commodityDetail)
+	err := ctx.ShouldBindBodyWith(&commodityDetail, binding.JSON)
 	if err != nil || commodityDetail.RecID == nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Updates(&commodityDetail).Where("rec_id = ?", commodityDetail.RecID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodityDetail)
 		return
 	}
@@ -216,6 +220,7 @@ func DeleteCommodityDetail(ctx *gin.Context) {
 	}
 	recID, err := strconv.Atoi(ctx.PostForm("commodity_batch_id"))
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}

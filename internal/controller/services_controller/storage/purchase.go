@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"strconv"
+	"time"
 )
 
 func CreatePurchase(ctx *gin.Context) {
@@ -16,12 +17,15 @@ func CreatePurchase(ctx *gin.Context) {
 		return
 	}
 	var purchase mongo_model.Purchase
-	//
 	err := ctx.ShouldBindBodyWith(&purchase, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	recID := int(time.Now().Unix())
+	purchase.RecID = &recID
+	purchase.BookName = bookName
+	purchase.BookNameID = bk.StorageName
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", bookName),

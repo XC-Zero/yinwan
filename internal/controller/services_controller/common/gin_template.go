@@ -443,7 +443,7 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 }
 
 type bookNameRequest struct {
-	BookName   string `json:"book_name" form:"book_name" binding:"required"`
+	BookName   string `json:"book_name" form:"book_name" `
 	BookNameID string `json:"book_name_id" form:"book_name_id" `
 }
 

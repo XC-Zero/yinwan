@@ -5,11 +5,14 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
+	"time"
 )
 
 func CreateStockOut(ctx *gin.Context) {
@@ -21,9 +24,14 @@ func CreateStockOut(ctx *gin.Context) {
 
 	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	recID := int(time.Now().Unix())
+	temp.RecID = &recID
+	temp.BookName = n
+	temp.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
@@ -71,8 +79,9 @@ func UpdateStockOut(ctx *gin.Context) {
 
 	temp := mongo_model.StockOutRecord{}
 
-	err := ctx.ShouldBind(&temp)
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil || temp.RecID == nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -94,6 +103,7 @@ func DeleteStockOut(ctx *gin.Context) {
 	var stockOutRecord mongo_model.StockOutRecord
 	recID, err := strconv.Atoi(ctx.PostForm("stock_out_record_id"))
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}

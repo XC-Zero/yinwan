@@ -46,7 +46,7 @@ func UpdateCredential(ctx *gin.Context) {
 		return
 	}
 	var credential mongo_model.FinanceCredential
-	err := ctx.ShouldBind(&credential)
+	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return

@@ -22,11 +22,13 @@ func CreateWarehouse(ctx *gin.Context) {
 	var warehouse mysql_model.Warehouse
 	err := ctx.ShouldBindBodyWith(&warehouse, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&warehouse).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, warehouse)
 		return
 	}
@@ -36,7 +38,6 @@ func CreateWarehouse(ctx *gin.Context) {
 
 func SelectWarehouse(ctx *gin.Context) {
 	bk, bookName := common.HarvestClientFromGinContext(ctx)
-	common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{})
 	if bk == nil {
 		return
 	}
@@ -78,11 +79,14 @@ func UpdateWarehouse(ctx *gin.Context) {
 	var warehouse mysql_model.Warehouse
 	err := ctx.ShouldBindBodyWith(&warehouse, binding.JSON)
 	if err != nil || warehouse.RecID == nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Updates(&warehouse).Where("rec_id = ?", warehouse.RecID).Error
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		Updates(&warehouse).Where("rec_id", *warehouse.RecID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, warehouse)
 		return
 	}
@@ -99,6 +103,7 @@ func DeleteWarehouse(ctx *gin.Context) {
 
 	recID, err := strconv.Atoi(ctx.PostForm("warehouse_id"))
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}

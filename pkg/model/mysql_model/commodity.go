@@ -114,7 +114,7 @@ func (c *Commodity) AfterUpdate(tx *gorm.DB) error {
 	}
 	return nil
 }
-func (c *Commodity) AfterDelete(tx *gorm.DB) error {
+func (c Commodity) AfterDelete(tx *gorm.DB) error {
 	err := client.DeleteFromIndex(c, c.RecID, tx.Statement.Context)
 	if err != nil {
 		return err

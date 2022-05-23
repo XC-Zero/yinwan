@@ -10,10 +10,10 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
-	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-redis/redis/v7"
-	"log"
+	"github.com/pkg/errors"
 	"math/rand"
 	"strconv"
 	"time"
@@ -22,14 +22,16 @@ import (
 // CreateStaff
 // @Param  model.Staff
 func CreateStaff(ctx *gin.Context) {
-	temp := mysql_model.Staff{}
-	err := ctx.ShouldBind(&temp)
+	staff := mysql_model.Staff{}
+	err := ctx.ShouldBindBodyWith(&staff, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("参数有误"))
 		return
 	}
-	err = client.MysqlClient.Model(&mysql_model.Staff{}).Create(&temp).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Create(&staff).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		ctx.JSON(_const.REQUEST_PARM_ERROR, errs.CreateWebErrorMsg("创建员工失败！"))
 		return
 	}
@@ -80,14 +82,16 @@ func SelectStaff(ctx *gin.Context) {
 // UpdateStaff 更新员工
 func UpdateStaff(ctx *gin.Context) {
 	var staff mysql_model.Staff
-	err := ctx.ShouldBind(&staff)
+	err := ctx.ShouldBindBodyWith(&staff, binding.JSON)
 	staff.StaffPassword = ""
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Model(&mysql_model.Staff{}).Updates(staff).Omit("staff_email", "staff_password").Where("rec_id", staff.RecID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)
 		return
 	}
@@ -104,6 +108,7 @@ func DeleteStaff(ctx *gin.Context) {
 	}
 	err := client.MysqlClient.Delete(&mysql_model.Staff{}, recID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, mysql_model.Staff{})
 		return
 	}
@@ -125,7 +130,8 @@ func SendStaffValidateEmail(ctx *gin.Context) {
 	n := strconv.Itoa(rand.Intn(999999))
 	err := client.RedisClient.Set(staffEmail, n, time.Minute*10).Err()
 	if err != nil {
-		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("Redis存储邮件验证码失败!")))
+		logger.Error(errors.WithStack(err), "")
+		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("Redis存储邮件验证码失败!"))
 		return
 	}
 	err = email.SendEmail("好上好系统验证邮件", "<div style=\"width: 100vw;height: 100vh;background-color: #ffffff;display: flex;flex-direction: column; justify-content: center;align-items: center\">"+
@@ -137,6 +143,7 @@ func SendStaffValidateEmail(ctx *gin.Context) {
 		"<h3 style=\"width: 80%;text-align:right;\">验证码十分钟有效~</h3>"+
 		"</div>", staffEmail)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("发送邮件验证码失败!")))
 		return
 	}
@@ -156,6 +163,7 @@ func ValidateStaffEmail(ctx *gin.Context) {
 	staffEmail := ctx.PostForm("staff_email")
 	if len(staffEmail) == 0 {
 		ctx.JSON(_const.REQUEST_PARM_ERROR, gin.H(errs.CreateWebErrorMsg("未输入邮箱哦")))
+		return
 	}
 	staffCaptcha := ctx.PostForm("captcha")
 	redisCaptcha, err := client.RedisClient.Get(staffEmail).Result()
@@ -166,14 +174,14 @@ func ValidateStaffEmail(ctx *gin.Context) {
 		return
 	} else if err != nil {
 		mes := "Redis 读取失败!"
-		logger.Error(errorx.MustWrap(err), mes)
+		logger.Error(errors.WithStack(err), "")
 		ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg(mes)))
 		return
 	}
 	if staffCaptcha == redisCaptcha {
 		aes, err := encode.EncryptByAes(staffEmail)
 		if err != nil {
-			log.Println(err)
+			logger.Error(errors.WithStack(err), "")
 		}
 		ctx.JSON(_const.OK, gin.H(errs.CreateSuccessMsg("邮箱验证通过!", map[string]interface{}{
 			"secret_key": aes,

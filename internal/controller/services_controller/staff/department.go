@@ -6,8 +6,11 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/pkg/errors"
 )
 
 // SelectDepartment 查询部门
@@ -49,13 +52,15 @@ func SelectDepartment(ctx *gin.Context) {
 // CreateDepartment 创建部门
 func CreateDepartment(ctx *gin.Context) {
 	var department mysql_model.Department
-	err := ctx.ShouldBind(&department)
+	err := ctx.ShouldBindBodyWith(&department, binding.JSON)
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Model(&mysql_model.Department{}).Create(&department).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, department)
 		return
 	}
@@ -68,13 +73,15 @@ func CreateDepartment(ctx *gin.Context) {
 // UpdateDepartment 更新部门
 func UpdateDepartment(ctx *gin.Context) {
 	var department mysql_model.Department
-	err := ctx.ShouldBind(&department)
+	err := ctx.ShouldBindBodyWith(&department, binding.JSON)
 	if err != nil || department.RecID == nil {
+		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	err = client.MysqlClient.Model(&mysql_model.Department{}).Where(" rec_id = ? ", department.RecID).Omit("rec_id").Updates(department).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, department)
 		return
 	}
@@ -91,6 +98,7 @@ func DeleteDepartment(ctx *gin.Context) {
 	}
 	err := client.MysqlClient.Delete(&mysql_model.Department{}, departmentID).Error
 	if err != nil {
+		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, mysql_model.Department{})
 		return
 	}
