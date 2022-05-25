@@ -31,6 +31,7 @@ var bookNameMysqlMigrateList = []interface{}{
 	&mysql_model.CommodityBatch{},
 	&mysql_model.Material{},
 	&mysql_model.MaterialBatch{},
+	&mysql_model.MaterialHistoryCost{},
 	&mysql_model.Customer{},
 	&mysql_model.Provider{},
 	&mysql_model.FixedAsset{},

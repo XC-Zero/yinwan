@@ -103,12 +103,15 @@ func (c Customer) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
 		"rec_id":                      c.RecID,
 		"remark":                      c.Remark,
+		"customer_pic_url":            c.CustomerLogoUrl,
 		"created_at":                  c.CreatedAt,
-		"provider_social_credit_code": c.CustomerSocialCreditCode,
+		"customer_social_credit_code": c.CustomerSocialCreditCode,
 		"customer_alias":              c.CustomerAlias,
 		"customer_name":               c.CustomerName,
 		"customer_contact":            c.CustomerContact,
 		"customer_address":            address,
+		"book_name":                   c.BookName,
+		"book_name_id":                c.BookNameID,
 	}
 }
 func (c *Customer) AfterCreate(tx *gorm.DB) error {

@@ -2,6 +2,8 @@ package client
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"time"
 
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 
@@ -11,6 +13,7 @@ import (
 
 // InitMongoDB ...
 func InitMongoDB(config cfg.MongoDBConfig) (*mongo.Database, error) {
+
 	// 设置客户端连接配置
 	clientOptions := options.Client().ApplyURI(config.URL)
 	// 连接到MongoDB
@@ -19,7 +22,9 @@ func InitMongoDB(config cfg.MongoDBConfig) (*mongo.Database, error) {
 		return nil, err
 	}
 	// 检查连接
-	err = client.Ping(context.TODO(), nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		return nil, err
 	}

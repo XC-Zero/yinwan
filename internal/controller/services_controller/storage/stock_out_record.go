@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 	"time"
 )
@@ -49,18 +48,13 @@ func SelectStockOut(ctx *gin.Context) {
 	conditions := []common.MongoCondition{
 		{
 			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "rec_id",
+			ColumnName:  "basicmodel.rec_id",
 			ColumnValue: ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("stock_out_record_id"),
-		},
-		{
 			Symbol:      my_mongo.NOT_EQUAL,
-			ColumnName:  "deleted_at",
-			ColumnValue: bsontype.Null,
+			ColumnName:  "basicmodel.deleted_at",
+			ColumnValue: nil,
 		},
 	}
 	options := common.SelectMongoDBTemplateOptions{

@@ -112,6 +112,8 @@ func (p Provider) ToESDoc() map[string]interface{} {
 		"provider_name":               p.ProviderName,
 		"provider_contact":            p.ProviderContact,
 		"provider_address":            address,
+		"book_name":                   p.BookName,
+		"book_name_id":                p.BookNameID,
 	}
 }
 func (p *Provider) AfterCreate(tx *gorm.DB) error {

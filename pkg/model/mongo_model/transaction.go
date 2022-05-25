@@ -107,6 +107,8 @@ func (t Transaction) ToESDoc() map[string]interface{} {
 		"transaction_amount":     t.TransactionAmount,
 		"transaction_owner_name": t.TransactionOwnerName,
 		//"transaction_content":t.TransactionContent,
+		"book_name":    t.BookName,
+		"book_name_id": t.BookNameID,
 	}
 }
 

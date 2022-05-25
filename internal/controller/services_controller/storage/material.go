@@ -2,11 +2,13 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -214,24 +216,69 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 	return
 }
 
-// SelectMaterialHistoryCost todo !!!!
+// SelectMaterialHistoryCost 详情页历史均价
 func SelectMaterialHistoryCost(ctx *gin.Context) {
-	//bk, bookName := common.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	return
-	//}
-	//
-	//recID, err := strconv.Atoi()
-	//if err != nil {
-	//	common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
-	//	return
-	//}
-	//common.SelectMysqlTableContentWithCountTemplate(ctx,common.SelectMysqlTemplateOptions{
-	//	DB:            nil,
-	//	TableModel:    nil,
-	//	OrderByColumn: "",
-	//	ResHookFunc:   nil,
-	//	NotReturn:     false,
-	//	NotPaginate:   false,
-	//})
+	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	materialID := ctx.PostForm("material_id")
+	if materialID == "" {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	conditions := []common.MysqlCondition{
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "material_id",
+			ColumnValue: materialID,
+		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
+	}
+	res := common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{
+		DB:            bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		OrderByColumn: "created_at",
+		TableModel:    mysql_model.MaterialHistoryCost{},
+		NotReturn:     true,
+		NotPaginate:   true,
+	}, conditions...)
+	if res == nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_SELECT_ERROR, mysql_model.MaterialHistoryCost{})
+		return
+	}
+	costs := res.([]mysql_model.MaterialHistoryCost)
+	var count = 0
+	var errorList []error
+	var totalPrice = math_plus.NewFromFloatByDecimal(0.0, 1)
+	var dataList = make([]mysql_model.MaterialHistoryCost, 0, 15)
+	for i := range costs {
+		n, err := math_plus.NewFromString(costs[i].Price)
+		if err != nil {
+			errorList = append(errorList, errors.WithStack(err))
+			continue
+		}
+		totalPrice = totalPrice.Add(n)
+		count += 1
+		if len(dataList) < 15 {
+			dataList = append(dataList, costs[i])
+		}
+	}
+	m, _ := math_plus.New(int64(count), 1)
+	var avg float64
+	if count != 0 {
+		avg = totalPrice.Div(m).Float64()
+	} else {
+		avg = 0
+	}
+
+	ctx.JSON(_const.OK, gin.H{
+		"count":         count,
+		"average_price": fmt.Sprintf("%.2f", avg),
+		"list":          dataList,
+	})
+	return
 }

@@ -83,5 +83,7 @@ func (r Return) ToESDoc() map[string]interface{} {
 		"transaction_id":    r.TransactionID,
 		"return_owner_name": r.ReturnOwnerName,
 		//"return_content":    r.ReturnContent,
+		"book_name":    r.BookName,
+		"book_name_id": r.BookNameID,
 	}
 }

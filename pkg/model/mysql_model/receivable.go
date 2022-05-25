@@ -86,8 +86,10 @@ func (p Receivable) Mapping() map[string]interface{} {
 }
 func (p Receivable) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
-		"rec_id": p.RecID,
-		"remark": p.Remark,
+		"rec_id":       p.RecID,
+		"remark":       p.Remark,
+		"book_name":    p.BookName,
+		"book_name_id": p.BookNameID,
 		//"payable_enterprise":p
 	}
 }

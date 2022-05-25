@@ -17,6 +17,15 @@ var (
 	ZERO_DENOMINATOR = errors.New("Denominator is 0 ! ")
 )
 
+var One = Fraction{
+	numerator:   1,
+	denominator: 1,
+}
+var Zero = Fraction{
+	numerator:   0,
+	denominator: 1,
+}
+
 // Fraction 分数
 type Fraction struct {
 	// 分子
@@ -50,6 +59,9 @@ func (f Fraction) ToFakeFraction(multiple int64) Fraction {
 
 //Add 加
 func (f Fraction) Add(fra Fraction) Fraction {
+	if fra.denominator == 0 {
+		return fra
+	}
 	lcm := LeastCommonMultiple(f.denominator, fra.denominator)
 	return newFraction(f.numerator*lcm/f.denominator+fra.numerator*lcm/fra.denominator, lcm).ToRealFraction()
 }
@@ -122,6 +134,13 @@ func NewFromFloatByDecimal(n, d float64) Fraction {
 func NewFromString(str string) (Fraction, error) {
 	fraction := Fraction{}
 	arr := strings.Split(str, "/")
+	if len(arr) == 1 {
+		n, err := strconv.Atoi(arr[0])
+		if err != nil {
+			return Fraction{int64(n), 1}, err
+		}
+	}
+
 	if len(arr) != 2 {
 		return fraction, errors.New(" Fraction string is invalid! ")
 	}

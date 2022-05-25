@@ -142,12 +142,17 @@ type MaterialBatch struct {
 
 // AfterCreate 同步创建历史成本
 func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
+
+	id := tx.Statement.Context.Value("material_id")
+	rec, ok := id.(int)
+	if id == nil || !ok {
+		return errors.New("Context have not material_id")
+	}
 	var cost = MaterialHistoryCost{
-		MaterialID:             0,
+		MaterialID:             rec,
 		Price:                  m.MaterialBatchUnitPrice,
 		RelatedMaterialBatchID: *m.RecID,
 	}
-
 	err := tx.Create(&cost).Error
 	return err
 }
@@ -159,9 +164,18 @@ func (m MaterialBatch) TableCnName() string {
 	return "原材料批次"
 }
 
+// MaterialHistoryCost 原材料历史进货价
 type MaterialHistoryCost struct {
 	BasicModel
 	MaterialID             int    `gorm:"type:int;not null;index" json:"material_id" form:"material_id"`
 	Price                  string `gorm:"type:varchar(20)" json:"price" form:"price"`
+	Num                    int    `json:"num" form:"num"`
 	RelatedMaterialBatchID int    `gorm:"type:int;not null;index" json:"related_material_batch_id" form:"related_material_batch_id"`
+}
+
+func (m MaterialHistoryCost) TableName() string {
+	return "material_history_costs"
+}
+func (m MaterialHistoryCost) TableCnName() string {
+	return "原材料历史进货价"
 }

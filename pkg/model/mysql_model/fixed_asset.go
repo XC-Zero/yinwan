@@ -92,6 +92,8 @@ func (p FixedAsset) ToESDoc() map[string]interface{} {
 		"created_at":         p.CreatedAt,
 		"fixed_asset_amount": p.TotalPrice,
 		"fixed_asset_name":   p.FixedAssetName,
+		"book_name":          p.BookName,
+		"book_name_id":       p.BookNameID,
 	}
 }
 func (p *FixedAsset) AfterCreate(tx *gorm.DB) error {

@@ -6,6 +6,7 @@ import (
 )
 
 // StockInRecord 入库记录
+// TODO BasicModel 改为
 // 存 MongoDB
 type StockInRecord struct {
 	mysql_model.BasicModel
@@ -19,7 +20,7 @@ type StockInRecord struct {
 	StockInDetailPosition     *string                  ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
 	StockInRecordType         string                   ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" `
 	StockInRecordContent      []map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
-	RelatePurchaseID          *int                     ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
+	RelatePurchaseID          []*int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
 	Remark                    *string                  ` json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 

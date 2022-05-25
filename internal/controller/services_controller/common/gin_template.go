@@ -15,7 +15,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/XC-Zero/yinwan/pkg/utils/tools"
 	"github.com/fatih/color"
-	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/olivere/elastic/v7"
@@ -60,8 +59,8 @@ type SelectMysqlTemplateOptions struct {
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
 	ResHookFunc   func(data []interface{}) []interface{}
-	NotReturn     bool
-	NotPaginate   bool
+	NotReturn     bool // 不自动返回
+	NotPaginate   bool // 不自动分页
 }
 
 // SelectESTemplateOptions ElasticSearch 搜索模板配置
@@ -147,7 +146,6 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 
 	err := op.DB.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), "there is any errors ! ")
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		logger.Error(errors.WithStack(err), "Mysql 查询时错误!表名为: "+op.TableModel.TableName())
 		return nil
@@ -166,8 +164,9 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 			if slice, ok := sliceConvert.([]interface{}); ok {
 				res = op.ResHookFunc(slice)
 			}
+		} else {
+			logger.Error(errors.WithStack(err), "Mysql 执行Hook函数错误!表名为: "+op.TableModel.TableName())
 		}
-		logger.Error(errors.WithStack(err), "Mysql 执行Hook函数错误!表名为: "+op.TableModel.TableName())
 	}
 
 	if !op.NotReturn {
@@ -183,8 +182,17 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	var findOptions = client.MongoPaginate(ctx, &options.FindOptions{})
 	var countOptions = options.Count().SetMaxTime(MONGO_COUNT_MAX_TIME)
 	var filter = bson.D{}
-	var list []_interface.ChineseTabler
+	var list = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
 
+	if op.DB == nil {
+		logger.Error(errors.New("gorm client is nil"), "表名为:"+op.TableModel.TableName())
+		InternalDataBaseErrorTemplate(ctx, BOOK_NAME_LACK_ERROR, op.TableModel)
+		return
+	}
+	var orderColumn string
+	if orderColumn == "" {
+		orderColumn = "basicmodel.rec_id"
+	}
 	if op.DB == nil {
 		logger.Error(errors.New("mongo client is nil"), "表名为:"+op.TableModel.TableName())
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
@@ -202,29 +210,37 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		}
 		filter = append(filter, my_mongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
-	logger.Info(fmt.Sprintf("%+v", filter))
+	logger.Info(fmt.Sprintf(" filter is %+v", filter))
 
-	findOptions.Sort = bson.D{{op.OrderByColumn, 1}}
-	data, err := tx.Find(context.TODO(), filter, findOptions)
+	findOptions.Sort = bson.D{{orderColumn, 1}}
+	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	data, err := tx.Find(c, filter, findOptions)
+	defer data.Close(c)
 	if err != nil {
-		logger.Error(errors.WithStack(err), "Mongo查询时错误!表名为: "+op.TableModel.TableName())
+		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
-	err = data.Decode(&list)
-	if err != nil {
-		logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
+	for data.Next(c) {
+		var temp = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
 
-		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-		return
+		err = data.Decode(&temp)
+		list = reflect.AppendSlice(reflect.ValueOf(list), reflect.ValueOf(temp)).Interface()
+		if err != nil {
+			logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
+			InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
+			return
+		}
 	}
+
 	count, err := tx.CountDocuments(context.TODO(), filter, countOptions)
 	if err != nil {
 		logger.Error(errors.WithStack(err), "Mongo查询总数时错误!表名为: "+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
 		return
 	}
-	var res interface{} = list
+	var res = list
 	if op.ResHookFunc != nil {
 		sliceConvert, err := convert.SliceConvert(list, []interface{}{})
 		if err == nil {
@@ -261,6 +277,10 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	var data = op.TableModel
 	if op.PreFunc != nil {
 		data = op.PreFunc(op.TableModel)
+	}
+	if data == nil {
+		RequestParamErrorTemplate(ctx, REQUEST_PARM_ERROR)
+		return
 	}
 	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(context.TODO(), data)
 

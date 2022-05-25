@@ -129,8 +129,8 @@ func (c FinanceCredential) ToESDoc() map[string]interface{} {
 		"related_person":             fmt.Sprintf("制单人:%s  会计:%s  出纳:%s  复核:%s ", maker, account, cashier, checker),
 		"finance_credential_content": credentialContent,
 		//"stock_in_owner":             m.StockInRecordOwnerName,
-		//"book_name":                  m.BookName,
-		//"book_name_id":               m.BookNameID,
+		"book_name":    c.BookName,
+		"book_name_id": c.BookNameID,
 	}
 }
 
