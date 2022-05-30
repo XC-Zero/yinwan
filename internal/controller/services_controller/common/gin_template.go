@@ -222,11 +222,19 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
+
 	for data.Next(c) {
-		var temp = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
+		var temp = bson.D{}
 
 		err = data.Decode(&temp)
-		list = reflect.AppendSlice(reflect.ValueOf(list), reflect.ValueOf(temp)).Interface()
+
+		model, err := reflectBsonDToStruct(temp, op.TableModel)
+		if err != nil {
+			logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
+			InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
+			return
+		}
+		list = reflect.Append(reflect.ValueOf(list), reflect.ValueOf(model)).Interface()
 		if err != nil {
 			logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
 			InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
@@ -496,4 +504,19 @@ func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return nil, ""
 	}
+}
+
+func reflectBsonDToStruct(d bson.D, tabler _interface.ChineseTabler) (_interface.ChineseTabler, error) {
+	str := reflect.New(reflect.TypeOf(tabler))
+	marshal, err := bson.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+	err = bson.Unmarshal(marshal, &str)
+	if err != nil {
+		return nil, err
+	}
+	chineseTabler := str.Interface().(_interface.ChineseTabler)
+	log.Printf("%+v %T", str, str)
+	return chineseTabler, nil
 }

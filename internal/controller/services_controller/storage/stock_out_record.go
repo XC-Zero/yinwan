@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
+	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
@@ -14,6 +15,7 @@ import (
 	"time"
 )
 
+// CreateStockOut todo hook function
 func CreateStockOut(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -35,6 +37,12 @@ func CreateStockOut(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: temp,
+		PreFunc: func(t _interface.ChineseTabler) _interface.ChineseTabler {
+			record := t.(mongo_model.StockOutRecord)
+			//content := record.StockOutRecordContent
+			//content[""]
+			return record
+		},
 	})
 	return
 

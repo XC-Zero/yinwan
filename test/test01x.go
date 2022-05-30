@@ -1,41 +1,59 @@
 package main
 
 import (
-	"github.com/XC-Zero/yinwan/internal/config"
-	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/client"
+	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
-	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/bson"
+	"log"
+	"reflect"
 )
 
 func main() {
-	// 读取配置文件
-	config.InitConfiguration()
-	// 开协程监听配置文件修改，实现热加载
-	go config.ViperMonitor()
-	client.InitSystemStorage(config.CONFIG.StorageConfig)
-	//indexes, err := client.ESClient.CatIndices().Do(context.TODO())
-	//if err != nil {
-	//	return
+	d := bson.D{{"stock_in_record_owner_id", nil}, {"rec_id", 1923}}
+	//info := mysql_model.BookNameInfo{
+	//	BookNameID: "a",
+	//	BookName:   "b",
 	//}
-	//for _, index := range indexes {
-	//	log.Println(index.Index)
-	//}
-	bk, _ := client.ReadBookMap("sss")
-	conditions := []common.MongoCondition{
+	a := mongo_model.StockInRecord{}
+	var b _interface.ChineseTabler = a
+	reflectToStruct(d, b)
 
-		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.deleted_at",
-			ColumnValue: bsontype.Null,
-		},
+	marshal, err := bson.Marshal(d)
+	if err != nil {
+		panic(err)
 	}
-	options := common.SelectMongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
-		TableModel: mongo_model.StockInRecord{},
+	err = bson.Unmarshal(marshal, &a)
+	if err != nil {
+		panic(err)
 	}
-	common.SelectMongoDBTableContentWithCountTemplate(nil, options, conditions...)
+
+	log.Printf("%+v", a)
+	// 读取配置文件
+	//config.InitConfiguration()
+	//// 开协程监听配置文件修改，实现热加载
+	//go config.ViperMonitor()
+	//client.InitSystemStorage(config.CONFIG.StorageConfig)
+	////indexes, err := client.ESClient.CatIndices().Do(context.TODO())
+	////if err != nil {
+	////	return
+	////}
+	////for _, index := range indexes {
+	////	log.Println(index.Index)
+	////}
+	//bk, _ := client.ReadBookMap("sss")
+	//conditions := []common.MongoCondition{
+	//
+	//	{
+	//		Symbol:      my_mongo.EQUAL,
+	//		ColumnName:  "basicmodel.deleted_at",
+	//		ColumnValue: bsontype.Null,
+	//	},
+	//}
+	//options := common.SelectMongoDBTemplateOptions{
+	//	DB:         bk.MongoDBClient,
+	//	TableModel: mongo_model.StockInRecord{},
+	//}
+	//common.SelectMongoDBTableContentWithCountTemplate(nil, options, conditions...)
 	//err := client.MysqlClient.AutoMigrate(mysql_model.MaterialHistoryCost{})
 	//if err != nil {
 	//	panic(err)
@@ -64,4 +82,18 @@ func main() {
 	//}
 	//log.Println(count)
 	//log.Printf("%T  \n %+v", data, data)
+}
+
+func reflectToStruct(d bson.D, tabler _interface.ChineseTabler) {
+	str := reflect.New(reflect.TypeOf(tabler))
+	marshal, err := bson.Marshal(d)
+	if err != nil {
+		panic(err)
+	}
+	err = bson.Unmarshal(marshal, &str)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("%+v %T", str, str)
 }
