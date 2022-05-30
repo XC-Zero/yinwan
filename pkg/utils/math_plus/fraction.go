@@ -77,6 +77,10 @@ func (f Fraction) Mul(fra Fraction) Fraction {
 	return newFraction(f.numerator*fra.numerator, f.denominator*fra.denominator).ToRealFraction()
 }
 
+func (f Fraction) MulInt64(n int64) Fraction {
+	return newFraction(f.numerator*n, f.denominator)
+}
+
 // Div 除
 func (f Fraction) Div(fra Fraction) Fraction {
 	return f.Mul(fra.Reverse())
@@ -135,10 +139,11 @@ func NewFromString(str string) (Fraction, error) {
 	fraction := Fraction{}
 	arr := strings.Split(str, "/")
 	if len(arr) == 1 {
-		n, err := strconv.Atoi(arr[0])
+		n, err := strconv.Atoi(str)
 		if err != nil {
-			return Fraction{int64(n), 1}, err
+			return Fraction{0, 1}, err
 		}
+		return Fraction{int64(n), 1}, nil
 	}
 
 	if len(arr) != 2 {

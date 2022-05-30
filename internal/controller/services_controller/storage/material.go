@@ -251,7 +251,7 @@ func SelectMaterialHistoryCost(ctx *gin.Context) {
 		return
 	}
 	costs := res.([]mysql_model.MaterialHistoryCost)
-	var count = 0
+	var count int64 = 0
 	var errorList []error
 	var totalPrice = math_plus.NewFromFloatByDecimal(0.0, 1)
 	var dataList = make([]mysql_model.MaterialHistoryCost, 0, 15)
@@ -261,13 +261,14 @@ func SelectMaterialHistoryCost(ctx *gin.Context) {
 			errorList = append(errorList, errors.WithStack(err))
 			continue
 		}
-		totalPrice = totalPrice.Add(n)
-		count += 1
+		one := int64(costs[i].Num)
+		totalPrice = totalPrice.Add(n.MulInt64(one))
+		count += one
 		if len(dataList) < 15 {
 			dataList = append(dataList, costs[i])
 		}
 	}
-	m, _ := math_plus.New(int64(count), 1)
+	m, _ := math_plus.New(count, 1)
 	var avg float64
 	if count != 0 {
 		avg = totalPrice.Div(m).Float64()

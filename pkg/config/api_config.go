@@ -5,6 +5,7 @@ type ApiConfig struct {
 	EmailConfig        EmailConfig        `json:"email_config" yaml:"email_config"`
 	TextMessageConfig  TextMessageConfig  `json:"text_message_config" yaml:"text_message_config"`
 	CurrencyRateConfig CurrencyRateConfig `json:"currency_rate_config" yaml:"currency_rate_config"`
+	WxConfig           WxConfig           `json:"wx_config" yaml:"wx_config"`
 }
 
 // TextMessageConfig 短信服务
@@ -27,4 +28,10 @@ type CurrencyRateConfig struct {
 	RateURL string `json:"rate_url" yaml:"rate_url"`
 	AppKey  string `json:"app_key" yaml:"app_key"`
 	Sign    string `json:"sign" yaml:"sign"`
+}
+
+type WxConfig struct {
+	AppID      string `json:"app_id" yaml:"app_id"`
+	AppSecrete string `json:"app_secrete" yaml:"app_secrete"`
+	ApiUrl     string `json:"api_url" yaml:"api_url"`
 }

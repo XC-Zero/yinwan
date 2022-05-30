@@ -89,7 +89,7 @@ func UpdateStaff(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Model(&mysql_model.Staff{}).Updates(staff).Omit("staff_email", "staff_password").Where("rec_id", staff.RecID).Error
+	err = client.MysqlClient.Model(&mysql_model.Staff{}).Where("rec_id = ? ", staff.RecID).Updates(&staff).Omit("staff_email", "staff_password").Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, staff)

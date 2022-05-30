@@ -20,6 +20,9 @@ func Starter() {
 	router := gin.Default()
 	//router.Use() todo 使用自定义的日志输出！
 	router.POST("/login", access_control.Login)
+	router.POST("/wx_login", access_control.WxLogin)
+	router.POST("/wx_binding_staff", access_control.WxBindingStaff)
+	router.POST("/remove_binding_staff", access_control.RemoveBindingStaff)
 	router.POST("/forget_password", access_control.ForgetPassword)
 	router.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
 	router.POST("/validate_staff_email", staff3.ValidateStaffEmail)

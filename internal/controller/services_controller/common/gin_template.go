@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -11,10 +12,9 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
-	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
+	myMongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/XC-Zero/yinwan/pkg/utils/tools"
-	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/olivere/elastic/v7"
@@ -45,7 +45,7 @@ type MysqlCondition struct {
 
 // MongoCondition MongoDB 搜索条件
 type MongoCondition struct {
-	Symbol      my_mongo.OperatorSymbol
+	Symbol      myMongo.OperatorSymbol
 	ColumnName  string
 	ColumnValue interface{}
 }
@@ -139,11 +139,6 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 		sg = sg.AddSuffixOther(client.MysqlPaginateSql(ctx))
 	}
 	contentSql, countSql := sg.HarvestSql(), sqlBatch.HarvestSql("count")
-	c := color.New(color.BgMagenta).Add(color.Underline)
-	// 打印成功与否并不重要，error 忽略掉就行
-	c.Println(contentSql)
-	c.Println(countSql)
-
 	err := op.DB.Raw(contentSql).Scan(&dataList).Error
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
@@ -191,7 +186,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	}
 	var orderColumn string
 	if orderColumn == "" {
-		orderColumn = "basicmodel.rec_id"
+		orderColumn = "rec_id"
 	}
 	if op.DB == nil {
 		logger.Error(errors.New("mongo client is nil"), "表名为:"+op.TableModel.TableName())
@@ -208,7 +203,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		if reflect.ValueOf(condition.ColumnValue).IsZero() {
 			continue
 		}
-		filter = append(filter, my_mongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
+		filter = append(filter, myMongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
 	logger.Info(fmt.Sprintf(" filter is %+v", filter))
 
@@ -216,7 +211,13 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	data, err := tx.Find(c, filter, findOptions)
-	defer data.Close(c)
+	log.Printf("%+v", data)
+	defer func(data *mongo.Cursor, ctx context.Context) {
+		err := data.Close(ctx)
+		if err != nil {
+			logger.Error(errors.WithStack(err), "")
+		}
+	}(data, c)
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
@@ -250,33 +251,17 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	}
 	var res = list
 	if op.ResHookFunc != nil {
-		sliceConvert, err := convert.SliceConvert(list, []interface{}{})
+		sliceConvert, err := convert.SliceConvert(res, []interface{}{})
 		if err == nil {
-			res = op.ResHookFunc(sliceConvert.([]interface{}))
+			if slice, ok := sliceConvert.([]interface{}); ok {
+				res = op.ResHookFunc(slice)
+			}
+			logger.Error(errors.WithStack(err), "Mongo执行Hook函数错误!表名为: "+op.TableModel.TableName())
 		}
-		logger.Error(errors.WithStack(err), "Mongo执行Hook函数错误!表名为: "+op.TableModel.TableName())
 	}
-	SelectSuccessTemplate(ctx, count, res)
-	return
-}
+	logger.Info(fmt.Sprintf("%+v", res))
 
-// CreateOneMysqlRecordTemplate MySQL 创建模板
-func CreateOneMysqlRecordTemplate(ctx *gin.Context, op CreateMysqlTemplateOptions) {
-	var data = op.TableModel
-	if op.PreFunc != nil {
-		data = op.PreFunc(op.TableModel)
-	}
-	err := op.DB.Create(&op.TableModel).Error
-	if err != nil {
-		log.Printf("%+v", op.TableModel)
-		log.Printf("%T", op.TableModel)
-		log.Println(err)
-		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, data)
-		return
-	}
-	mes := fmt.Sprintf("新建%s成功", data.TableCnName())
-	logger.Info(mes)
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
+	SelectSuccessTemplate(ctx, count, res)
 	return
 }
 
@@ -307,7 +292,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		}
 	}
 	id := reflect.ValueOf(data).Field(0).FieldByName("RecID").Interface().(*int)
-	mes := fmt.Sprintf("新建%s成功,编号为%d", data.TableCnName(), *id)
+	mes := fmt.Sprintf("新建%s成功,编号为%d", data.TableCnName(), id)
 	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
@@ -320,7 +305,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		data = op.PreFunc(data)
 	}
 	filter, update := bson.D{}, bson.D{}
-	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
+	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
 	objV, objT := reflect.ValueOf(data), reflect.TypeOf(data)
 	if objV.IsZero() {
 		logger.Waring(errors.New("This struct is empty! "), "这里尝试更新,但空结构体~")
@@ -369,7 +354,7 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		data = op.PreFunc(data)
 	}
 	filter := bson.D{}
-	filter = append(filter, my_mongo.TransMysqlOperatorSymbol(my_mongo.EQUAL, "rec_id", op.RecID))
+	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
 
 	_, err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
 		Valid: true,
@@ -393,21 +378,6 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	mes := fmt.Sprintf("更新%s信息成功！", data.TableCnName())
 	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
-	return
-}
-
-// UpdateOneMysqlRecordTemplate MySQL 更新模板
-func UpdateOneMysqlRecordTemplate(ctx *gin.Context, op UpdateMysqlTemplateOptions) {
-	var data = op.TableModel
-	if op.PreFunc != nil {
-		data = op.PreFunc(data)
-	}
-	err := op.DB.Updates(data).Omit(op.OmitColumn...).Error
-	if err != nil {
-		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
-		return
-	}
-	ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 	return
 }
 
@@ -507,16 +477,24 @@ func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 }
 
 func reflectBsonDToStruct(d bson.D, tabler _interface.ChineseTabler) (_interface.ChineseTabler, error) {
-	str := reflect.New(reflect.TypeOf(tabler))
-	marshal, err := bson.Marshal(d)
+	t := reflect.TypeOf(tabler)
+	if t.Kind() == reflect.Ptr { //指针类型获取真正type需要调用Elem
+		t = t.Elem()
+	}
+	str := reflect.New(t)
+	log.Printf("%+v \n -----------------------------  \n map is \n %+v", d, d.Map())
+
+	marshal, err := json.Marshal(d.Map())
 	if err != nil {
 		return nil, err
 	}
-	err = bson.Unmarshal(marshal, &str)
+	log.Printf("%s", string(marshal))
+
+	err = json.Unmarshal(marshal, &str)
 	if err != nil {
 		return nil, err
 	}
-	chineseTabler := str.Interface().(_interface.ChineseTabler)
-	log.Printf("%+v %T", str, str)
+	chineseTabler := str.Elem().Interface().(_interface.ChineseTabler)
+	log.Printf("%+v %T", chineseTabler, chineseTabler)
 	return chineseTabler, nil
 }

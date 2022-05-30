@@ -1,15 +1,13 @@
 package mongo_model
 
-import (
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-)
+import "github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 
 // Purchase 采购
 //  存在MongoDB里
 //  凡是什么什么单含有不确定数据结构的均存在MongoDB里
 type Purchase struct {
-	mysql_model.BasicModel
-	BookNameInfo
+	mysql_model.BasicModel   `bson:"inline"`
+	BookNameInfo             `bson:"-"`
 	ProviderID               *int                      `json:"provider_id,omitempty" form:"provider_id"  bson:"provider_id" cn:"供应商编号"`
 	ProviderName             *string                   `json:"provider_name,omitempty" form:"provider_name"  bson:"provider_name" cn:"供应商名称"`
 	ProviderOwner            *string                   `json:"provider_owner,omitempty" form:"provider_owner" bson:"provider_owner" cn:"对方联络人"`

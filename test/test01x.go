@@ -2,7 +2,7 @@ package main
 
 import (
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"reflect"
@@ -14,7 +14,7 @@ func main() {
 	//	BookNameID: "a",
 	//	BookName:   "b",
 	//}
-	a := mongo_model.StockInRecord{}
+	a := mysql_model.WxStaffRelationship{}
 	var b _interface.ChineseTabler = a
 	reflectToStruct(d, b)
 

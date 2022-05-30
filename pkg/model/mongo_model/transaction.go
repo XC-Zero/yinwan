@@ -1,8 +1,6 @@
 package mongo_model
 
-import (
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-)
+import "github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 
 type PayType int
 
@@ -34,8 +32,8 @@ func (p PayType) DisPlay() string {
 
 // Transaction 销售
 type Transaction struct {
-	mysql_model.BasicModel
-	BookNameInfo
+	mysql_model.BasicModel  `bson:"inline"`
+	BookNameInfo            `bson:"-"`
 	TransactionContent      []map[string]interface{} `json:"transaction_content" form:"transaction_content" bson:"transaction_content" cn:"销售详情"`
 	TransactionAmount       string                   `json:"transaction_amount" form:"transaction_amount" bson:"transaction_amount" cn:"销售金额"`
 	TransactionActualAmount string                   `json:"transaction_actual_amount" form:"transaction_actual_amount" bson:"transaction_actual_amount" cn:"实际销售金额"`

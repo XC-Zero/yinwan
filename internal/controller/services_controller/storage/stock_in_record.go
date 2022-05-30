@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 	"time"
 )
@@ -35,6 +34,7 @@ func CreateStockIn(ctx *gin.Context) {
 	temp.RecID = &recID
 	temp.BookName = n
 	temp.BookNameID = bk.StorageName
+	temp.CreatedAt = time.Now()
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
@@ -88,13 +88,13 @@ func SelectStockIn(ctx *gin.Context) {
 	conditions := []common.MongoCondition{
 		{
 			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.rec_id",
+			ColumnName:  "rec_id",
 			ColumnValue: ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.deleted_at",
-			ColumnValue: bsontype.Null,
+			Symbol:      my_mongo.LESS_THAN_EQUAL,
+			ColumnName:  "deleted_at.time",
+			ColumnValue: my_mongo.NullTime,
 		},
 		{
 			Symbol:      my_mongo.EQUAL,

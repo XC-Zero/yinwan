@@ -3,16 +3,16 @@ package mongo_model
 import "github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 
 type Return struct {
-	mysql_model.BasicModel
-	BookNameInfo
-	ReturnContent      map[string]interface{} `json:"return_content" form:"return_content" bson:"return_content" cn:"退款订单内容" `
-	ReturnActualAmount string                 `json:"return_actual_amount" form:"return_actual_amount" bson:"return_actual_amount" cn:"实际退款金额" `
-	ReturnAmount       string                 `json:"return_bill_amount" form:"return_bill_amount" cn:"应退金额" `
-	ReturnOwnerID      *int                   `json:"return_owner_id,omitempty" form:"return_owner_id,omitempty" json:"return_owner_id" cn:"退款记录负责人ID"`
-	ReturnOwnerName    *string                `json:"return_owner_name,omitempty" form:"return_owner_name,omitempty" bson:"return_owner_name" cn:"退款记录负责人名称"`
-	TransactionID      *int                   `json:"transaction_id,omitempty" form:"transaction_id" bson:"transaction_id" cn:"关联销售订单ID"`
-	ReceiveID          *int                   `json:"receive_id,omitempty" form:"receive_id,omitempty" bson:"receive_id" cn:"关联红字应收记录ID" `
-	Remark             *string                `json:"remark,omitempty" form:"remark,omitempty" bson:"remark" cn:"备注"`
+	mysql_model.BasicModel `bson:"inline"`
+	BookNameInfo           `bson:"-"`
+	ReturnContent          map[string]interface{} `json:"return_content" form:"return_content" bson:"return_content" cn:"退款订单内容" `
+	ReturnActualAmount     string                 `json:"return_actual_amount" form:"return_actual_amount" bson:"return_actual_amount" cn:"实际退款金额" `
+	ReturnAmount           string                 `json:"return_bill_amount" form:"return_bill_amount" cn:"应退金额" `
+	ReturnOwnerID          *int                   `json:"return_owner_id,omitempty" form:"return_owner_id,omitempty" json:"return_owner_id" cn:"退款记录负责人ID"`
+	ReturnOwnerName        *string                `json:"return_owner_name,omitempty" form:"return_owner_name,omitempty" bson:"return_owner_name" cn:"退款记录负责人名称"`
+	TransactionID          *int                   `json:"transaction_id,omitempty" form:"transaction_id" bson:"transaction_id" cn:"关联销售订单ID"`
+	ReceiveID              *int                   `json:"receive_id,omitempty" form:"receive_id,omitempty" bson:"receive_id" cn:"关联红字应收记录ID" `
+	Remark                 *string                `json:"remark,omitempty" form:"remark,omitempty" bson:"remark" cn:"备注"`
 }
 
 func (r Return) TableCnName() string {

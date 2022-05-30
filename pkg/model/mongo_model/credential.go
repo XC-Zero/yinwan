@@ -9,8 +9,8 @@ import (
 
 // FinanceCredential 财务凭证
 type FinanceCredential struct {
-	mysql_model.BasicModel
-	BookNameInfo
+	mysql_model.BasicModel `bson:"inline"`
+	BookNameInfo           `bson:"-"`
 	// 凭证标题
 	FinanceCredentialLabel string `json:"finance_credential_label" bson:"finance_credential_label"`
 	// 凭证责任人ID

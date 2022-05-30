@@ -135,7 +135,7 @@ type MaterialBatch struct {
 	MaterialBatchSurplusNumber int     `gorm:"type:int;not null" json:"material_batch_surplus_number" cn:"当前批次原材料剩余数量"`
 	MaterialBatchUnitPrice     string  `gorm:"type:varchar(50);not null" json:"material_batch_unit_price" cn:"单价"`
 	WarehouseID                *int    `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
-	WarehouseName              *string `gorm:"type:int" json:"warehouse_name,omitempty"  cn:"仓库名称"`
+	WarehouseName              *string `gorm:"type:varchar(50)" json:"warehouse_name,omitempty"  cn:"仓库名称"`
 	StockInTime                *string `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
 	Remark                     *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
 }
@@ -150,6 +150,7 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 	}
 	var cost = MaterialHistoryCost{
 		MaterialID:             rec,
+		Num:                    m.MaterialBatchNumber,
 		Price:                  m.MaterialBatchUnitPrice,
 		RelatedMaterialBatchID: *m.RecID,
 	}

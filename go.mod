@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/Shopify/sarama v1.31.1
 	github.com/dollarkillerx/urllib v1.13.16
-	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/fwhezfwhez/errorx v1.1.0
 	github.com/ghodss/yaml v1.0.0
@@ -66,7 +65,6 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/minio/md5-simd v1.1.0 // indirect
 	github.com/minio/sha256-simd v0.1.1 // indirect
