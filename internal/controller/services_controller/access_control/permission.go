@@ -51,10 +51,6 @@ func Login(ctx *gin.Context) {
 
 }
 
-func HarvestRole(ctx *gin.Context) {
-
-}
-
 // ForgetPassword 忘记密码
 func ForgetPassword(ctx *gin.Context) {
 	staffEmail := ctx.PostForm("staff_email")

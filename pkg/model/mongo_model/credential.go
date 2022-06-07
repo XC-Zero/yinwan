@@ -4,13 +4,12 @@ import (
 	"fmt"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 )
 
 // FinanceCredential 财务凭证
 type FinanceCredential struct {
-	mysql_model.BasicModel `bson:"inline"`
-	BookNameInfo           `bson:"-"`
+	BasicModel   `bson:"inline"`
+	BookNameInfo `bson:"-"`
 	// 凭证标题
 	FinanceCredentialLabel string `json:"finance_credential_label" bson:"finance_credential_label"`
 	// 凭证责任人ID
