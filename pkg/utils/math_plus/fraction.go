@@ -111,19 +111,16 @@ func NewFromFloat(n, d float64) (Fraction, error) {
 	if d == 0.0 {
 		return Fraction{}, ZERO_DENOMINATOR
 	}
-	arr := strings.Split(fmt.Sprint(n), ".")
-	num, err := strconv.ParseInt(arr[0]+arr[1], 10, 64)
+
+	nn, err := FloatToFraction(n)
 	if err != nil {
 		return Fraction{}, err
 	}
-
-	nn := newFraction(num, int64(math.Pow10(len(arr[1]))))
-	if d == 1 {
-		return nn, nil
-	} else {
-		f, _ := NewFromFloat(d, 1)
-		return nn.Mul(f.Reverse()), nil
+	dd, err := FloatToFraction(d)
+	if err != nil {
+		return Fraction{}, err
 	}
+	return nn.Div(dd), nil
 }
 
 // NewFromFloatByDecimal 使用decimal 计算，结果可能不完全正确
@@ -161,4 +158,23 @@ func NewFromString(str string) (Fraction, error) {
 		return Fraction{}, ZERO_DENOMINATOR
 	}
 	return newFraction(n, d).ToRealFraction(), nil
+}
+func FloatToFraction(f float64) (Fraction, error) {
+	if f == 0 {
+		return newFraction(0, 1), nil
+	} else {
+		str := fmt.Sprint(f)
+		if strings.Contains(str, ".") {
+			arr := strings.Split(str, ".")
+			n, err := strconv.ParseInt(arr[0]+arr[1], 10, 64)
+			if err != nil {
+				return Fraction{}, err
+			}
+			return newFraction(n, int64(math.Pow10(len(arr[1])))), nil
+
+		} else {
+			return newFraction(int64(int(f)), 1), nil
+		}
+
+	}
 }

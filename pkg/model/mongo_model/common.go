@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"log"
-	"time"
 )
 
 type Analyzer string
@@ -15,16 +14,16 @@ const (
 )
 
 type BasicModel struct {
-	RecID     *int       ` json:"rec_id,omitempty" bson:"rec_id" cn:"记录ID"`
-	CreatedAt time.Time  ` json:"created_at" bson:"created_at" cn:"创建时间"`
-	UpdatedAt *time.Time ` json:"updated_at,omitempty" bson:"updated_at" cn:"更新时间"`
-	DeletedAt *time.Time ` json:"deleted_at,omitempty" bson:"deleted_at" cn:"删除时间"`
+	RecID     *int    ` json:"rec_id,omitempty" bson:"rec_id" cn:"记录ID"`
+	CreatedAt string  `json:"created_at" bson:"created_at"`
+	UpdatedAt *string `json:"updated_at,omitempty" bson:"updated_at"`
+	DeletedAt *string `json:"deleted_at,omitempty" bson:"deleted_at" cn:"删除时间"`
 }
 
 type mapping map[string]interface{}
 type BookNameInfo mysql_model.BookNameInfo
 
-func (m mapping) ToString() string {
+func (m mapping) String() string {
 	marshal, err := json.Marshal(m)
 	if err != nil {
 		return ""

@@ -19,9 +19,8 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
+	"github.com/qiniu/qmgo"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 	"reflect"
@@ -80,14 +79,14 @@ type CreateMysqlTemplateOptions struct {
 
 // SelectMongoDBTemplateOptions MongoDB 搜索模板配置
 type SelectMongoDBTemplateOptions struct {
-	DB            *mongo.Database
+	DB            *qmgo.Database
 	TableModel    _interface.ChineseTabler
 	OrderByColumn string
 	ResHookFunc   func(data []interface{}) []interface{}
 }
 
 type CreateMongoDBTemplateOptions struct {
-	DB         *mongo.Database
+	DB         *qmgo.Database
 	Context    context.Context
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
@@ -95,7 +94,7 @@ type CreateMongoDBTemplateOptions struct {
 
 // MongoDBTemplateOptions MongoDB 模板配置
 type MongoDBTemplateOptions struct {
-	DB         *mongo.Database
+	DB         *qmgo.Database
 	Context    context.Context
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
@@ -174,8 +173,7 @@ func SelectMysqlTableContentWithCountTemplate(ctx *gin.Context, op SelectMysqlTe
 // SelectMongoDBTableContentWithCountTemplate MongoDB 搜索模板
 func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongoDBTemplateOptions, conditionList ...MongoCondition) {
 	// 分页参数
-	var findOptions = client.MongoPaginate(ctx, &options.FindOptions{})
-	var countOptions = options.Count().SetMaxTime(MONGO_COUNT_MAX_TIME)
+	offset, limit := client.Paginate(ctx)
 	var filter = bson.D{}
 	var list = reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(op.TableModel)), 0, 0).Interface()
 
@@ -200,50 +198,25 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		return
 	}
 	for _, condition := range conditionList {
-		if reflect.ValueOf(condition.ColumnValue).IsZero() {
+		if condition.ColumnValue == nil || reflect.ValueOf(condition.ColumnValue).IsZero() {
 			continue
 		}
 		filter = append(filter, myMongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
 	logger.Info(fmt.Sprintf(" filter is %+v", filter))
 
-	findOptions.Sort = bson.D{{orderColumn, 1}}
 	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	data, err := tx.Find(c, filter, findOptions)
-	log.Printf("%+v", data)
-	defer func(data *mongo.Cursor, ctx context.Context) {
-		err := data.Close(ctx)
-		if err != nil {
-			logger.Error(errors.WithStack(err), "")
-		}
-	}(data, c)
+	err := tx.Find(c, filter).Sort(orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
+	log.Printf("%+v", list)
+
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
 
-	for data.Next(c) {
-		var temp = bson.D{}
-
-		err = data.Decode(&temp)
-
-		model, err := reflectBsonDToStruct(temp, op.TableModel)
-		if err != nil {
-			logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
-			InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-			return
-		}
-		list = reflect.Append(reflect.ValueOf(list), reflect.ValueOf(model)).Interface()
-		if err != nil {
-			logger.Error(errors.WithStack(err), "Mongo查询返回结果解析时错误!表名为: "+op.TableModel.TableName())
-			InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
-			return
-		}
-	}
-
-	count, err := tx.CountDocuments(context.TODO(), filter, countOptions)
+	count, err := tx.Find(c, filter).Count()
 	if err != nil {
 		logger.Error(errors.WithStack(err), "Mongo查询总数时错误!表名为: "+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_COUNT_ERROR, op.TableModel)
@@ -326,7 +299,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 			update = append(update, bson.E{Key: v, Value: nowValue.Interface()})
 		}
 	}
-	err := op.DB.Collection(op.TableModel.TableName()).FindOneAndUpdate(context.TODO(), filter, bson.D{{"$set", update}})
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{"$set", update}})
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
@@ -355,11 +328,14 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	}
 	filter := bson.D{}
 	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
-
-	_, err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
 		Valid: true,
 		Time:  time.Now(),
 	})}}})
+	if err != nil {
+		return
+	}
+
 	if err != nil {
 		logger.Error(errors.WithStack(err), "Mongo 软删除失败! 表:"+en)
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
@@ -481,10 +457,10 @@ func reflectBsonDToStruct(d bson.D, tabler _interface.ChineseTabler) (_interface
 	if t.Kind() == reflect.Ptr { //指针类型获取真正type需要调用Elem
 		t = t.Elem()
 	}
-	str := reflect.New(t)
-	log.Printf("%+v \n -----------------------------  \n map is \n %+v", d, d.Map())
 
-	marshal, err := json.Marshal(d.Map())
+	str := reflect.New(t)
+
+	marshal, err := bson.Marshal(d)
 	if err != nil {
 		return nil, err
 	}

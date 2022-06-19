@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
-	"time"
 )
 
 type OperatorSymbol string
@@ -20,11 +19,11 @@ const (
 	LESS_THAN_EQUAL    OperatorSymbol = "$lte"
 )
 
-var NullTime time.Time
-
-func init() {
-	NullTime, _ = time.Parse("2006-01-02", "1970-01-11")
-}
+//var NullTime time.Time
+//
+//func init() {
+//	NullTime, _ = time.Parse("2006-01-02", "1970-01-11")
+//}
 
 func TransMysqlOperatorSymbol(symbol OperatorSymbol, column string, value interface{}) bson.E {
 	//switch symbol {

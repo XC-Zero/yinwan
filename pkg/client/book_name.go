@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/minio/minio-go/v7"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/qiniu/qmgo"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +11,6 @@ type BookName struct {
 	BookName      string
 	StorageName   string
 	MysqlClient   *gorm.DB
-	MongoDBClient *mongo.Database
+	MongoDBClient *qmgo.Database
 	MinioClient   *minio.Client
 }

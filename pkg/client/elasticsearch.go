@@ -6,6 +6,7 @@ import (
 	"fmt"
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"log"
@@ -106,6 +107,7 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 		hl := hit[i].Highlight
 		err = json.Unmarshal(hit[i].Source, &m)
 		if err != nil {
+			logger.Error(errors.WithStack(err), "Unmarshal Error! ")
 			continue
 		}
 		for s, strList := range hl {

@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 )
 
@@ -47,7 +46,7 @@ func SelectPayable(ctx *gin.Context) {
 		{
 			Symbol:      my_mongo.NOT_EQUAL,
 			ColumnName:  "deleted_at",
-			ColumnValue: bsontype.Null,
+			ColumnValue: nil,
 		},
 	}
 	op := common.SelectMongoDBTemplateOptions{

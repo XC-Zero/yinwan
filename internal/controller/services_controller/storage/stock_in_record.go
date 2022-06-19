@@ -34,7 +34,7 @@ func CreateStockIn(ctx *gin.Context) {
 	temp.RecID = &recID
 	temp.BookName = n
 	temp.BookNameID = bk.StorageName
-	temp.CreatedAt = time.Now()
+	temp.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
@@ -57,10 +57,10 @@ func CreateStockIn(ctx *gin.Context) {
 					StockInRecordID:            *temp.RecID,
 					MaterialBatchOwnerID:       temp.StockInRecordOwnerID,
 					MaterialBatchOwnerName:     temp.StockInRecordOwnerName,
-					MaterialBatchTotalPrice:    price,
+					MaterialBatchTotalPrice:    tPrice,
 					MaterialBatchNumber:        num,
 					MaterialBatchSurplusNumber: num,
-					MaterialBatchUnitPrice:     tPrice,
+					MaterialBatchUnitPrice:     price,
 					WarehouseID:                temp.StockInWarehouseID,
 					WarehouseName:              temp.StockInWarehouseName,
 					StockInTime:                &date,
@@ -87,29 +87,29 @@ func SelectStockIn(ctx *gin.Context) {
 
 	conditions := []common.MongoCondition{
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("stock_in_record_id"),
+			my_mongo.EQUAL,
+			"rec_id",
+			ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			Symbol:      my_mongo.LESS_THAN_EQUAL,
-			ColumnName:  "deleted_at.time",
-			ColumnValue: my_mongo.NullTime,
+			my_mongo.LESS_THAN_EQUAL,
+			"deleted_at",
+			nil,
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "stock_in_record_type",
-			ColumnValue: ctx.PostForm("stock_in_record_type"),
+			my_mongo.EQUAL,
+			"stock_in_record_type",
+			ctx.PostForm("stock_in_record_type"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "stock_in_warehouse_id",
-			ColumnValue: ctx.PostForm("stock_in_warehouse_id"),
+			my_mongo.EQUAL,
+			"stock_in_warehouse_id",
+			ctx.PostForm("stock_in_warehouse_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "stock_in_record_owner_id",
-			ColumnValue: ctx.PostForm("stock_in_record_owner_id"),
+			my_mongo.EQUAL,
+			"stock_in_record_owner_id",
+			ctx.PostForm("stock_in_record_owner_id"),
 		},
 	}
 	options := common.SelectMongoDBTemplateOptions{

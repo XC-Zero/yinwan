@@ -1,10 +1,14 @@
 package mysql_model
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"log"
 )
 
 // Material 原材料
@@ -139,6 +143,11 @@ type MaterialBatch struct {
 	StockInTime                *string `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
 	Remark                     *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
 }
+type tempScan struct {
+	Surplus     int64 `json:"surplus"`
+	TotalPrice  int64 `json:"total_price"`
+	TotalNumber int64 `json:"total_number"`
+}
 
 // AfterCreate 同步创建历史成本
 func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
@@ -146,16 +155,76 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 	id := tx.Statement.Context.Value("material_id")
 	rec, ok := id.(int)
 	if id == nil || !ok {
-		return errors.New("Context have not material_id")
+		logger.Error(errors.New("Context have not material_id"), "")
+		return nil
 	}
 	var cost = MaterialHistoryCost{
 		MaterialID:             rec,
 		Num:                    m.MaterialBatchNumber,
-		Price:                  m.MaterialBatchUnitPrice,
+		Price:                  m.MaterialBatchTotalPrice,
 		RelatedMaterialBatchID: *m.RecID,
 	}
-	err := tx.Create(&cost).Error
-	return err
+
+	err := tx.Transaction(func(tx *gorm.DB) error {
+		var res MaterialHistoryCost
+		err2 := tx.Where("related_material_batch_id = ?", *m.RecID).Find(&res).Error
+		if err2 != nil {
+			log.Println(errors.WithStack(err2))
+			return err2
+		}
+		if res.RecID == nil {
+			err2 := tx.Model(cost).Create(&cost).Error
+			if err2 != nil {
+				log.Println("@@@@ Create ERROR is ", errors.WithStack(err2))
+				return err2
+			}
+		} else {
+			err2 := tx.Updates(&cost).Where("rec_id", *res.RecID).Error
+			if err2 != nil {
+				log.Println("@@@@ Updates ERROR is ", errors.WithStack(err2))
+				return err2
+			}
+		}
+		var tempScan tempScan
+
+		err2 = tx.Model(MaterialBatch{}).Where("material_id = ? and deleted_at is null ", rec).Select(
+			"sum(material_batch_surplus_number) as surplus," +
+				"sum(material_batch_total_price) as total_price," +
+				"sum(material_batch_number) as total_number ").Scan(&tempScan).Error
+		if err2 != nil {
+			log.Println("@@@@ Statics ERROR is ", errors.WithStack(err2))
+
+			return err2
+		}
+		var averagePrice string
+		if tempScan.TotalNumber == 0 {
+			averagePrice = "0"
+		} else {
+			fraction, err := math_plus.New(tempScan.TotalPrice, tempScan.TotalNumber)
+			if err != nil {
+				averagePrice = "0"
+			}
+			averagePrice = fmt.Sprintf("%.2f", fraction.Float64())
+		}
+
+		err2 = tx.Raw("update materials set average_unit_price = ? , "+
+			"material_present_count = ? where rec_id = ? ",
+			averagePrice, tempScan.Surplus, rec).Error
+		if err2 != nil {
+			log.Println(errors.WithStack(err2))
+			return err2
+		}
+		return nil
+	},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m MaterialBatch) AfterUpdate(tx *gorm.DB) error {
+	return m.AfterCreate(tx)
 }
 
 func (m MaterialBatch) TableName() string {

@@ -18,13 +18,14 @@ require (
 	github.com/mozillazg/go-pinyin v0.19.0
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/pkg/errors v0.9.1
+	github.com/qiniu/qmgo v1.1.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shopspring/decimal v1.3.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/viper v1.10.1
 	github.com/tealeg/xlsx v1.0.5
 	github.com/xuri/excelize/v2 v2.5.0
-	go.mongodb.org/mongo-driver v1.8.3
+	go.mongodb.org/mongo-driver v1.9.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	gorm.io/driver/mysql v1.2.3

@@ -11,8 +11,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/olivere/elastic/v7"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/qiniu/qmgo"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
@@ -131,7 +130,7 @@ var (
 	MysqlClient    *gorm.DB
 	MinioClient    *minio.Client
 	InfluxDBClient *influxdb2.Client
-	MongoDBClient  *mongo.Database
+	MongoDBClient  *qmgo.Database
 	KafkaClient    *sarama.Client
 )
 
@@ -219,28 +218,33 @@ func MysqlPaginateSql(ctx *gin.Context) string {
 	return fmt.Sprintf(" limit %d,%d ", offset, limit)
 }
 
-func MongoPaginate(ctx *gin.Context, options *options.FindOptions) *options.FindOptions {
-	pageNumber := ctx.PostForm("page_number")
-	pageSize := ctx.PostForm("page_size")
-	log.Println(pageNumber, pageSize)
-	var n, limit int64 = 0, 0
-	if pn, err := strconv.Atoi(pageNumber); err != nil {
-		n = 1
-	} else {
-		n = int64(pn)
-	}
-	if ps, err := strconv.Atoi(pageSize); err != nil {
-		limit = 10
-	} else {
-		limit = int64(ps)
-	}
+//func MongoPaginate(ctx *gin.Context,query qmgo.Query) qmgo.Query {
+//	pageNumber := ctx.PostForm("page_number")
+//	pageSize := ctx.PostForm("page_size")
+//	log.Println(pageNumber, pageSize)
+//	var n, limit int64 = 0, 0
+//	if pn, err := strconv.Atoi(pageNumber); err != nil {
+//		n = 1
+//	} else {
+//		n = int64(pn)
+//	}
+//	if ps, err := strconv.Atoi(pageSize); err != nil {
+//		limit = 10
+//	} else {
+//		limit = int64(ps)
+//	}
+//
+//	offset := (n - 1) * limit
+//
+//
+//
+//	return query.Limit(limit).Skip(offset)
+//}
 
-	offset := (n - 1) * limit
-
-	options.Limit = &limit
-	options.Skip = &offset
-	return options
-}
+//	options.Limit = &limit
+//	options.Skip = &offset
+//	return options
+//}
 
 func Paginate(ctx *gin.Context) (int, int) {
 	pageNumber := ctx.PostForm("page_number")
