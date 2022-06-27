@@ -56,12 +56,12 @@ func SelectStockOut(ctx *gin.Context) {
 	conditions := []common.MongoCondition{
 		{
 			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.rec_id",
+			ColumnName:  "rec_id",
 			ColumnValue: ctx.PostForm("stock_in_record_id"),
 		},
 		{
 			Symbol:      my_mongo.NOT_EQUAL,
-			ColumnName:  "basicmodel.deleted_at",
+			ColumnName:  "deleted_at",
 			ColumnValue: nil,
 		},
 	}

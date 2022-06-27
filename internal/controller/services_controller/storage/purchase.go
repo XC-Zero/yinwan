@@ -43,29 +43,29 @@ func SelectPurchase(ctx *gin.Context) {
 
 	conditions := []common.MongoCondition{
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.rec_id",
-			ColumnValue: ctx.PostForm("stock_in_record_id"),
+			my_mongo.EQUAL,
+			"rec_id",
+			ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "basicmodel.deleted_at",
-			ColumnValue: "null",
+			my_mongo.EQUAL,
+			"deleted_at",
+			nil,
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "provider_id",
-			ColumnValue: ctx.PostForm("provider_id"),
+			my_mongo.EQUAL,
+			"provider_id",
+			ctx.PostForm("provider_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "stock_in_warehouse_id",
-			ColumnValue: ctx.PostForm("stock_in_warehouse_id"),
+			my_mongo.EQUAL,
+			"stock_in_warehouse_id",
+			ctx.PostForm("stock_in_warehouse_id"),
 		},
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "stock_in_record_owner_id",
-			ColumnValue: ctx.PostForm("stock_in_record_owner_id"),
+			my_mongo.EQUAL,
+			"stock_in_record_owner_id",
+			ctx.PostForm("stock_in_record_owner_id"),
 		},
 	}
 	options := common.SelectMongoDBTemplateOptions{
@@ -77,10 +77,27 @@ func SelectPurchase(ctx *gin.Context) {
 
 }
 func UpdatePurchase(ctx *gin.Context) {
-	//bk, bookName := common.HarvestClientFromGinContext(ctx)
-	//if bk == nil {
-	//	return
-	//}
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
+	temp := mongo_model.Purchase{}
+
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
+	if err != nil || temp.RecID == nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
+		RecID:      *temp.RecID,
+		TableModel: temp,
+		PreFunc:    nil,
+	})
+
+	return
 
 }
 func DeletePurchase(ctx *gin.Context) {

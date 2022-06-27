@@ -17,6 +17,8 @@ import (
 	"time"
 )
 
+// CreateStockIn 创建入库单
+// 入库会同步触发新增原材料批次信息
 func CreateStockIn(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {

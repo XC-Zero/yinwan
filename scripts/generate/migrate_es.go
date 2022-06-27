@@ -21,6 +21,7 @@ func init() {
 		&m.FinanceCredential{},
 		&m.StockOutRecord{},
 		&m.StockInRecord{},
+		&m.Purchase{},
 		&m.Transaction{},
 		&m.Return{},
 	)
