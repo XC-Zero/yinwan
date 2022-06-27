@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
@@ -64,17 +66,19 @@ func UpdatePayable(ctx *gin.Context) {
 	temp := mysql_model.Payable{}
 
 	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
-	if err != nil {
-		logger.Error(errors.WithStack(err), "绑定模型失败!")
+	if err != nil || temp.RecID == nil {
+		logger.Error(errors.WithStack(err), "更新应付失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: temp,
-		PreFunc:    nil,
-	})
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "更新应付记录失败!")
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, temp)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新应付记录成功!"))
 	return
 }
 

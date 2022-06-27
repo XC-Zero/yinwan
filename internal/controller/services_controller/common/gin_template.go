@@ -37,9 +37,9 @@ const (
 
 // MysqlCondition MySQL 搜索条件
 type MysqlCondition struct {
-	Symbol      mysql.OperatorSymbol
-	ColumnName  string
-	ColumnValue string
+	Symbol      mysql.OperatorSymbol // 操作符
+	ColumnName  string               // 相关字段
+	ColumnValue string               // 字段值
 }
 
 // MongoCondition MongoDB 搜索条件
@@ -54,12 +54,12 @@ type EsCondition struct {
 
 // SelectMysqlTemplateOptions MySQL 搜索模板配置
 type SelectMysqlTemplateOptions struct {
-	DB            *gorm.DB
-	TableModel    _interface.ChineseTabler
-	OrderByColumn string
-	ResHookFunc   func(data []interface{}) []interface{}
-	NotReturn     bool // 不自动返回
-	NotPaginate   bool // 不自动分页
+	DB            *gorm.DB                               // db
+	TableModel    _interface.ChineseTabler               // 表
+	OrderByColumn string                                 // order by 字段
+	ResHookFunc   func(data []interface{}) []interface{} // 返回前预处理函数
+	NotReturn     bool                                   // 不自动返回
+	NotPaginate   bool                                   // 不自动分页
 }
 
 // SelectESTemplateOptions ElasticSearch 搜索模板配置
@@ -421,7 +421,7 @@ type bookNameRequest struct {
 	BookNameID string `json:"book_name_id" form:"book_name_id" `
 }
 
-// HarvestClientFromGinContext 从请求头里读取账套信息
+// HarvestClientFromGinContext 从请求体里读取账套信息
 func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 
 	var bookNameJson bookNameRequest

@@ -25,7 +25,9 @@ import (
 
 var bookNameMysqlMigrateList = []interface{}{
 	&mysql_model.Payable{},
+	&mysql_model.PayableDetail{},
 	&mysql_model.Receivable{},
+	&mysql_model.ReceivableDetail{},
 	&mysql_model.Commodity{},
 	&mysql_model.CommodityHistoricalCost{},
 	&mysql_model.CommodityBatch{},
