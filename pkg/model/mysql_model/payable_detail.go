@@ -11,11 +11,13 @@ import (
 type PayableDetail struct {
 	BasicModel
 	BookNameInfo
-	ReceivableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty"`
-	ReceivableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty"`
-	ReceivableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty"`
-	ReceivableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty"`
-	Remark                 *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark"`
+	PayableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty"`
+	PayableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty"`
+	PayableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty"`
+	PayableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty"`
+	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty"`
+	PayableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty"`
+	Remark              *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark"`
 }
 
 func (p PayableDetail) TableCnName() string {
@@ -35,13 +37,13 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	p.BookName = bk.BookName
 
 	var payable Payable
-	payable.RecID = &p.ReceivableID
+	payable.RecID = &p.PayableID
 	var amountList []string
 	err := bk.MysqlClient.WithContext(tx.Statement.Context).
 		Raw("select ? from ?  where ? = ? and ? = ?",
 			"receivable_amount", p.TableName(),
 			"deleted_at", "is null",
-			"receivable_id", p.ReceivableID,
+			"receivable_id", p.PayableID,
 		).Scan(&amountList).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "查询应付记录详情失败!")
@@ -57,7 +59,7 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 		num = num.Add(fraction)
 	}
 	actualAmount := num.String()
-	payable.ReceivableActualAmount = &actualAmount
+	payable.PayableActualAmount = &actualAmount
 	err = bk.MysqlClient.WithContext(tx.Statement.Context).Updates(&payable).Where("rec_id = ?", payable.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付记录失败!")

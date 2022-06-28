@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -25,7 +26,6 @@ func CreateCredential(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		TableModel: credential,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		PreFunc:    nil,
 	})
 	return
 }
@@ -36,6 +36,20 @@ func SelectCredential(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
+	conditions := []common.MongoCondition{
+		{
+			my_mongo.LESS_THAN_EQUAL,
+			"deleted_at",
+			nil,
+		},
+	}
+
+	op := common.SelectMongoDBTemplateOptions{
+		DB:         bk.MongoDBClient,
+		TableModel: mongo_model.FinanceCredential{},
+	}
+	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, conditions...)
+	return
 }
 
 // UpdateCredential 更新凭证
@@ -47,15 +61,14 @@ func UpdateCredential(ctx *gin.Context) {
 	}
 	var credential mongo_model.FinanceCredential
 	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
-	if err != nil {
+	if err != nil || credential.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		RecID:      0,
+		RecID:      *credential.RecID,
 		TableModel: credential,
-		PreFunc:    nil,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 	})
 	return
@@ -69,16 +82,15 @@ func DeleteCredential(ctx *gin.Context) {
 	}
 	var credential mongo_model.FinanceCredential
 	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
-	if err != nil {
+	if err != nil || credential.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		RecID:      0,
+		RecID:      *credential.RecID,
 		TableModel: credential,
-		PreFunc:    nil,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 	})
 	return

@@ -10,7 +10,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/devfeel/mapper"
-	_ "github.com/devfeel/mapper"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
@@ -70,7 +69,7 @@ func SelectPayable(ctx *gin.Context) {
 				if err != nil {
 					continue
 				}
-				valMap["receivable_status"] = payable.ReceivableStatus.Display()
+				valMap["payable_status"] = payable.PayableStatus.Display()
 				datum = append(datum, valMap)
 			}
 			if len(datum) == 0 {
@@ -147,8 +146,8 @@ func SelectPayableDetail(ctx *gin.Context) {
 	condition := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,
-			ColumnName:  "receivable_id",
-			ColumnValue: ctx.PostForm("receivable_id"),
+			ColumnName:  "payable_id",
+			ColumnValue: ctx.PostForm("payable_id"),
 		},
 		{
 			Symbol:      mysql.NOT_EQUAL,

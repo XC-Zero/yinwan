@@ -12,18 +12,18 @@ import (
 type Payable struct {
 	BasicModel
 	BookNameInfo
-	CustomerID              *int                  `gorm:"type:int" json:"customer_id,omitempty" form:"customer_id,omitempty"`
-	CustomerName            *string               `gorm:"type:varchar(50)" json:"customer_name,omitempty" form:"customer_name"`
-	ReceivableDate          *string               `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date"`
-	ReceivableTotalAmount   *string               `gorm:"type:varchar(50)" json:"receivable_total_amount,omitempty" form:"receivable_total_amount"`
-	ReceivableActualAmount  *string               `gorm:"type:varchar(50)" json:"receivable_actual_amount,omitempty" form:"receivable_actual_amount"`
-	ReceivableDiscount      *string               `gorm:"type:varchar(50)" json:"receivable_discount,omitempty" form:"receivable_discount"`
-	ReceivableHedgingAmount *string               `gorm:"type:varchar(50)" json:"receivable_hedging_amount,omitempty" form:"receivable_hedging_amount"`
-	ReceivableDebtAmount    *string               `gorm:"type:varchar(50)" json:"receivable_debt_amount,omitempty" form:"receivable_debt_amount"`
-	ReceivableStatus        *_const.PayableStatus `gorm:"type:int" json:"receivable_status,omitempty" form:"receivable_status"`
-	PurchaseID              *int                  `gorm:"type:int" json:"purchase_id,omitempty" form:"purchase_id,omitempty" cn:"关联采购单ID"`
-	CredentialID            *int                  `gorm:"type:int" json:"credential_id,omitempty" form:"credential_id,omitempty"`
-	Remark                  *string               `gorm:"type:varchar(200)" json:"remark,omitempty" form:"remark"`
+	CustomerID           *int                  `gorm:"type:int" json:"customer_id,omitempty" form:"customer_id,omitempty"`
+	CustomerName         *string               `gorm:"type:varchar(50)" json:"customer_name,omitempty" form:"customer_name"`
+	PayableDate          *string               `gorm:"type:varchar(50)" json:"payable_date,omitempty" form:"payable_date"`
+	PayableTotalAmount   *string               `gorm:"type:varchar(50)" json:"payable_total_amount,omitempty" form:"payable_total_amount"`
+	PayableActualAmount  *string               `gorm:"type:varchar(50)" json:"payable_actual_amount,omitempty" form:"payable_actual_amount"`
+	PayableDiscount      *string               `gorm:"type:varchar(50)" json:"payable_discount,omitempty" form:"payable_discount"`
+	PayableHedgingAmount *string               `gorm:"type:varchar(50)" json:"payable_hedging_amount,omitempty" form:"payable_hedging_amount"`
+	PayableDebtAmount    *string               `gorm:"type:varchar(50)" json:"payable_debt_amount,omitempty" form:"payable_debt_amount"`
+	PayableStatus        *_const.PayableStatus `gorm:"type:int" json:"payable_status,omitempty" form:"payable_status"`
+	PurchaseID           *int                  `gorm:"type:int" json:"purchase_id,omitempty" form:"purchase_id,omitempty" cn:"关联采购单ID"`
+	CredentialID         *int                  `gorm:"type:int" json:"credential_id,omitempty" form:"credential_id,omitempty"`
+	Remark               *string               `gorm:"type:varchar(200)" json:"remark,omitempty" form:"remark"`
 }
 
 func (p Payable) TableCnName() string {
