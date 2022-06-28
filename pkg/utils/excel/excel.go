@@ -52,3 +52,9 @@ func JsonListToMapData(jsonList []string) {
 func MapToSheet(data map[string]interface{}) {
 
 }
+
+//
+//func HarvestExcelFromMultiPart(file *multipart.FileHeader) *excelize.File {
+//	f := excelize.NewFile()
+//	f.
+//}

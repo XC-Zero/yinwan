@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.31.1
+	github.com/devfeel/mapper v0.7.10
 	github.com/dollarkillerx/urllib v1.13.16
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/fwhezfwhez/errorx v1.1.0

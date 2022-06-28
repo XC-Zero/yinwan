@@ -421,6 +421,10 @@ type bookNameRequest struct {
 	BookNameID string `json:"book_name_id" form:"book_name_id" `
 }
 
+func HarvestEmailFromHeader(ctx *gin.Context) string {
+	return ctx.Request.Header.Get("staff_email")
+}
+
 // HarvestClientFromGinContext 从请求体里读取账套信息
 func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 

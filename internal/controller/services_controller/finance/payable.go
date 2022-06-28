@@ -2,20 +2,20 @@ package finance
 
 import (
 	"context"
+	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
-	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
+	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
+	"github.com/devfeel/mapper"
+	_ "github.com/devfeel/mapper"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"strconv"
 )
-
-// todo mysql 的用啥MongoDB啊!!!
 
 func CreatePayable(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
@@ -30,32 +30,57 @@ func CreatePayable(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: temp,
-		PreFunc:    nil,
-	})
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Create(&temp).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "绑定模型失败!")
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, temp)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("新建应付成功!"))
 	return
 }
 
 func SelectPayable(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	condition := []common.MongoCondition{
+	condition := []common.MysqlCondition{
 		{
-			Symbol:      my_mongo.NOT_EQUAL,
+			Symbol:      mysql.NOT_EQUAL,
 			ColumnName:  "deleted_at",
-			ColumnValue: nil,
+			ColumnValue: " ",
 		},
 	}
-	op := common.SelectMongoDBTemplateOptions{
-		DB:         client.MongoDBClient,
+	op := common.SelectMysqlTemplateOptions{
+		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		TableModel: mysql_model.Payable{},
+		ResHookFunc: func(data []interface{}) []interface{} {
+			var datum []interface{}
+			m := mapper.NewMapper()
+			for i := 0; i < len(data); i++ {
+				payable, ok := data[i].(mysql_model.Payable)
+				if !ok {
+					continue
+				}
+				valMap := make(map[string]interface{})
+				m.SetEnabledJsonTag(true)
+				err := m.Mapper(payable, valMap)
+				if err != nil {
+					continue
+				}
+				valMap["receivable_status"] = payable.ReceivableStatus.Display()
+				datum = append(datum, valMap)
+			}
+			if len(datum) == 0 {
+				return data
+			}
+			return datum
+		},
 	}
-	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, condition...)
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)
+	return
 }
 
 func UpdatePayable(ctx *gin.Context) {
@@ -87,18 +112,54 @@ func DeletePayable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var stockOutRecord mysql_model.Payable
+	var payable mysql_model.Payable
 	recID, err := strconv.Atoi(ctx.PostForm("payable_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
-		RecID:      recID,
-		TableModel: stockOutRecord,
-		PreFunc:    nil,
-	})
+	payable.RecID = &recID
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Delete(&payable).Where("rec_id = ? ", recID).Error
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	logger.Info(fmt.Sprintf("删除应付记录成功!记录ID:%d 操作人: %s", recID, common.HarvestEmailFromHeader(ctx)))
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除应付记录成功!"))
+	return
+}
+
+func CreatePayableDetail(ctx *gin.Context) {
+
+}
+func UpdatePayableDetail(ctx *gin.Context) {
+
+}
+func DeletePayableDetail(ctx *gin.Context) {
+
+}
+func SelectPayableDetail(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	condition := []common.MysqlCondition{
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "receivable_id",
+			ColumnValue: ctx.PostForm("receivable_id"),
+		},
+		{
+			Symbol:      mysql.NOT_EQUAL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
+	}
+	op := common.SelectMysqlTemplateOptions{
+		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		TableModel: mysql_model.PayableDetail{},
+	}
+	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)
 	return
 }
