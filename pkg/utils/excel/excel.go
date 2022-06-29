@@ -1,60 +1,69 @@
-package excel
+package main
 
 import (
-	"encoding/json"
+	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
+	//"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/devfeel/mapper"
+	"github.com/pkg/errors"
 	"github.com/xuri/excelize/v2"
-	"reflect"
-	"sync"
+	"mime/multipart"
 )
-
-func A() {
-	excelize.NewFile()
-}
-
-// JsonListToMapData todo 一条条JSON 转 map
-func JsonListToMapData(jsonList []string) {
-	var wg sync.WaitGroup
-	var mutex sync.Mutex
-	num, length, dataMap := 50, len(jsonList), make(map[string]interface{}, 0)
-	if length < 50 {
-		num = length
-	}
-	wg.Add(num)
-	for i := range jsonList {
-		var errorList []error
-		go func(index int) {
-			tempMap := map[string]interface{}{}
-			err := json.Unmarshal([]byte(jsonList[i]), &tempMap)
-			if err != nil {
-				mutex.Lock()
-				errorList = append(errorList, err)
-				mutex.Unlock()
-			} else {
-				for key, value := range tempMap {
-					if data, ok := dataMap[key]; ok {
-						tempType, tempVal := reflect.TypeOf(value), reflect.ValueOf(value)
-						if tempType.Kind() == reflect.Slice {
-							dataMap[key] = append(tempVal.Interface().([]interface{}), data)
-						}
-					} else {
-						dataMap[key] = value
-					}
-				}
-			}
-			wg.Done()
-		}(i)
-		wg.Wait()
-
-	}
-}
-
-//
-func MapToSheet(data map[string]interface{}) {
-
-}
 
 //
 //func HarvestExcelFromMultiPart(file *multipart.FileHeader) *excelize.File {
 //	f := excelize.NewFile()
 //	f.
 //}
+type a struct {
+	B struct {
+		C struct {
+			D string
+		}
+	}
+}
+
+//func tets() {
+//	excel := excelize.NewFile()
+//	excel.MergeCell()
+//}
+func StructToMapSlice() {
+	var tabler a
+	var m = make(map[string]interface{}, 0)
+	err := mapper.Mapper(&tabler, &m)
+	if err != nil {
+		panic(errors.WithStack(err))
+	}
+	spew.Dump(m)
+	//sort.
+}
+
+func NewFile() {
+
+}
+
+func OpenExcelFromMultiPart(multi *multipart.FileHeader) (*excelize.File, error) {
+	f, err := multi.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	excel, err := excelize.OpenReader(f)
+	if err != nil {
+		return nil, err
+	}
+	return excel, nil
+}
+
+var mapping map[int]string
+
+func init() {
+	mapping = make(map[int]string, 26)
+	for i := 1; i < 27; i++ {
+		mapping[i] = string(('A') + int32(i-1))
+	}
+}
+
+func IndexToExcelCol(index int) string {
+	return math_plus.TenToAnyWithMapping(index+1, 26, mapping)
+}
