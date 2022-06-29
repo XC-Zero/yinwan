@@ -3,7 +3,6 @@ package common
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -27,8 +26,6 @@ import (
 	"strconv"
 	"time"
 )
-
-const MONGO_COUNT_MAX_TIME = 5 * time.Second
 
 const (
 	JSON = "application/json"
@@ -248,7 +245,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		RequestParamErrorTemplate(ctx, REQUEST_PARM_ERROR)
 		return
 	}
-	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(context.TODO(), data)
+	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data)
 
 	if err != nil {
 		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
@@ -299,7 +296,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 			update = append(update, bson.E{Key: v, Value: nowValue.Interface()})
 		}
 	}
-	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{"$set", update}})
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{"$set", update}})
 	if err != nil {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
@@ -328,7 +325,7 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	}
 	filter := bson.D{}
 	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
-	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
 		Valid: true,
 		Time:  time.Now(),
 	})}}})
@@ -454,27 +451,4 @@ func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return nil, ""
 	}
-}
-
-func reflectBsonDToStruct(d bson.D, tabler _interface.ChineseTabler) (_interface.ChineseTabler, error) {
-	t := reflect.TypeOf(tabler)
-	if t.Kind() == reflect.Ptr { //指针类型获取真正type需要调用Elem
-		t = t.Elem()
-	}
-
-	str := reflect.New(t)
-
-	marshal, err := bson.Marshal(d)
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("%s", string(marshal))
-
-	err = json.Unmarshal(marshal, &str)
-	if err != nil {
-		return nil, err
-	}
-	chineseTabler := str.Elem().Interface().(_interface.ChineseTabler)
-	log.Printf("%+v %T", chineseTabler, chineseTabler)
-	return chineseTabler, nil
 }

@@ -12,10 +12,10 @@ import (
 type Payable struct {
 	BasicModel
 	BookNameInfo
-	CustomerID           *int                  `gorm:"type:int" json:"customer_id,omitempty" form:"customer_id,omitempty"`
-	CustomerName         *string               `gorm:"type:varchar(50)" json:"customer_name,omitempty" form:"customer_name"`
+	ProviderID           *int                  `gorm:"type:int" json:"provider_id,omitempty" form:"provider_id,omitempty"`
+	ProviderName         *string               `gorm:"type:varchar(50)" json:"provider_name,omitempty" form:"provider_name"`
 	PayableDate          *string               `gorm:"type:varchar(50)" json:"payable_date,omitempty" form:"payable_date"`
-	PayableTotalAmount   *string               `gorm:"type:varchar(50)" json:"payable_total_amount,omitempty" form:"payable_total_amount"`
+	PayableTotalAmount   *string               `gorm:"type:varchar(50);" json:"payable_total_amount,omitempty" form:"payable_total_amount"`
 	PayableActualAmount  *string               `gorm:"type:varchar(50)" json:"payable_actual_amount,omitempty" form:"payable_actual_amount"`
 	PayableDiscount      *string               `gorm:"type:varchar(50)" json:"payable_discount,omitempty" form:"payable_discount"`
 	PayableHedgingAmount *string               `gorm:"type:varchar(50)" json:"payable_hedging_amount,omitempty" form:"payable_hedging_amount"`

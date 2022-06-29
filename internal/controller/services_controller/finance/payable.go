@@ -138,6 +138,7 @@ func UpdatePayableDetail(ctx *gin.Context) {
 func DeletePayableDetail(ctx *gin.Context) {
 
 }
+
 func SelectPayableDetail(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {

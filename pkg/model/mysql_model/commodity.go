@@ -26,9 +26,11 @@ type Commodity struct {
 func (c Commodity) TableCnName() string {
 	return "产品"
 }
+
 func (c Commodity) TableName() string {
 	return "commodities"
 }
+
 func (c Commodity) Mapping() map[string]interface{} {
 	ma := mapping{
 		"settings": mapping{},
@@ -82,6 +84,7 @@ func (c Commodity) ToESDoc() map[string]interface{} {
 		"book_name_id":      c.BookNameID,
 	}
 }
+
 func (c *Commodity) AfterCreate(db *gorm.DB) error {
 	bookName := db.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
@@ -114,6 +117,7 @@ func (c *Commodity) AfterUpdate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
 func (c Commodity) AfterDelete(tx *gorm.DB) error {
 	err := client.DeleteFromIndex(c, c.RecID, tx.Statement.Context)
 	if err != nil {
@@ -133,6 +137,7 @@ type CommodityHistoricalCost struct {
 func (c CommodityHistoricalCost) TableCnName() string {
 	return "历史成本"
 }
+
 func (c CommodityHistoricalCost) TableName() string {
 	return "commodity_historical_costs"
 }
@@ -145,6 +150,7 @@ type CommodityBatch struct {
 func (c CommodityBatch) TableCnName() string {
 	return "产品批次"
 }
+
 func (c CommodityBatch) TableName() string {
 	return "commodity_batches"
 }

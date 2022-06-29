@@ -14,15 +14,15 @@ type Receivable struct {
 	BookNameInfo
 	CustomerID              *int                     `gorm:"type:int" json:"customer_id,omitempty" form:"customer_id,omitempty"`
 	CustomerName            *string                  `gorm:"type:varchar(50)" json:"customer_name,omitempty" form:"customer_name"`
-	ReceivableDate          *string                  `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date"`
-	ReceivableTotalAmount   *string                  `gorm:"type:varchar(50)" json:"receivable_total_amount,omitempty" form:"receivable_total_amount"`
-	ReceivableActualAmount  *string                  `gorm:"type:varchar(50)" json:"receivable_actual_amount,omitempty" form:"receivable_actual_amount"`
-	ReceivableDiscount      *string                  `gorm:"type:varchar(50)" json:"receivable_discount,omitempty" form:"receivable_discount"`
-	ReceivableHedgingAmount *string                  `gorm:"type:varchar(50)" json:"receivable_hedging_amount,omitempty" form:"receivable_hedging_amount"`
-	ReceivableDebtAmount    *string                  `gorm:"type:varchar(50)" json:"receivable_debt_amount,omitempty" form:"receivable_debt_amount"`
-	ReceivableStatus        *_const.ReceivableStatus `gorm:"type:int" json:"receivable_status,omitempty" form:"receivable_status"`
+	ReceivableDate          *string                  `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date" cn:"应收日期"`
+	ReceivableTotalAmount   *string                  `gorm:"type:varchar(50)" json:"receivable_total_amount,omitempty" form:"receivable_total_amount" cn:"账单总金额"`
+	ReceivableActualAmount  *string                  `gorm:"type:varchar(50)" json:"receivable_actual_amount,omitempty" form:"receivable_actual_amount" cn:"实际收款"`
+	ReceivableDiscount      *string                  `gorm:"type:varchar(50)" json:"receivable_discount,omitempty" form:"receivable_discount" cn:"零头优惠"`
+	ReceivableHedgingAmount *string                  `gorm:"type:varchar(50)" json:"receivable_hedging_amount,omitempty" form:"receivable_hedging_amount" cn:"红冲金额"`
+	ReceivableDebtAmount    *string                  `gorm:"type:varchar(50)" json:"receivable_debt_amount,omitempty" form:"receivable_debt_amount" cn:"欠款金额"`
+	ReceivableStatus        *_const.ReceivableStatus `gorm:"type:int" json:"receivable_status,omitempty" form:"receivable_status" cn:"收款状态"`
 	CredentialID            *int                     `gorm:"type:int" json:"credential_id,omitempty"  form:"credential_id" cn:"关联凭证ID"`
-	SaleID                  *int                     `gorm:"type:int" json:"sale_id,omitempty"  form:"sale_id" cn:"关联销售单ID"`
+	TransactionID           *int                     `gorm:"type:int" json:"transaction_id,omitempty" form:"transaction_id,omitempty" cn:"关联销售单ID"`
 	Remark                  *string                  `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark"`
 }
 

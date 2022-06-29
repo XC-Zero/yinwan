@@ -30,7 +30,7 @@ func CreatePurchase(ctx *gin.Context) {
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", bookName),
-		TableModel: mongo_model.Purchase{},
+		TableModel: purchase,
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
 	return

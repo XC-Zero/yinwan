@@ -160,8 +160,18 @@ func Starter() {
 	{
 		// 销售
 		{
-			transaction.POST("")
+			transaction.POST("/create_transaction", transaction2.CreateTransaction)
+			transaction.POST("/select_transaction", transaction2.SelectTransaction)
+			transaction.POST("/update_transaction", transaction2.UpdateTransaction)
+			transaction.POST("/delete_transaction", transaction2.DeleteTransaction)
+		}
 
+		// 退货
+		{
+			transaction.POST("/create_return", transaction2.CreateReturn)
+			transaction.POST("/select_return", transaction2.SelectReturn)
+			transaction.POST("/update_return", transaction2.UpdateReturn)
+			transaction.POST("/delete_return", transaction2.DeleteReturn)
 		}
 		// 客户
 		{
