@@ -154,6 +154,13 @@ func Starter() {
 			finance.POST("/update_payable", finance3.UpdatePayable)
 			finance.POST("/delete_payable", finance3.DeletePayable)
 		}
+		//应付详情
+		{
+			finance.POST("/create_payable_detail", finance3.CreatePayableDetail)
+			finance.POST("/select_payable_detail", finance3.SelectPayableDetail)
+			finance.POST("/update_payable_detail", finance3.UpdatePayableDetail)
+			finance.POST("/delete_payable_detail", finance3.DeletePayableDetail)
+		}
 	}
 
 	transaction := services.Group("/transaction")

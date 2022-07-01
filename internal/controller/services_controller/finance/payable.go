@@ -130,13 +130,72 @@ func DeletePayable(ctx *gin.Context) {
 }
 
 func CreatePayableDetail(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	temp := mysql_model.PayableDetail{}
 
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
+	if err != nil {
+		logger.Error(errors.WithStack(err), "绑定模型失败!")
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Create(&temp).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "绑定模型失败!")
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, temp)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("新建应付详情成功!"))
+	return
 }
 func UpdatePayableDetail(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	temp := mysql_model.PayableDetail{}
 
+	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
+	if err != nil || temp.RecID == nil {
+		logger.Error(errors.WithStack(err), "更新应付详情失败!")
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "更新应付详情记录失败!")
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, temp)
+		return
+	}
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新应付详情记录成功!"))
+	return
 }
 func DeletePayableDetail(ctx *gin.Context) {
-
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	var payableDetail mysql_model.PayableDetail
+	recID, err := strconv.Atoi(ctx.PostForm("payable_detail_id"))
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	payableDetail.RecID = &recID
+	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+		Delete(&payableDetail).Where("rec_id = ? ", recID).Error
+	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	logger.Info(fmt.Sprintf("删除应付记录成功!记录ID:%d 操作人: %s", recID, common.HarvestEmailFromHeader(ctx)))
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除应付记录成功!"))
+	return
 }
 
 func SelectPayableDetail(ctx *gin.Context) {

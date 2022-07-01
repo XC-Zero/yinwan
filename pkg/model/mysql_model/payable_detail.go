@@ -27,6 +27,7 @@ func (p PayableDetail) TableName() string {
 	return "receivable_details"
 }
 
+// todo 修改实际付款，剩余付款，付款状态
 func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
@@ -59,7 +60,20 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 		num = num.Add(fraction)
 	}
 	actualAmount := num.String()
+	//查询数据库中payable的值
+	err = bk.MysqlClient.WithContext(tx.Statement.Context).Select(&payable).Where("rec_id = ?", payable.RecID).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "应付记录查询失败!")
+		return err
+	}
+	totalAmount, err := math_plus.NewFromString(*payable.PayableTotalAmount)
+	if err != nil {
+		logger.Error(errors.WithStack(err), "转化失败!")
+	}
+	sub := totalAmount.Sub(num)
+	debtAmount := sub.String()
 	payable.PayableActualAmount = &actualAmount
+	payable.PayableDebtAmount = &debtAmount
 	err = bk.MysqlClient.WithContext(tx.Statement.Context).Updates(&payable).Where("rec_id = ?", payable.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付记录失败!")
