@@ -45,7 +45,7 @@ func SelectReceivable(ctx *gin.Context) {
 		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("fixed_asset_id"),
+			ColumnValue: ctx.PostForm("receivable_id"),
 		},
 		{
 			Symbol:      mysql.LIKE,

@@ -89,7 +89,13 @@ type CreateMongoDBTemplateOptions struct {
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 }
 
-// MongoDBTemplateOptions MongoDB 模板配置
+// MongoDBTemplateOptions MongoDB 更新/删除配置项
+//	DB 			Mongo数据库连接
+//	Context 	上下文传递参数或状态
+//	TableModel	要操作的对象
+//	PreFunc		操作前执行的函数
+//	RecID		对象ID
+//	OmitList	对象里忽略的字段
 type MongoDBTemplateOptions struct {
 	DB         *qmgo.Database
 	Context    context.Context
@@ -268,7 +274,8 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	return
 }
 
-// UpdateOneMongoDBRecordByIDTemplate MongoDB 按REC_ID更新模板
+// UpdateOneMongoDBRecordByIDTemplate MongoDB 通用更新
+//	按REC_ID更新模板
 func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOptions) {
 	var data = op.TableModel
 	if op.PreFunc != nil {

@@ -107,3 +107,49 @@ func GetInterfaceToString(value interface{}) string {
 
 	return key
 }
+
+// StructToTagMap 结构体根据指定tag转map
+//	并没有递归深入展开嵌套结构体
+func StructToTagMap(instance interface{}, tag string) (map[string]interface{}, error) {
+
+	objT, objV := reflect.TypeOf(instance), reflect.ValueOf(instance)
+	length := objV.NumField()
+	var m = make(map[string]interface{}, length)
+	if objT.Kind() != reflect.Struct {
+		return nil, errors.New("Unsupported " + objT.Kind().String() + " type!")
+	}
+	for i := 0; i < length; i++ {
+		key := objT.Field(i).Tag.Get(tag)
+		if key == "" {
+			continue
+		}
+		m[key] = objV.Field(i).Interface()
+	}
+	return m, nil
+}
+
+func StructToTagString(instance interface{}, tag string) string {
+	var contentStr = ""
+	tagMap, err := StructToTagMap(instance, tag)
+	if err != nil {
+		contentStr = ""
+	}
+	marshal, err := json.Marshal(tagMap)
+	if err != nil {
+		contentStr = ""
+	}
+	contentStr = string(marshal)
+	return contentStr
+}
+
+func StructSliceToTagString(instance interface{}, tag string) string {
+	var res string
+	slice, ok := instance.([]interface{})
+	if !ok {
+		return ""
+	}
+	for i := range slice {
+		res += StructToTagString(slice[i], tag)
+	}
+	return res
+}

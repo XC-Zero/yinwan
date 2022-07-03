@@ -1,7 +1,9 @@
 package _interface
 
-import _const "github.com/XC-Zero/yinwan/pkg/const"
+import (
+	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
+)
 
 type Credential interface {
-	TransferToInvoice(invoiceType _const.InvoiceType) Invoice
+	TransferToCredential(template mongo_model.CredentialTemplate, perFunc func(credential Credential) Credential) mongo_model.Credential
 }

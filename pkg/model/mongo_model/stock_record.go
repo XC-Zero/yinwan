@@ -1,7 +1,8 @@
 package mongo_model
 
 import (
-	"encoding/json"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 )
 
 // StockInRecord 入库记录
@@ -20,6 +21,13 @@ type StockInRecord struct {
 	StockInRecordContent      []map[string]interface{} ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
 	RelatePurchaseID          []*int                   ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
 	Remark                    *string                  ` json:"remark,omitempty" form:"remark" bson:"remark"`
+}
+type stockInRecordContent struct {
+	MaterialID          int    `bson:"material_id" json:"material_id" form:"material_id"`
+	MaterialName        string `bson:"material_name" json:"material_name" form:"material_name"`
+	MaterialNum         int    `bson:"material_num" json:"material_num" form:"material_num"`
+	MaterialAmount      string `bson:"material_amount" json:"material_amount" form:"material_amount"`
+	MaterialTotalAmount string `bson:"material_total_amount" json:"material_total_amount" form:"material_total_amount"`
 }
 
 func (m StockInRecord) TableName() string {
@@ -75,18 +83,12 @@ func (m StockInRecord) Mapping() map[string]interface{} {
 	return ma
 }
 func (m StockInRecord) ToESDoc() map[string]interface{} {
-	var str string
-	bytes, err := json.Marshal(m.StockInRecordContent)
-	str = string(bytes)
-	if err != nil {
-		str = ""
-	}
 
 	return map[string]interface{}{
-		"rec_id":               m.RecID,
-		"created_at":           m.CreatedAt,
-		"remark":               m.Remark,
-		"stock_in_content":     str,
+		"rec_id":     m.RecID,
+		"created_at": m.CreatedAt,
+		"remark":     m.Remark,
+		//"stock_in_content":     convert.StructToTagString(m, string(_const.CN)),
 		"stock_in_record_type": m.StockInRecordType,
 		"stock_in_owner":       m.StockInRecordOwnerName,
 		"book_name":            m.BookName,
@@ -99,14 +101,16 @@ func (m StockInRecord) ToESDoc() map[string]interface{} {
 type StockOutRecord struct {
 	BasicModel              `bson:"inline"`
 	BookNameInfo            `bson:"-"`
-	StockOutRecordOwnerID   int                      `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
-	StockOutRecordOwnerName string                   `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
-	StockOutRecordType      string                   `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
-	StockOutWarehouseID     *int                     ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
-	StockOutWarehouseName   *string                  ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
-	StockOutDetailPosition  *string                  ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
-	StockOutRecordContent   []map[string]interface{} `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
-	Remark                  *string                  `json:"remark,omitempty" form:"remark" bson:"remark"`
+	StockOutRecordOwnerID   int                     `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
+	StockOutRecordOwnerName string                  `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
+	StockOutRecordType      string                  `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
+	StockOutWarehouseID     *int                    ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
+	StockOutWarehouseName   *string                 ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
+	StockOutDetailPosition  *string                 ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
+	StockOutRecordContent   []stockOutRecordContent `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
+	Remark                  *string                 `json:"remark,omitempty" form:"remark" bson:"remark"`
+}
+type stockOutRecordContent struct {
 }
 
 func (m StockOutRecord) ToESDoc() map[string]interface{} {
@@ -114,7 +118,7 @@ func (m StockOutRecord) ToESDoc() map[string]interface{} {
 		"rec_id":                m.RecID,
 		"created_at":            m.CreatedAt,
 		"remark":                m.Remark,
-		"stock_out_content":     m.StockOutRecordContent,
+		"stock_out_content":     convert.StructToTagString(m.StockOutRecordContent, string(_const.CN)),
 		"stock_out_record_type": m.StockOutRecordType,
 		"stock_out_owner":       m.StockOutRecordOwnerName,
 		"book_name":             m.BookName,

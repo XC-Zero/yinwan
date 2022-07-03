@@ -51,8 +51,8 @@ func CellIndexToCellString(colIndex, rowIndex int) string {
 
 func NewRootCell() *cellHeader {
 	return &cellHeader{
-		col:      0,
-		row:      0,
+		colIndex: 0,
+		rowIndex: 0,
 		width:    0,
 		height:   1,
 		content:  nil,
@@ -62,8 +62,8 @@ func NewRootCell() *cellHeader {
 }
 
 type cellHeader struct {
-	col      int
-	row      int
+	colIndex int
+	rowIndex int
 	width    int
 	height   int
 	content  interface{}
@@ -81,17 +81,18 @@ func (c *cellHeader) AddChild(newChild *cellHeader, isXAxis bool) {
 	}
 
 	if isXAxis {
-		newChild.col = c.col + nowWidth
-		newChild.row = c.row + 1
+		newChild.colIndex = c.colIndex + nowWidth
+		newChild.rowIndex = c.rowIndex + 1
 		c.children = append(c.children, newChild)
 		c.GrowWidth()
 	} else {
-		newChild.col = c.col + 1
-		newChild.row = c.row + nowHeight
+		newChild.colIndex = c.colIndex + 1
+		newChild.rowIndex = c.rowIndex + nowHeight
 		c.children = append(c.children, newChild)
 		c.GrowHeight()
 	}
 	spew.Dump(newChild)
+	log.Println("_________________________________________________")
 }
 
 // GrowWidth
@@ -184,8 +185,8 @@ func StructToMap(i interface{}) (map[string]interface{}, error) {
 func (c *cellHeader) WriteIntoSheet(file *excelize.File, sheetName string) error {
 
 	if c.father != nil {
-		log.Printf("index is %s,value is %s", CellIndexToCellString(c.col, c.row), c.content)
-		err := file.SetCellValue(sheetName, CellIndexToCellString(c.col, c.row), c.content)
+		log.Printf("index is %s,value is %s", CellIndexToCellString(c.colIndex, c.rowIndex), c.content)
+		err := file.SetCellValue(sheetName, CellIndexToCellString(c.colIndex, c.rowIndex), c.content)
 		if err != nil {
 			return err
 		}

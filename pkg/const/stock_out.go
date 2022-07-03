@@ -6,7 +6,7 @@ var StockOutTypeList = []map[string]interface{}{
 	{
 		"stock_out_type": LOSS.Display(),
 	}, {
-		"stock_out_type": SALE.Display(),
+		"stock_out_type": TRANSACTION.Display(),
 	}, {
 		"stock_out_type": ASSEMBLE.Display(),
 	}, {
@@ -16,7 +16,7 @@ var StockOutTypeList = []map[string]interface{}{
 
 const (
 	LOSS StockOutType = iota + 770001
-	SALE
+	TRANSACTION
 	ASSEMBLE
 )
 
@@ -26,7 +26,7 @@ func (s StockOutType) Display() string {
 		return "损耗出库"
 	case ASSEMBLE:
 		return "组装出库"
-	case SALE:
+	case TRANSACTION:
 		return "销售出库"
 	default:
 		return "其他"

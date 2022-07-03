@@ -16,6 +16,7 @@ import (
 )
 
 // CreateStockOut todo hook function
+//	出库
 func CreateStockOut(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -55,14 +56,29 @@ func SelectStockOut(ctx *gin.Context) {
 
 	conditions := []common.MongoCondition{
 		{
-			Symbol:      my_mongo.EQUAL,
-			ColumnName:  "rec_id",
-			ColumnValue: ctx.PostForm("stock_in_record_id"),
+			my_mongo.EQUAL,
+			"rec_id",
+			ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			Symbol:      my_mongo.NOT_EQUAL,
-			ColumnName:  "deleted_at",
-			ColumnValue: nil,
+			my_mongo.NOT_EQUAL,
+			"deleted_at",
+			nil,
+		},
+		{
+			my_mongo.EQUAL,
+			"stock_out_record_type",
+			ctx.PostForm("stock_out_record_type"),
+		},
+		{
+			my_mongo.EQUAL,
+			"stock_out_warehouse_id",
+			ctx.PostForm("stock_out_warehouse_id"),
+		},
+		{
+			my_mongo.EQUAL,
+			"stock_out_record_owner_id",
+			ctx.PostForm("stock_out_record_owner_id"),
 		},
 	}
 	options := common.SelectMongoDBTemplateOptions{
@@ -92,9 +108,7 @@ func UpdateStockOut(ctx *gin.Context) {
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      *temp.RecID,
 		TableModel: temp,
-		PreFunc:    nil,
 	})
-
 	return
 }
 func DeleteStockOut(ctx *gin.Context) {

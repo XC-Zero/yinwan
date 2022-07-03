@@ -2,49 +2,34 @@ package mongo_model
 
 import (
 	"fmt"
-	_const "github.com/XC-Zero/yinwan/pkg/const"
-	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 )
 
-// FinanceCredential 财务凭证
-type FinanceCredential struct {
-	BasicModel   `bson:"inline"`
-	BookNameInfo `bson:"-"`
-	// 凭证标题
-	FinanceCredentialLabel string `json:"finance_credential_label" bson:"finance_credential_label"`
-	// 凭证责任人ID
-	FinanceCredentialOwnerID int `json:"finance_credential_owner_id" bson:"finance_credential_owner_id"`
-	// 凭证责任人名称
-	FinanceCredentialOwnerName string `json:"finance_credential_owner_name" bson:"finance_credential_owner_name"`
-	// 凭证分录
-	FinanceCredentialEvents []FinanceCredentialEvent `json:"finance_credential_events" bson:"finance_credential_events"`
-	// 制单人
-	FinanceCredentialMakerID *int `json:"finance_credential_maker_id" bson:"finance_credential_maker_id"`
-	// 会计
-	FinanceCredentialAccountantID *int `json:"finance_credential_accountant_id" bson:"finance_credential_accountant_id"`
-	// 出纳
-	FinanceCredentialCashierID *int `json:"finance_credential_cashier_id,omitempty" bson:"finance_credential_cashier_id"`
-	// 复核
-	FinanceCredentialCheckerID *int `json:"finance_credential_checker_id,omitempty" bson:"finance_credential_checker_id"`
-	// 制单人
-	FinanceCredentialMakerName *string `json:"finance_credential_maker_name,omitempty" bson:"finance_credential_maker_name"`
-	// 会计
-	FinanceCredentialAccountantName *string `json:"finance_credential_accountant_name,omitempty" bson:"finance_credential_accountant_name"`
-	// 出纳
-	FinanceCredentialCashierName *string `json:"finance_credential_cashier_name,omitempty" bson:"finance_credential_cashier_name"`
-	// 复核
-	FinanceCredentialCheckerName *string `json:"finance_credential_checker_name,omitempty" bson:"finance_credential_checker_name"`
-	//	凭证备注
-	Remark *string `json:"remark,omitempty" bson:"remark"`
+// Credential 财务凭证
+type Credential struct {
+	BasicModel               `bson:"inline"`
+	BookNameInfo             `bson:"-"`
+	CredentialLabel          string            `json:"credential_label" form:"credential_label" bson:"credential_label" cn:"凭证标题"`
+	CredentialOwnerID        int               `json:"credential_owner_id" form:"credential_owner_id" bson:"credential_owner_id" cn:"凭证责任人编号"`
+	CredentialOwnerName      string            `json:"credential_owner_name" form:"credential_owner_name" bson:"credential_owner_name" cn:"凭证责任人名称"`
+	CredentialEvents         []CredentialEvent `json:"credential_events" form:"credential_events" bson:"credential_events" cn:"凭证分录"`
+	CredentialMakerID        *int              `json:"credential_maker_id" form:"credential_maker_id" bson:"credential_maker_id" cn:"制单人编号"`
+	CredentialMakerName      *string           `json:"credential_maker_name" form:"credential_maker_name" bson:"credential_maker_name" cn:"制单人名称"`
+	CredentialAccountantID   *int              `json:"credential_accountant_id" form:"credential_accountant_id" bson:"credential_accountant_id" cn:"会计编号"`
+	CredentialAccountantName *string           `json:"credential_accountant_name" form:"credential_accountant_name" bson:"credential_accountant_name" cn:"会计名称"`
+	CredentialCashierID      *int              `json:"credential_cashier_id" form:"credential_cashier_id" bson:"credential_cashier_id" cn:"出纳编号"`
+	CredentialCashierName    *string           `json:"credential_cashier_name" form:"credential_cashier_name" bson:"credential_cashier_name" cn:"出纳名称"`
+	CredentialCheckerID      *int              `json:"credential_checker_id" form:"credential_checker_id" bson:"credential_checker_id" cn:"复核编号"`
+	CredentialCheckerName    *string           `json:"credential_checker_name" form:"credential_checker_name" bson:"credential_checker_name" cn:"复核名称"`
+	Remark                   *string           `json:"remark" form:"remark" bson:"remark" cn:"备注"`
 }
 
-func (c FinanceCredential) TableCnName() string {
-	return "财务凭证"
+func (c Credential) TableCnName() string {
+	return "凭证"
 }
-func (c FinanceCredential) TableName() string {
-	return "finance_credentials"
+func (c Credential) TableName() string {
+	return "credentials"
 }
-func (c FinanceCredential) Mapping() map[string]interface{} {
+func (c Credential) Mapping() map[string]interface{} {
 	ma := mapping{
 		"settings": mapping{},
 		"mappings": mapping{
@@ -57,7 +42,7 @@ func (c FinanceCredential) Mapping() map[string]interface{} {
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"finance_credential_content": mapping{
+				"credential_content": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
@@ -86,24 +71,24 @@ func (c FinanceCredential) Mapping() map[string]interface{} {
 }
 
 // ToESDoc todo !!!!
-func (c FinanceCredential) ToESDoc() map[string]interface{} {
+func (c Credential) ToESDoc() map[string]interface{} {
 
 	maker, account, cashier, checker := "", "", "", ""
-	if c.FinanceCredentialMakerName != nil {
-		maker = *c.FinanceCredentialMakerName
+	if c.CredentialMakerName != nil {
+		maker = *c.CredentialMakerName
 	}
-	if c.FinanceCredentialCashierName != nil {
-		cashier = *c.FinanceCredentialCashierName
+	if c.CredentialCashierName != nil {
+		cashier = *c.CredentialCashierName
 	}
-	if c.FinanceCredentialAccountantName != nil {
-		account = *c.FinanceCredentialAccountantName
+	if c.CredentialAccountantName != nil {
+		account = *c.CredentialAccountantName
 	}
 
-	if c.FinanceCredentialCheckerName != nil {
-		checker = *c.FinanceCredentialCheckerName
+	if c.CredentialCheckerName != nil {
+		checker = *c.CredentialCheckerName
 	}
 	var credentialContent string
-	for _, event := range c.FinanceCredentialEvents {
+	for _, event := range c.CredentialEvents {
 		for _, decrease := range event.DecreaseEvent {
 			credentialContent += fmt.Sprintf(
 				"贷: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
@@ -122,19 +107,19 @@ func (c FinanceCredential) ToESDoc() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"rec_id":                     c.RecID,
-		"created_at":                 c.CreatedAt,
-		"remark":                     c.Remark,
-		"related_person":             fmt.Sprintf("制单人:%s  会计:%s  出纳:%s  复核:%s ", maker, account, cashier, checker),
-		"finance_credential_content": credentialContent,
+		"rec_id":             c.RecID,
+		"created_at":         c.CreatedAt,
+		"remark":             c.Remark,
+		"related_person":     fmt.Sprintf("制单人:%s  会计:%s  出纳:%s  复核:%s ", maker, account, cashier, checker),
+		"credential_content": credentialContent,
 		//"stock_in_owner":             m.StockInRecordOwnerName,
 		"book_name":    c.BookName,
 		"book_name_id": c.BookNameID,
 	}
 }
 
-// FinanceCredentialEvent 凭证条目
-type FinanceCredentialEvent struct {
+// CredentialEvent 凭证条目
+type CredentialEvent struct {
 	// 借
 	IncreaseEvent []EventItem `json:"increase_event" bson:"increase_event"`
 	// 贷
@@ -153,18 +138,19 @@ type EventItem struct {
 
 // CalculateTotalAmount todo 通过凭证中各条目计算总金额
 // todo 需不需要，有待商榷
-func (c *FinanceCredential) CalculateTotalAmount() {
+func (c *Credential) CalculateTotalAmount() {
 
 }
 
-// CreateFinanceCredential 创建财务凭证
+// CreateCredential 创建财务凭证
 //  todo
-func CreateFinanceCredential() {
+func CreateCredential() {
 
 }
 
-// TransferToInvoice 转为单据
-// todo
-func (c *FinanceCredential) TransferToInvoice(invoiceType _const.InvoiceType) _interface.Invoice {
-	return nil
-}
+//
+//// TransferToInvoice 转为单据
+//// todo
+//func (c *Credential) TransferToInvoice(invoiceType _const.InvoiceType) _interface.Invoice {
+//	return nil
+//}

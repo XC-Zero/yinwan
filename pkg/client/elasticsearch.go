@@ -3,14 +3,12 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	cfg "github.com/XC-Zero/yinwan/pkg/config"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"log"
-	"reflect"
 	"strings"
 )
 
@@ -34,7 +32,7 @@ func InitElasticsearch(config cfg.ESConfig) (*elastic.Client, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
+	log.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
 
 	// Getting the ES version number is quite common, so there's a shortcut
 	esVersion, err := esClient.ElasticsearchVersion(config.Host)
@@ -42,7 +40,7 @@ func InitElasticsearch(config cfg.ESConfig) (*elastic.Client, error) {
 		// Handle error
 		panic(err)
 	}
-	fmt.Printf("Elasticsearch version %s\n", esVersion)
+	log.Printf("Elasticsearch version %s\n", esVersion)
 
 	return esClient, nil
 }
@@ -99,8 +97,8 @@ func GetFromIndex(tabler _interface.EsTabler, query elastic.Query, from, size in
 	}
 
 	count = res.TotalHits()
-	l := res.Each(reflect.TypeOf(tabler))
-	log.Printf("%+v", l)
+	//l := res.Each(reflect.TypeOf(tabler))
+	//log.Printf("%+v", l)
 	hit := res.Hits.Hits
 	for i := range hit {
 		var m map[string]interface{}
@@ -162,10 +160,9 @@ func UpdateIntoIndex(tabler _interface.EsTabler, recID *int, ctx context.Context
 	if recID == nil {
 		return errors.New("缺少主键！")
 	}
-	do, err := ESClient.UpdateByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Script(script).Refresh("true").Do(context.Background())
+	_, err := ESClient.UpdateByQuery(tabler.TableName()).Query(elastic.NewTermQuery("rec_id", recID)).Script(script).Refresh("true").Do(context.Background())
 	if err != nil {
 		return err
 	}
-	log.Println(do.Total)
 	return nil
 }
