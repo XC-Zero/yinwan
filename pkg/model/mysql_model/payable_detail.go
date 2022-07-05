@@ -11,13 +11,14 @@ import (
 type PayableDetail struct {
 	BasicModel
 	BookNameInfo
-	PayableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty"`
-	PayableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty"`
-	PayableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty"`
-	PayableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty"`
-	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty"`
-	PayableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty"`
-	Remark              *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark"`
+	PayableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty" cn:"关联应付编号"`
+	PayableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty" cn:"付款时间"`
+	PayableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty" cn:"付款内容摘要"`
+	PayableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty" cn:"付款金额"`
+	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty" cn:"操作人编号"`
+	PayableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty" cn:"操作人名称"`
+	PayablePicUrlList   *string `gorm:"type:mediumtext" form:"payable_pic_url_list" json:"payable_pic_url_list" cn:"相关单据图片"`
+	Remark              *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark" cn:"备注"`
 }
 
 func (p PayableDetail) TableCnName() string {

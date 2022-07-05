@@ -8,20 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
+// ReceivableDetail 收款详情
 type ReceivableDetail struct {
 	BasicModel
 	BookNameInfo
-	ReceivableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty"`
-	ReceivableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty"`
-	ReceivableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty"`
-	ReceivableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty"`
-	ReceivableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty"`
-	ReceivableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty"`
-	Remark                 *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark"`
+	ReceivableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty" cn:"关联应收编号"`
+	ReceivableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty" cn:"收款日期"`
+	ReceivableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty" cn:"收款款内容摘要"`
+	ReceivableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty" cn:"收款金额"`
+	ReceivableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty" cn:"操作人编号"`
+	ReceivableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty" cn:"操作人名称"`
+	ReceivablePicUrlList   *string `gorm:"type:mediumtext" form:"receivable_pic_url_list,omitempty" json:"receivable_pic_url_list,omitempty" cn:"相关单据图片"`
+	Remark                 *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark" cn:"备注"`
 }
 
 func (p ReceivableDetail) TableCnName() string {
-	return "应付详情"
+	return "收款详情"
 }
 func (p ReceivableDetail) TableName() string {
 	return "receivable_details"

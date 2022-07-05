@@ -205,14 +205,25 @@ func SelectPayableDetail(ctx *gin.Context) {
 	}
 	condition := []common.MysqlCondition{
 		{
-			Symbol:      mysql.EQUAL,
-			ColumnName:  "payable_id",
-			ColumnValue: ctx.PostForm("payable_id"),
+			mysql.EQUAL,
+			"rec_id",
+			ctx.PostForm("payable_detail_id"),
 		},
 		{
-			Symbol:      mysql.NOT_EQUAL,
-			ColumnName:  "deleted_at",
-			ColumnValue: " ",
+			mysql.EQUAL,
+			"payable_id",
+			ctx.PostForm("payable_id"),
+		},
+		{
+			mysql.NOT_EQUAL,
+			"deleted_at",
+			" ",
+		},
+		// todo
+		{
+			mysql.NOT_NULL,
+			"deleted_at",
+			ctx.PostForm("is_deleted"),
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{

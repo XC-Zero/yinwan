@@ -15,7 +15,7 @@ func CreateCredential(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var credential mongo_model.FinanceCredential
+	var credential mongo_model.Credential
 
 	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil {
@@ -46,7 +46,7 @@ func SelectCredential(ctx *gin.Context) {
 
 	op := common.SelectMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		TableModel: mongo_model.FinanceCredential{},
+		TableModel: mongo_model.Credential{},
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, op, conditions...)
 	return
@@ -59,7 +59,7 @@ func UpdateCredential(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var credential mongo_model.FinanceCredential
+	var credential mongo_model.Credential
 	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil || credential.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -80,7 +80,7 @@ func DeleteCredential(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var credential mongo_model.FinanceCredential
+	var credential mongo_model.Credential
 	err := ctx.ShouldBindBodyWith(&credential, binding.JSON)
 	if err != nil || credential.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
