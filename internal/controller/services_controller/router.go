@@ -147,6 +147,14 @@ func Starter() {
 			finance.POST("/update_receivable", finance3.UpdateReceivable)
 			finance.POST("/delete_receivable", finance3.DeleteReceivable)
 		}
+		//应收详情
+		{
+			finance.POST("/create_receivable_detail", finance3.CreateReceivableDetail)
+			finance.POST("/select_receivable_detail", finance3.SelectReceivableDetail)
+			finance.POST("/update_receivable_detail", finance3.UpdateReceivableDetail)
+			finance.POST("/delete_receivable_detail", finance3.DeleteReceivableDetail)
+		}
+
 		//应付
 		{
 			finance.POST("/create_payable", finance3.CreatePayable)

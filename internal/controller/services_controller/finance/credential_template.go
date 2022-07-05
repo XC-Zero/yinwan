@@ -31,7 +31,7 @@ func SelectCredentialTemplate(ctx *gin.Context) {
 	common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{
 		DB:         client.MysqlClient,
 		TableModel: mongo_model.CredentialTemplate{},
-	})
+	}, conditions...)
 
 }
 func UpdateCredentialTemplate(ctx *gin.Context) {

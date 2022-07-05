@@ -2,6 +2,7 @@ package mysql_model
 
 import (
 	"github.com/XC-Zero/yinwan/pkg/client"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	"github.com/pkg/errors"
@@ -11,13 +12,13 @@ import (
 type PayableDetail struct {
 	BasicModel
 	BookNameInfo
-	PayableID           int     `gorm:"type:int" json:"receivable_id,omitempty" form:"receivable_id,omitempty" cn:"关联应付编号"`
-	PayableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty" cn:"付款时间"`
-	PayableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty" cn:"付款内容摘要"`
-	PayableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty" cn:"付款金额"`
-	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty" cn:"操作人编号"`
-	PayableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty" cn:"操作人名称"`
-	PayablePicUrlList   *string `gorm:"type:mediumtext" form:"payable_pic_url_list" json:"payable_pic_url_list" cn:"相关单据图片"`
+	PayableID           *int    `gorm:"type:int" json:"payable_id,omitempty" form:"payable_id,omitempty" cn:"关联应付编号"`
+	PayableDate         *string `gorm:"type:varchar(50)" json:"payable_date,omitempty" form:"payable_date,omitempty" cn:"付款时间"`
+	PayableContent      *string `gorm:"type:varchar(200)" json:"payable_content,omitempty" form:"payable_content,omitempty" cn:"付款内容摘要"`
+	PayableAmount       *string `gorm:"type:varchar(50)" json:"payable_amount,omitempty" form:"payable_amount,omitempty" cn:"付款金额"`
+	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"payable_operator_id,omitempty" form:"payable_operator_id,omitempty" cn:"操作人编号"`
+	PayableOperatorName *string `gorm:"type:varchar(50)" json:"payable_operator_name,omitempty" form:"payable_operator_name,omitempty" cn:"操作人名称"`
+	PayablePicUrlList   *string `gorm:"type:mediumtext" form:"payable_pic_url_list,omitempty" json:"payable_pic_url_list,omitempty" cn:"相关单据图片"`
 	Remark              *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark" cn:"备注"`
 }
 
@@ -25,7 +26,7 @@ func (p PayableDetail) TableCnName() string {
 	return "应收详情"
 }
 func (p PayableDetail) TableName() string {
-	return "receivable_details"
+	return "payable_details"
 }
 
 // todo 修改实际付款，剩余付款，付款状态
@@ -39,13 +40,13 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	p.BookName = bk.BookName
 
 	var payable Payable
-	payable.RecID = &p.PayableID
+	payable.RecID = p.PayableID
 	var amountList []string
 	err := bk.MysqlClient.WithContext(tx.Statement.Context).
 		Raw("select ? from ?  where ? = ? and ? = ?",
-			"receivable_amount", p.TableName(),
+			"payable_amount", p.TableName(),
 			"deleted_at", "is null",
-			"receivable_id", p.PayableID,
+			"payable_id", p.PayableID,
 		).Scan(&amountList).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "查询应付记录详情失败!")
@@ -75,6 +76,18 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	debtAmount := sub.String()
 	payable.PayableActualAmount = &actualAmount
 	payable.PayableDebtAmount = &debtAmount
+	unpaid := _const.UnPaid
+	paid := _const.Paid
+	partialPaid := _const.PartialPaid
+
+	switch {
+	case num.IsZero():
+		payable.PayableStatus = &unpaid
+	case sub.IsZero():
+		payable.PayableStatus = &paid
+	case actualAmount < *payable.PayableTotalAmount:
+		payable.PayableStatus = &partialPaid
+	}
 	err = bk.MysqlClient.WithContext(tx.Statement.Context).Updates(&payable).Where("rec_id = ?", payable.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付记录失败!")

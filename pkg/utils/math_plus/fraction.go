@@ -57,6 +57,13 @@ func (f Fraction) ToFakeFraction(multiple int64) Fraction {
 	return newFraction(f.numerator*multiple, f.denominator*multiple)
 }
 
+func (f Fraction) IsZero() bool {
+	if f.numerator == 0 {
+		return true
+	}
+	return false
+}
+
 //Add 加
 func (f Fraction) Add(fra Fraction) Fraction {
 	if fra.denominator == 0 {

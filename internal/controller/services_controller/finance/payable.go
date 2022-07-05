@@ -137,7 +137,7 @@ func CreatePayableDetail(ctx *gin.Context) {
 	temp := mysql_model.PayableDetail{}
 
 	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
-	if err != nil {
+	if err != nil || temp.PayableID == nil {
 		logger.Error(errors.WithStack(err), "绑定模型失败!")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
@@ -152,6 +152,7 @@ func CreatePayableDetail(ctx *gin.Context) {
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("新建应付详情成功!"))
 	return
 }
+
 func UpdatePayableDetail(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -175,6 +176,7 @@ func UpdatePayableDetail(ctx *gin.Context) {
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("更新应付详情记录成功!"))
 	return
 }
+
 func DeletePayableDetail(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -219,7 +221,6 @@ func SelectPayableDetail(ctx *gin.Context) {
 			"deleted_at",
 			" ",
 		},
-		// todo
 		{
 			mysql.NOT_NULL,
 			"deleted_at",

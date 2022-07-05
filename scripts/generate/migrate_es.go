@@ -18,7 +18,7 @@ func init() {
 		&es.FixedAsset{},
 		&es.Provider{},
 		&es.Customer{},
-		&m.FinanceCredential{},
+		&m.Credential{},
 		&m.StockOutRecord{},
 		&m.StockInRecord{},
 		&m.Purchase{},
