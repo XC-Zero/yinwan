@@ -133,6 +133,14 @@ func Starter() {
 			finance.POST("/update_credential", finance3.UpdateCredential)
 			finance.POST("/delete_credential", finance3.DeleteCredential)
 		}
+
+		// 凭证模板
+		{
+			finance.POST("/select_credential_template", finance3.SelectCredentialTemplate)
+			finance.POST("/create_credential_template", finance3.CreateCredentialTemplate)
+			finance.POST("/update_credential_template", finance3.UpdateCredentialTemplate)
+			finance.POST("/delete_credential_template", finance3.DeleteCredentialTemplate)
+		}
 		// 固定资产
 		{
 			finance.POST("/select_fixed_asset", finance3.SelectFixedAsset)

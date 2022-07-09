@@ -4,10 +4,7 @@ import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
@@ -41,43 +38,6 @@ func CreateStockIn(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: temp,
-		PreFunc: func(tabler _interface.ChineseTabler) _interface.ChineseTabler {
-			record := tabler.(mongo_model.StockInRecord)
-			for _, m := range record.StockInRecordContent {
-
-				id, _ := strconv.Atoi(convert.GetInterfaceToString(m["material_id"]))
-				num, _ := strconv.Atoi(convert.GetInterfaceToString(m["material_num"]))
-				price := convert.GetInterfaceToString(m["material_amount"])
-				tPrice := convert.GetInterfaceToString(m["material_total_amount"])
-				name := convert.GetInterfaceToString(m["material_name"])
-
-				date := time.Now().Format("2006-01-02 15:04")
-				batch := mysql_model.MaterialBatch{
-
-					MaterialID:                 id,
-					MaterialName:               name,
-					StockInRecordID:            *temp.RecID,
-					MaterialBatchOwnerID:       temp.StockInRecordOwnerID,
-					MaterialBatchOwnerName:     temp.StockInRecordOwnerName,
-					MaterialBatchTotalPrice:    tPrice,
-					MaterialBatchNumber:        num,
-					MaterialBatchSurplusNumber: num,
-					MaterialBatchUnitPrice:     price,
-					WarehouseID:                temp.StockInWarehouseID,
-					WarehouseName:              temp.StockInWarehouseName,
-					StockInTime:                &date,
-					Remark:                     nil,
-				}
-				err := bk.MysqlClient.WithContext(context.WithValue(context.Background(), "material_id", id)).
-					Create(&batch).Error
-				if err != nil {
-					logger.Error(errors.WithStack(err), "同步创建批次信息失败!")
-					return nil
-				}
-			}
-
-			return record
-		},
 	})
 	return
 }

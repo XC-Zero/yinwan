@@ -1,5 +1,7 @@
 package mongo_model
 
+import "context"
+
 type Return struct {
 	BasicModel         `bson:"inline"`
 	BookNameInfo       `bson:"-"`
@@ -84,4 +86,14 @@ func (r Return) ToESDoc() map[string]interface{} {
 		"book_name":    r.BookName,
 		"book_name_id": r.BookNameID,
 	}
+}
+
+func (r *Return) AfterInsert(ctx context.Context) error {
+	return nil
+}
+func (r *Return) AfterUpdate(ctx context.Context) error {
+	return nil
+}
+func (r *Return) AfterDelete(ctx context.Context) error {
+	return nil
 }

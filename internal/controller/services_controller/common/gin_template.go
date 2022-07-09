@@ -87,6 +87,7 @@ type CreateMongoDBTemplateOptions struct {
 	Context    context.Context
 	TableModel _interface.ChineseTabler
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
+	NotSyncES  bool
 }
 
 // MongoDBTemplateOptions MongoDB 更新/删除配置项
@@ -103,6 +104,7 @@ type MongoDBTemplateOptions struct {
 	PreFunc    func(_interface.ChineseTabler) _interface.ChineseTabler
 	RecID      int
 	OmitList   []string
+	NotSyncES  bool
 }
 
 // UpdateMysqlTemplateOptions Mysql 更新模板配置
@@ -259,7 +261,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		return
 	}
 	v, ok := data.(_interface.EsTabler)
-	if ok {
+	if ok && !op.NotSyncES {
 		err := client.PutIntoIndex(v)
 		if err != nil {
 			logger.Error(errors.WithStack(err), "Mongo 数据同步插入 ES Data 失败!表:"+op.TableModel.TableName())
@@ -300,8 +302,14 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 			if _, omit := omitMap[v]; omit {
 				continue
 			}
+			if v == "updated_at" {
+				update = append(update, bson.E{Key: v, Value: time.Now().String()})
+				continue
+			}
 			update = append(update, bson.E{Key: v, Value: nowValue.Interface()})
+
 		}
+
 	}
 	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{"$set", update}})
 	if err != nil {
@@ -309,7 +317,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		return
 	}
 	v, ok := op.TableModel.(_interface.EsTabler)
-	if ok {
+	if ok && !op.NotSyncES {
 		err := client.UpdateIntoIndex(v, &op.RecID, op.Context, es_tool.ESDocToUpdateScript(v.ToESDoc()))
 		if err != nil {
 			logger.Error(errors.WithStack(err), "Mongo 同步更新 es 失败!")
@@ -346,7 +354,7 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		return
 	}
 	v, ok := op.TableModel.(_interface.EsTabler)
-	if ok {
+	if ok && !op.NotSyncES {
 		err := client.DeleteFromIndex(v, &op.RecID, op.Context)
 		if err != nil {
 			logger.Error(errors.WithStack(err), "Mongo 同步删除es 失败! 表:"+en)

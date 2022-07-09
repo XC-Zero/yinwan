@@ -94,9 +94,7 @@ func UpdatePurchase(ctx *gin.Context) {
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      *temp.RecID,
 		TableModel: temp,
-		PreFunc:    nil,
 	})
-
 	return
 
 }
@@ -116,7 +114,6 @@ func DeletePurchase(ctx *gin.Context) {
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      recID,
 		TableModel: stockOutRecord,
-		PreFunc:    nil,
 	})
 	return
 }

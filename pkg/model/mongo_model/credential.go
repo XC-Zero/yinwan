@@ -89,21 +89,18 @@ func (c Credential) ToESDoc() map[string]interface{} {
 	}
 	var credentialContent string
 	for _, event := range c.CredentialEvents {
-		for _, decrease := range event.DecreaseEvent {
-			credentialContent += fmt.Sprintf(
-				"贷: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
-				decrease.EventItemType,
-				decrease.EventItemObject,
-				decrease.EventItemAmount)
-		}
+		credentialContent += fmt.Sprintf(
+			"贷: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
+			event.DecreaseEvent.EventItemType,
+			event.DecreaseEvent.EventItemObject,
+			event.DecreaseEvent.EventItemAmount)
 
-		for _, increase := range event.IncreaseEvent {
-			credentialContent += fmt.Sprintf(
-				"借: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
-				increase.EventItemType,
-				increase.EventItemObject,
-				increase.EventItemAmount)
-		}
+		credentialContent += fmt.Sprintf(
+			"借: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
+			event.IncreaseEvent.EventItemType,
+			event.IncreaseEvent.EventItemObject,
+			event.IncreaseEvent.EventItemAmount)
+
 	}
 
 	return map[string]interface{}{
@@ -121,9 +118,9 @@ func (c Credential) ToESDoc() map[string]interface{} {
 // CredentialEvent 凭证条目
 type CredentialEvent struct {
 	// 借
-	IncreaseEvent []EventItem `json:"increase_event" bson:"increase_event"`
+	IncreaseEvent EventItem `json:"increase_event" bson:"increase_event"`
 	// 贷
-	DecreaseEvent []EventItem `json:"decrease_event" bson:"decrease_event"`
+	DecreaseEvent EventItem `json:"decrease_event" bson:"decrease_event"`
 }
 
 // EventItem 具体条目
