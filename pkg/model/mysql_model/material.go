@@ -192,8 +192,7 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 				"sum(material_batch_total_price) as total_price," +
 				"sum(material_batch_number) as total_number ").Scan(&tempScan).Error
 		if err2 != nil {
-			log.Println("@@@@ Statics ERROR is ", errors.WithStack(err2))
-
+			log.Println("[ERROR] Statics ERROR is ", errors.WithStack(err2))
 			return err2
 		}
 		var averagePrice string
@@ -226,7 +225,9 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 func (m MaterialBatch) AfterUpdate(tx *gorm.DB) error {
 	return m.AfterCreate(tx)
 }
-
+func (m MaterialBatch) AfterDelete(tx *gorm.DB) error {
+	return m.AfterCreate(tx)
+}
 func (m MaterialBatch) TableName() string {
 	return "material_batches"
 }

@@ -1,8 +1,11 @@
 package mongo_model
 
 import (
+	"context"
+	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
+	"github.com/pkg/errors"
 )
 
 // StockOutRecord 出库记录
@@ -88,4 +91,29 @@ func (m StockOutRecord) Mapping() map[string]interface{} {
 		},
 	}
 	return ma
+}
+
+// BeforeInsert todo !!!!
+func (m *StockOutRecord) BeforeInsert(ctx context.Context) error {
+	bookName := ctx.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	if m.RecID == nil || bk.StorageName == "" {
+		return errors.New("缺少主键！")
+	}
+	return nil
+}
+
+// BeforeUpdate todo !!!!
+func (m *StockOutRecord) BeforeUpdate(ctx context.Context) error {
+
+	return nil
+}
+
+// BeforeRemove todo !!!!
+func (m *StockOutRecord) BeforeRemove(ctx context.Context) error {
+
+	return nil
 }

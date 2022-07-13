@@ -66,6 +66,11 @@ func SelectReturn(ctx *gin.Context) {
 			"deleted_at",
 			nil,
 		},
+		{
+			Symbol:      my_mongo.EQUAL,
+			ColumnName:  "rec_id",
+			ColumnValue: ctx.PostForm("return_id"),
+		},
 	}
 
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, common.SelectMongoDBTemplateOptions{

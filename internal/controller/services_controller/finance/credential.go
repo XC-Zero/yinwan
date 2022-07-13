@@ -7,6 +7,8 @@ import (
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"strconv"
+	"time"
 )
 
 // CreateCredential 创建凭证
@@ -22,6 +24,11 @@ func CreateCredential(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	recID := int(time.Now().Unix())
+	credential.RecID = &recID
+	credential.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
+	credential.BookName = n
+	credential.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		TableModel: credential,
