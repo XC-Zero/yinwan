@@ -145,6 +145,19 @@ func (c CommodityHistoricalCost) TableName() string {
 // CommodityBatch 批次
 type CommodityBatch struct {
 	BasicModel
+	CommodityID                 int     `gorm:"type:int;not null" json:"commodity_id" cn:"产品ID"`
+	CommodityName               string  `gorm:"type:varchar(50);not null" json:"commodity_name" cn:"产品名称"`
+	StockInRecordID             int     `gorm:"type:int;not null" json:"stock_in_record_id" cn:"关联入库单号"`
+	CommodityBatchOwnerID       *int    `gorm:"type:int;index" json:"commodity_batch_owner_id,omitempty" cn:"负责人ID"`
+	CommodityBatchOwnerName     *string `gorm:"type:varchar(50)" json:"commodity_batch_owner_name,omitempty" cn:"负责人名称"`
+	CommodityBatchTotalPrice    string  `gorm:"type:varchar(50);not null" json:"commodity_batch_total_price" cn:"批次总价"`
+	CommodityBatchNumber        int     `gorm:"type:int;not null" json:"commodity_batch_number" cn:"批次产品总数"`
+	CommodityBatchSurplusNumber int     `gorm:"type:int;not null" json:"commodity_batch_surplus_number" cn:"当前批次产品剩余数量"`
+	CommodityBatchUnitPrice     string  `gorm:"type:varchar(50);not null" json:"commodity_batch_unit_price" cn:"单价"`
+	WarehouseID                 *int    `gorm:"type:int;index" json:"warehouse_id,omitempty" cn:"仓库ID"`
+	WarehouseName               *string `gorm:"type:varchar(50)" json:"warehouse_name,omitempty"  cn:"仓库名称"`
+	StockInTime                 *string `gorm:"type:timestamp " json:"stock_in_time" cn:"入库时间"`
+	Remark                      *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"批次备注"`
 }
 
 func (c CommodityBatch) TableCnName() string {

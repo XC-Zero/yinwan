@@ -16,13 +16,18 @@ type StockOutRecord struct {
 	StockOutRecordOwnerID   int                     `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
 	StockOutRecordOwnerName string                  `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
 	StockOutRecordType      string                  `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
-	StockOutWarehouseID     *int                    ` json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
-	StockOutWarehouseName   *string                 ` json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
-	StockOutDetailPosition  *string                 ` json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
+	StockOutWarehouseID     *int                    `json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
+	StockOutWarehouseName   *string                 `json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
+	StockOutDetailPosition  *string                 `json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
 	StockOutRecordContent   []stockOutRecordContent `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
 	Remark                  *string                 `json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 type stockOutRecordContent struct {
+	CommodityID      *int    `form:"commodity_id,omitempty" json:"commodity_id,omitempty" bson:"commodity_id"`
+	CommodityName    *string `form:"commodity_name,omitempty" json:"commodity_name,omitempty" bson:"commodity_name"`
+	CommodityNum     int     `form:"commodity_num" json:"commodity_num" bson:"commodity_num"`
+	CommodityPrice   *string `form:"commodity_price,omitempty" json:"commodity_price,omitempty" bson:"commodity_price,omitempty"`
+	CommodityBatchID *int    `form:"commodity_batch_id,omitempty" json:"commodity_batch_id,omitempty" bson:"commodity_batch_id,omitempty"`
 }
 
 func (m StockOutRecord) ToESDoc() map[string]interface{} {
