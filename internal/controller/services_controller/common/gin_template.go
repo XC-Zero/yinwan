@@ -209,11 +209,9 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		filter = append(filter, myMongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
 	logger.Info(fmt.Sprintf(" filter is %+v", filter))
-
 	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	err := tx.Find(c, filter).Sort(orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
-	log.Printf("%+v", list)
 
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
@@ -237,7 +235,6 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 			logger.Error(errors.WithStack(err), "Mongo执行Hook函数错误!表名为: "+op.TableModel.TableName())
 		}
 	}
-	logger.Info(fmt.Sprintf("%+v", res))
 
 	SelectSuccessTemplate(ctx, count, res)
 	return
@@ -271,7 +268,6 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	}
 	id := reflect.ValueOf(data).Field(0).FieldByName("RecID").Interface().(*int)
 	mes := fmt.Sprintf("新建%s成功,编号为%d", data.TableCnName(), id)
-	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
 }
@@ -414,9 +410,8 @@ func SelectESTableContentWithCountTemplate(ctx *gin.Context, op SelectESTemplate
 	offset, limit := client.Paginate(ctx)
 	list, count, err := client.GetFromIndex(op.TableModel, op.Query, offset, limit)
 	log.Println(op.Query.Source())
-
 	if err != nil {
-		log.Println(errors.WithStack(err))
+		logger.Error(errors.WithStack(err), " 普适ES查询失败!")
 		InternalDataBaseErrorTemplate(ctx, DATABASE_SELECT_ERROR, op.TableModel)
 		return
 	}
@@ -466,4 +461,14 @@ func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
 		return nil, ""
 	}
+}
+
+// HarvestClientFromContext 从Context里读取账套信息
+func HarvestClientFromContext(ctx context.Context) (*client.BookName, string) {
+	bookName := ctx.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return nil, ""
+	}
+	return &bk, bk.BookName
 }

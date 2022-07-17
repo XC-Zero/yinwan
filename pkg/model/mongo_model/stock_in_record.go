@@ -17,17 +17,17 @@ import (
 type StockInRecord struct {
 	BasicModel                `bson:"inline"`
 	BookNameInfo              `bson:"-"`
-	StockInRecordOwnerID      *int                   ` json:"stock_in_record_owner_id,omitempty"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" `
-	StockInRecordOwnerName    *string                ` json:"stock_in_record_owner_name,omitempty" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" `
-	StockInRecordProviderID   *int                   ` json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
-	StockInRecordProviderName *string                ` json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
-	StockInWarehouseID        *int                   ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
-	StockInWarehouseName      *string                ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
-	StockInDetailPosition     *string                ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
-	StockInRecordType         string                 ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" `
-	StockInRecordContent      []stockInRecordContent ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
-	RelatePurchaseID          []*int                 ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
-	Remark                    *string                ` json:"remark,omitempty" form:"remark" bson:"remark"`
+	StockInRecordOwnerID      *int                 ` json:"stock_in_record_owner_id,omitempty"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" `
+	StockInRecordOwnerName    *string              ` json:"stock_in_record_owner_name,omitempty" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" `
+	StockInRecordProviderID   *int                 ` json:"stock_in_record_provider_id,omitempty" bson:"stock_in_record_provider_id"`
+	StockInRecordProviderName *string              ` json:"stock_in_record_provider_name,omitempty" bson:"stock_in_record_provider_name"`
+	StockInWarehouseID        *int                 ` json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
+	StockInWarehouseName      *string              ` json:"stock_in_warehouse_name,omitempty" form:"stock_in_warehouse_name,omitempty" bson:"stock_in_warehouse_name"`
+	StockInDetailPosition     *string              ` json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
+	StockInRecordType         string               ` json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" `
+	StockInRecordContent      []stockRecordContent ` json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
+	RelatePurchaseID          []*int               ` json:"relate_purchase_id,omitempty" form:"relate_purchase_id,omitempty" bson:"relate_purchase_id"`
+	Remark                    *string              ` json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 type stockInRecordContent struct {
 	MaterialID          int    `bson:"material_id" json:"material_id" form:"material_id"`
@@ -116,21 +116,21 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 		date := time.Now().Format("2006-01-02 15:04")
 		for _, content := range s.StockInRecordContent {
 			batch := mysql_model.MaterialBatch{
-				MaterialID:                 content.MaterialID,
-				MaterialName:               content.MaterialName,
+				MaterialID:                 content.RecID,
+				MaterialName:               content.Name,
 				StockInRecordID:            *s.RecID,
 				MaterialBatchOwnerID:       s.StockInRecordOwnerID,
 				MaterialBatchOwnerName:     s.StockInRecordOwnerName,
-				MaterialBatchTotalPrice:    content.MaterialTotalAmount,
-				MaterialBatchNumber:        content.MaterialNum,
-				MaterialBatchSurplusNumber: content.MaterialNum,
-				MaterialBatchUnitPrice:     content.MaterialAmount,
+				MaterialBatchTotalPrice:    content.TotalPrice,
+				MaterialBatchNumber:        content.Num,
+				MaterialBatchSurplusNumber: content.Num,
+				MaterialBatchUnitPrice:     content.Price,
 				WarehouseID:                s.StockInWarehouseID,
 				WarehouseName:              s.StockInWarehouseName,
 				StockInTime:                &date,
 				Remark:                     s.Remark,
 			}
-			err := tx.WithContext(context.WithValue(context.Background(), "material_id", content.MaterialID)).
+			err := tx.WithContext(context.WithValue(context.Background(), "material_id", content.RecID)).
 				Create(&batch).Error
 			if err != nil {
 				logger.Error(errors.WithStack(err), "同步创建批次信息失败!")

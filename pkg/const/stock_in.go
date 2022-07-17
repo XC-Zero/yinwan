@@ -40,3 +40,22 @@ func (s StockInType) Display() string {
 		return "其他"
 	}
 }
+
+// StockContentType 出入库内容类型
+type StockContentType int
+
+const (
+	MATERIAL StockContentType = iota + 780001
+	COMMODITY
+)
+
+func (s StockContentType) Display() string {
+	switch s {
+	case MATERIAL:
+		return "原材料"
+	case COMMODITY:
+		return "产成品"
+	default:
+		return "未知"
+	}
+}

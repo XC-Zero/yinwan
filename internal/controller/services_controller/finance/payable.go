@@ -9,7 +9,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
-	"github.com/devfeel/mapper"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
@@ -47,7 +46,27 @@ func SelectPayable(ctx *gin.Context) {
 	}
 	condition := []common.MysqlCondition{
 		{
-			Symbol:      mysql.NOT_EQUAL,
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "rec_id",
+			ColumnValue: ctx.PostForm("payable_id"),
+		},
+		{
+			Symbol:      mysql.LIKE,
+			ColumnName:  "provider_name",
+			ColumnValue: ctx.PostForm("provider_name"),
+		},
+		{
+			Symbol:      mysql.GREATER_THEN_EQUAL,
+			ColumnName:  "payable_date",
+			ColumnValue: ctx.PostForm("payable_date"),
+		},
+		{
+			Symbol:      mysql.LESS_THAN_EQUAL,
+			ColumnName:  "payable_date",
+			ColumnValue: ctx.PostForm("payable_date2"),
+		},
+		{
+			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
 		},
@@ -55,28 +74,6 @@ func SelectPayable(ctx *gin.Context) {
 	op := common.SelectMysqlTemplateOptions{
 		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		TableModel: mysql_model.Payable{},
-		ResHookFunc: func(data []interface{}) []interface{} {
-			var datum []interface{}
-			m := mapper.NewMapper()
-			for i := 0; i < len(data); i++ {
-				payable, ok := data[i].(mysql_model.Payable)
-				if !ok {
-					continue
-				}
-				valMap := make(map[string]interface{})
-				m.SetEnabledJsonTag(true)
-				err := m.Mapper(payable, valMap)
-				if err != nil {
-					continue
-				}
-				valMap["payable_status"] = payable.PayableStatus.Display()
-				datum = append(datum, valMap)
-			}
-			if len(datum) == 0 {
-				return data
-			}
-			return datum
-		},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)
 	return

@@ -182,7 +182,7 @@ func AddBookName(bookName string) (status bool) {
 
 	err = bk.MysqlClient.Transaction(func(tx *gorm.DB) error {
 		for i := range bookNameMysqlMigrateList {
-			err = bk.MysqlClient.AutoMigrate(bookNameMysqlMigrateList[i])
+			err = tx.AutoMigrate(bookNameMysqlMigrateList[i])
 			if err != nil {
 				return err
 			}

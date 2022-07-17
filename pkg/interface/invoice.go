@@ -13,5 +13,5 @@ type Invoice interface {
 
 	// TransferToCredential 单据转凭证
 	// 根据类型去找对应的转换模板
-	TransferToCredential(_const.CredentialType) Credential
+	//TransferToCredential(_const.CredentialType) Credential
 }

@@ -8,6 +8,7 @@ import (
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 	"time"
 )
@@ -50,7 +51,7 @@ func SelectPurchase(ctx *gin.Context) {
 		{
 			my_mongo.EQUAL,
 			"deleted_at",
-			nil,
+			bsontype.Null,
 		},
 		{
 			my_mongo.EQUAL,

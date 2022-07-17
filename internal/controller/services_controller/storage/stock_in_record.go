@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 	"time"
 )
@@ -54,9 +55,9 @@ func SelectStockIn(ctx *gin.Context) {
 			ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			my_mongo.LESS_THAN_EQUAL,
+			my_mongo.NOT_EQUAL,
 			"deleted_at",
-			nil,
+			bsontype.Null,
 		},
 		{
 			my_mongo.EQUAL,

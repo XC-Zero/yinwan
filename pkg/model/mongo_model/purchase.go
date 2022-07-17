@@ -118,8 +118,9 @@ func (p Purchase) TableName() string {
 	return "purchases"
 }
 
-func (p *Purchase) AfterInsert(ctx context.Context) error {
-	flag, ok := ctx.Value("auto_create").(bool)
+// BeforeInsert 同步创建应收
+func (p *Purchase) BeforeInsert(ctx context.Context) error {
+	flag, ok := ctx.Value("auto").(bool)
 	if !ok || (ok && !flag) {
 		return nil
 	}
@@ -140,11 +141,69 @@ func (p *Purchase) AfterInsert(ctx context.Context) error {
 		PayableActualAmount: &payableActualAmount,
 		PayableDebtAmount:   &p.PurchaseTotalAmount,
 		PayableStatus:       &unpaid,
+		PurchaseID:          p.RecID,
+		Remark:              p.Remark,
 	}
 
 	err := bk.MysqlClient.WithContext(ctx).Create(&payable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "同步创建应收记录失败!")
+		return err
+	}
+	return nil
+}
+
+// BeforeUpdate 采购同步更新应付
+//	只会更新总价和供应商
+func (p *Purchase) BeforeUpdate(ctx context.Context) error {
+	flag, ok := ctx.Value("auto").(bool)
+	if !ok || (ok && !flag) {
+		return nil
+	}
+	bookName := ctx.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	if p.RecID == nil || bk.StorageName == "" {
+		return errors.New("缺少主键！")
+	}
+	payable := mysql_model.Payable{
+		ProviderName:       p.ProviderName,
+		ProviderID:         p.ProviderID,
+		PayableTotalAmount: &p.PurchaseTotalAmount,
+		//PayableActualAmount: &payableActualAmount,
+		//PayableDebtAmount:   &p.PurchaseTotalAmount,
+		//PayableStatus:       &unpaid,
+		PurchaseID: p.RecID,
+		Remark:     p.Remark,
+	}
+
+	err := bk.MysqlClient.WithContext(ctx).Updates(&payable).Where("purchase_id = ?", p.RecID).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "同步更新应收记录失败!")
+		return err
+	}
+	return nil
+}
+
+// BeforeRemove 采购同步删除应付
+func (p *Purchase) BeforeRemove(ctx context.Context) error {
+	flag, ok := ctx.Value("auto").(bool)
+	if !ok || (ok && !flag) {
+		return nil
+	}
+	bookName := ctx.Value("book_name").(string)
+	bk, ok := client.ReadBookMap(bookName)
+	if !ok {
+		return errors.New("There is no book name!")
+	}
+	if p.RecID == nil || bk.StorageName == "" {
+		return errors.New("缺少主键！")
+	}
+	err := bk.MysqlClient.WithContext(ctx).Delete(&mysql_model.Payable{}).Where("purchase_id = ?", p.RecID).Error
+	if err != nil {
+		logger.Error(errors.WithStack(err), "同步删除应收记录失败!")
 		return err
 	}
 	return nil

@@ -10,11 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"strconv"
 	"time"
 )
 
-// CreateStockOut todo hook function
+// CreateStockOut
 //	出库
 func CreateStockOut(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
@@ -41,6 +42,8 @@ func CreateStockOut(ctx *gin.Context) {
 	return
 
 }
+
+// SelectStockOut 查询出库
 func SelectStockOut(ctx *gin.Context) {
 	bk, _ := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -56,7 +59,7 @@ func SelectStockOut(ctx *gin.Context) {
 		{
 			my_mongo.NOT_EQUAL,
 			"deleted_at",
-			nil,
+			bsontype.Null,
 		},
 		{
 			my_mongo.EQUAL,
@@ -82,6 +85,8 @@ func SelectStockOut(ctx *gin.Context) {
 	return
 
 }
+
+// UpdateStockOut 更新出库
 func UpdateStockOut(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -104,6 +109,8 @@ func UpdateStockOut(ctx *gin.Context) {
 	})
 	return
 }
+
+// DeleteStockOut 删除出库
 func DeleteStockOut(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {

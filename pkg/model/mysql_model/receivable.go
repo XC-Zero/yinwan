@@ -131,3 +131,9 @@ func (p *Receivable) AfterDelete(tx *gorm.DB) error {
 	}
 	return nil
 }
+
+func (p *Receivable) UpdateStatus() {
+	if p.ReceivableDebtAmount == nil {
+
+	}
+}
