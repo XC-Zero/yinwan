@@ -209,7 +209,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 		filter = append(filter, myMongo.TransMysqlOperatorSymbol(condition.Symbol, condition.ColumnName, condition.ColumnValue))
 	}
 	logger.Info(fmt.Sprintf(" filter is %+v", filter))
-	c, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	err := tx.Find(c, filter).Sort(orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
 
@@ -252,7 +252,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 	}
 	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data)
 
-	if err != nil {
+	if err != nil && err != myMongo.CancelError {
 		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, op.TableModel)
 		return
@@ -308,7 +308,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 
 	}
 	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{"$set", update}})
-	if err != nil {
+	if err != nil && err != myMongo.CancelError {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
 	}

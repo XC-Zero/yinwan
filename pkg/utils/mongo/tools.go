@@ -1,8 +1,12 @@
 package mongo
 
 import (
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 )
+
+// CancelError 撤销操作
+var CancelError error = errors.New("this operation is cancel!")
 
 type OperatorSymbol string
 

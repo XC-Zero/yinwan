@@ -1,7 +1,7 @@
 package mongo_model
 
 type CredentialTemplate struct {
-	BasicModel
+	BasicModel             `bson:"inline"`
 	CredentialTemplateName string `bson:"credential_template_name" json:"credential_template_name" form:"credential_template_name"`
 	CredentialMappingList  []CredentialMapping
 }
