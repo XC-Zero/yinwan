@@ -27,6 +27,7 @@ type Purchase struct {
 	Remark                   *string            `json:"remark,omitempty" form:"remark,omitempty" bson:"remark" cn:"备注"`
 }
 
+// 内嵌结构体 采购内容
 type purchaseContent struct {
 	MaterialID         int     `bson:"material_id" json:"material_id" form:"material_id" cn:"原材料编号"`
 	MaterialName       string  `bson:"material_name" json:"material_name" form:"material_name" cn:"名称"`
@@ -39,6 +40,11 @@ type purchaseContent struct {
 	PurchaseTax        string  `bson:"purchase_tax" json:"purchase_tax" form:"purchase_tax"  cn:"采购税额"`
 	PurchaseTotalPrice string  `bson:"purchase_total_price" json:"purchase_total_price" form:"purchase_total_price" cn:"含税总价"`
 	Remark             *string `bson:"remark" json:"remark,omitempty" form:"remark,omitempty" cn:"备注"`
+}
+
+// ToString todo !!!
+func (p purchaseContent) ToString() string {
+	return ""
 }
 
 func (p Purchase) Mapping() map[string]interface{} {

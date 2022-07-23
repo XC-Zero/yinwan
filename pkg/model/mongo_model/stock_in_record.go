@@ -1,11 +1,13 @@
 package mongo_model
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
+	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
-	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	myMongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -93,6 +95,8 @@ func (s StockInRecord) Mapping() map[string]interface{} {
 	return ma
 }
 
+// BeforeInsert 创建入库
+//
 func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 	bookName := ctx.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
@@ -103,27 +107,60 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 		return errors.New("缺少主键！")
 	}
 	err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		date := time.Now().Format("2006-01-02 15:04")
-		for _, content := range s.StockInRecordContent {
-			batch := mysql_model.MaterialBatch{
-				MaterialID:                 content.RecID,
-				MaterialName:               content.Name,
-				StockInRecordID:            *s.RecID,
-				MaterialBatchOwnerID:       s.StockInRecordOwnerID,
-				MaterialBatchOwnerName:     s.StockInRecordOwnerName,
-				MaterialBatchTotalPrice:    content.TotalPrice,
-				MaterialBatchNumber:        content.Num,
-				MaterialBatchSurplusNumber: content.Num,
-				MaterialBatchUnitPrice:     content.Price,
-				WarehouseID:                s.StockInWarehouseID,
-				WarehouseName:              s.StockInWarehouseName,
-				StockInTime:                &date,
-				Remark:                     s.Remark,
+		var contentList = s.StockInRecordContent
+		var now = time.Now().Format("2006-01-02")
+		var remark = fmt.Sprintf("根据入库单[编号]:%d 自动创建", *s.RecID)
+		for i := 0; i < len(contentList); i++ {
+			content := contentList[i]
+			var model _interface.ChineseTabler
+			var relateID string
+			if content.ContentType == _const.MATERIAL {
+				relateID = "material_id"
+				model = mysql_model.MaterialBatch{
+					BasicModel: mysql_model.BasicModel{
+						CreatedAt: time.Now(),
+					},
+					MaterialID:                 content.RecID,
+					MaterialName:               content.Name,
+					StockInRecordID:            *s.RecID,
+					MaterialBatchOwnerID:       s.StockInRecordOwnerID,
+					MaterialBatchOwnerName:     s.StockInRecordOwnerName,
+					MaterialBatchTotalPrice:    content.TotalPrice,
+					MaterialBatchNumber:        content.Num,
+					MaterialBatchSurplusNumber: content.Num,
+					MaterialBatchUnitPrice:     content.Price,
+					WarehouseID:                s.StockInWarehouseID,
+					WarehouseName:              s.StockInWarehouseName,
+					StockInTime:                &now,
+					Remark:                     &remark,
+				}
+			} else if content.ContentType == _const.COMMODITY {
+				relateID = "commodity_id"
+				model = mysql_model.CommodityBatch{
+					BasicModel: mysql_model.BasicModel{
+						CreatedAt: time.Now(),
+					},
+					CommodityID:                 content.RecID,
+					CommodityName:               content.Name,
+					StockInRecordID:             *s.RecID,
+					CommodityBatchOwnerID:       s.StockInRecordOwnerID,
+					CommodityBatchOwnerName:     s.StockInRecordOwnerName,
+					CommodityBatchTotalPrice:    content.TotalPrice,
+					CommodityBatchNumber:        content.Num,
+					CommodityBatchSurplusNumber: content.Num,
+					CommodityBatchUnitPrice:     content.Price,
+					WarehouseID:                 s.StockInWarehouseID,
+					WarehouseName:               s.StockInWarehouseName,
+					StockInTime:                 &now,
+					Remark:                      &remark,
+				}
+			} else {
+				continue
 			}
-			err := tx.WithContext(context.WithValue(context.Background(), "material_id", content.RecID)).
-				Create(&batch).Error
+			err := tx.WithContext(context.WithValue(context.Background(), relateID, content.RecID)).
+				Create(&model).Error
+
 			if err != nil {
-				logger.Error(errors.WithStack(err), "同步创建批次信息失败!")
 				return err
 			}
 		}
@@ -132,6 +169,13 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func (s *StockInRecord) BeforeUpdate(ctx context.Context) error {
+	return myMongo.CancelError
+}
+
+func (s *StockInRecord) BeforeRemove(ctx context.Context) error {
+	return myMongo.CancelError
 }

@@ -172,6 +172,11 @@ func SelectMaterialDetail(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("material_id"),
 		},
 		{
+			mysql.GREATER_THEN,
+			"material_batch_surplus_number",
+			ctx.PostForm("material_batch_surplus_number"),
+		},
+		{
 			Symbol:      mysql.EQUAL,
 			ColumnName:  "material_type_id",
 			ColumnValue: ctx.PostForm("material_type_id"),

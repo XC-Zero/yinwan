@@ -18,7 +18,7 @@ import (
 	"github.com/XC-Zero/yinwan/internal/config"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/dollarkillerx/urllib"
-	"github.com/fwhezfwhez/errorx"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -82,7 +82,7 @@ func GetCurrencyList() {
 	err := urllib.Get(listUrl).FromJson(&currencyList)
 	if err != nil {
 		retry--
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("调用接口用于获取货币列表失败,正在重试 %d/%d 次 ！ ", MAX_RETRY-retry, MAX_RETRY))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("调用接口用于获取货币列表失败,正在重试 %d/%d 次 ！ ", MAX_RETRY-retry, MAX_RETRY))
 		if retry < 1 {
 			return
 		} else {
@@ -112,7 +112,7 @@ func GetCurrencyRate(sourceCurrency, targetCurrency string) CurrencyRateResponse
 		cfg.RateURL, sourceCurrency, targetCurrency, cfg.AppKey, cfg.Sign,
 	)).FromJson(&currencyRate)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("获取 %s 货币（%s）到 %s 货币（%s）的汇率失败！ ",
+		logger.Error(errors.WithStack(err), fmt.Sprintf("获取 %s 货币（%s）到 %s 货币（%s）的汇率失败！ ",
 			sourceCurrency, CurrencyNameReverseMap[sourceCurrency], targetCurrency, CurrencyNameReverseMap[targetCurrency]))
 	}
 	return currencyRate

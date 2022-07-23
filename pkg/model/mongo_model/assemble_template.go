@@ -1,8 +1,10 @@
 package mongo_model
 
+// AssembleTemplate 组装拆卸模板
 type AssembleTemplate struct {
 	BasicModel            `bson:"inline"`
 	BookNameInfo          `bson:"-"`
+	AssembleTemplateName  string
 	AssembleMaterialList  []assembleMaterial  `bson:"assemble_material_list" json:"assemble_material_list" form:"assemble_material_list"`
 	AssembleCommodityList []assembleCommodity `bson:"assemble_commodity_list" json:"assemble_commodity_list" form:"assemble_commodity_list"`
 	OperatorID            *int                `bson:"operator_id" json:"operator_id" form:"operator_id"`

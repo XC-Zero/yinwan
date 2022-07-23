@@ -5,7 +5,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -136,7 +135,7 @@ func (t Transaction) TableName() string {
 }
 
 // BeforeInsert 创建销售记录
-// 如果自动创建应收记录则 mongo 事务套MySQL事务,MySQL事务里套ES插入
+// 如果自动创建应收记录则 mongo 事务套MySQL事务
 // 逻辑上保证原子性
 // 之所以选择前触发器,是想把mysql的
 func (t *Transaction) BeforeInsert(ctx context.Context) error {
@@ -151,7 +150,7 @@ func (t *Transaction) BeforeInsert(ctx context.Context) error {
 	t.BookNameID = bk.StorageName
 	t.BookName = bk.BookName
 	// 同步创建应收
-	flag, ok := ctx.Value("auto_create").(bool)
+	flag, ok := ctx.Value("auto").(bool)
 	if ok && flag {
 		unpaid := _const.Unfinished
 		var receivable = mysql_model.Receivable{
@@ -166,7 +165,7 @@ func (t *Transaction) BeforeInsert(ctx context.Context) error {
 			TransactionID:         t.RecID,
 			Remark:                t.Remark,
 		}
-		// 开mysql事务里套es
+
 		err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 			err := tx.Create(&receivable).Error
 			if err != nil {
@@ -175,10 +174,7 @@ func (t *Transaction) BeforeInsert(ctx context.Context) error {
 			// 事务里的是并发还是一个一个来?失败了回滚?
 			// FIXME 测试下能不能真的插入
 			t.ReceiveID = receivable.RecID
-			err = client.PutIntoIndex(t)
-			if err != nil {
-				return err
-			}
+
 			return nil
 		})
 		if err != nil {
@@ -217,19 +213,15 @@ func (t *Transaction) BeforeUpdate(ctx context.Context) error {
 		TransactionID:         t.RecID,
 		Remark:                t.Remark,
 	}
-	// 开mysql事务里套es
 	err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		err := client.UpdateIntoIndex(t, t.RecID, ctx, es_tool.ESDocToUpdateScript(t.ToESDoc()))
-		if err != nil {
-			return err
-		}
+
 		var receivables []mysql_model.Receivable
-		err = tx.Model(receivable).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
+		err := tx.Model(receivable).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
 		if err != nil {
 			return err
 		}
 
-		flag, ok := ctx.Value("auto_update").(bool)
+		flag, ok := ctx.Value("auto").(bool)
 		if ok && flag {
 			if len(receivables) != 0 {
 				err = tx.Updates(&receivable).Where("transaction_id = ?", t.RecID).Error
@@ -261,21 +253,17 @@ func (t *Transaction) BeforeDelete(ctx context.Context) error {
 	t.BookNameID = bk.StorageName
 	t.BookName = bk.BookName
 
-	// 开mysql事务里套es
 	err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		err := client.DeleteFromIndex(t, t.RecID, ctx)
-		if err != nil {
-			return err
-		}
+
 		var receivables []mysql_model.Receivable
-		err = tx.Model(mysql_model.Receivable{}).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
+		err := tx.Model(mysql_model.Receivable{}).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
 		if err != nil {
 			return err
 		}
 		if len(receivables) == 0 {
 			return nil
 		}
-		flag, ok := ctx.Value("auto_delete").(bool)
+		flag, ok := ctx.Value("auto").(bool)
 		if ok && flag {
 			err = bk.MysqlClient.WithContext(ctx).Delete(mysql_model.Receivable{}).Where("transaction_id = ?", t.RecID).Error
 			if err != nil {

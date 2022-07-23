@@ -46,7 +46,14 @@ type MongoCondition struct {
 	ColumnValue interface{}
 }
 
-type EsCondition struct {
+// Auto 临时结构
+//	是否自动创建/删除/更新应收?
+type Auto struct {
+	Auto bool `json:"auto" form:"auto"`
+}
+
+func (auto Auto) WithContext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, "auto", auto.Auto)
 }
 
 // SelectMysqlTemplateOptions MySQL 搜索模板配置

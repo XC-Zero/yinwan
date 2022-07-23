@@ -12,12 +12,6 @@ import (
 	"time"
 )
 
-// auto 临时结构
-//	是否自动创建/删除/更新应收?
-type auto struct {
-	Auto bool `json:"auto" form:"auto"`
-}
-
 func CreateTransaction(ctx *gin.Context) {
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
@@ -30,16 +24,15 @@ func CreateTransaction(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	var autoCreate auto
-	ctx.ShouldBindBodyWith(&autoCreate, binding.JSON)
+	var auto common.Auto
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	recID := int(time.Now().Unix())
 	transaction.RecID = &recID
 	transaction.BookName = n
 	transaction.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
-		DB: bk.MongoDBClient,
-		Context: context.WithValue(context.WithValue(context.Background(), "book_name", n),
-			"auto_create", autoCreate.Auto),
+		DB:         bk.MongoDBClient,
+		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		TableModel: transaction,
 	})
 	return
@@ -77,12 +70,12 @@ func UpdateTransaction(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	var autoUpdate auto
+	var auto common.Auto
 	//ctx.ShouldBindBodyWith(&autoUpdate, binding.JSON) TODO 考虑是否自动级联更新?
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB: bk.MongoDBClient,
-		Context: context.WithValue(context.WithValue(context.Background(), "book_name", n),
-			"auto_update", autoUpdate.Auto),
+		DB:      bk.MongoDBClient,
+		Context: auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+
 		TableModel: transaction,
 		RecID:      *transaction.RecID,
 	})
@@ -95,8 +88,8 @@ func DeleteTransaction(ctx *gin.Context) {
 		return
 	}
 
-	var autoDelete auto
-	ctx.ShouldBindBodyWith(&autoDelete, binding.JSON)
+	var auto common.Auto
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	var transaction mongo_model.Transaction
 	err := ctx.ShouldBindBodyWith(&transaction, binding.JSON)
 	if err != nil || transaction.RecID == nil {
@@ -105,9 +98,9 @@ func DeleteTransaction(ctx *gin.Context) {
 		return
 	}
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB: bk.MongoDBClient,
-		Context: context.WithValue(context.WithValue(context.Background(), "book_name", n),
-			"auto_create", autoDelete.Auto),
+		DB:      bk.MongoDBClient,
+		Context: auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+
 		TableModel: transaction,
 		RecID:      *transaction.RecID,
 	})

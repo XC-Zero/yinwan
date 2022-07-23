@@ -8,7 +8,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
-	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
@@ -23,7 +22,7 @@ func CreateProvider(ctx *gin.Context) {
 	var provider mysql_model.Provider
 	err := ctx.ShouldBindBodyWith(&provider, binding.JSON)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), "provider errors ")
+		logger.Error(errors.WithStack(err), "provider errors ")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}

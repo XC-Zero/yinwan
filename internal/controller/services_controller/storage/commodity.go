@@ -175,6 +175,11 @@ func SelectCommodityDetail(ctx *gin.Context) {
 			ColumnValue: ctx.PostForm("commodity_type_id"),
 		},
 		{
+			mysql.GREATER_THEN,
+			"commodity_batch_surplus_number",
+			ctx.PostForm("commodity_batch_surplus_number"),
+		},
+		{
 			Symbol:      mysql.NULL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",

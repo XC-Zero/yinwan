@@ -14,10 +14,12 @@ import (
 )
 
 func CreatePurchase(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
+	var auto common.Auto
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	var purchase mongo_model.Purchase
 	err := ctx.ShouldBindBodyWith(&purchase, binding.JSON)
 	if err != nil {
@@ -26,11 +28,11 @@ func CreatePurchase(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	purchase.RecID = &recID
-	purchase.BookName = bookName
+	purchase.BookName = n
 	purchase.BookNameID = bk.StorageName
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         client.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", bookName),
+		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		TableModel: purchase,
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
@@ -82,9 +84,9 @@ func UpdatePurchase(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-
+	var auto common.Auto
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	temp := mongo_model.Purchase{}
-
 	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
 	if err != nil || temp.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -92,7 +94,7 @@ func UpdatePurchase(ctx *gin.Context) {
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		RecID:      *temp.RecID,
 		TableModel: temp,
 	})
@@ -104,15 +106,20 @@ func DeletePurchase(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
+	var auto common.Auto
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
+
 	var stockOutRecord mongo_model.Purchase
+
 	recID, err := strconv.Atoi(ctx.PostForm("purchase_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	stockOutRecord.RecID = &recID
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		RecID:      recID,
 		TableModel: stockOutRecord,
 	})

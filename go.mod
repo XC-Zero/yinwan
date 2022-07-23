@@ -4,10 +4,9 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.31.1
-	github.com/devfeel/mapper v0.7.10
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dollarkillerx/urllib v1.13.16
 	github.com/fsnotify/fsnotify v1.5.1
-	github.com/fwhezfwhez/errorx v1.1.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/v7 v7.4.1
@@ -34,7 +33,6 @@ require (
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/eapache/go-resiliency v1.2.0 // indirect
@@ -46,7 +44,6 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.1.1 // indirect

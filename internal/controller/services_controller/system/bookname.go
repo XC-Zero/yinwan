@@ -11,7 +11,6 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
-	"github.com/fwhezfwhez/errorx"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/minio/minio-go/v7"
@@ -167,13 +166,13 @@ func AddBookName(bookName string) (status bool) {
 	config2.CONFIG.BookNameConfig = append(config2.CONFIG.BookNameConfig, cfg)
 	err = config2.SaveBookConfig(config2.CONFIG)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时写入配置文件失败! "))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("新建账套时写入配置文件失败! "))
 		return false
 	}
 	logger.Info(fmt.Sprintf("新建账套成功，账套名为 %s ", cfg.BookName))
 	err = client.InitBookMap(config2.CONFIG.BookNameConfig)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("初始化账套 (%s) 客户端失败! ", cfg.BookName))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("初始化账套 (%s) 客户端失败! ", cfg.BookName))
 	}
 	bk, ok := client.ReadBookMap(bookName)
 	if !ok {
@@ -239,7 +238,7 @@ func createMysqlDataBase(name string) error {
 	)
 	err := client.MysqlClient.Exec(createSQL).Error
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时创建 Mysql Database 失败! "))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("新建账套时创建 Mysql Database 失败! "))
 		return err
 	}
 	logger.Info(fmt.Sprintf("新建账套时创建 Mysql Database（%s） 成功! ", name))
@@ -254,7 +253,7 @@ func createBucket(name string) error {
 	// 创建 minio bucket
 	exists, err := client.MinioClient.BucketExists(context.TODO(), name)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时查询 Minio 桶失败! "))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("新建账套时查询 Minio 桶失败! "))
 		return err
 	}
 	if !exists {
@@ -263,11 +262,11 @@ func createBucket(name string) error {
 			ObjectLocking: false,
 		})
 		if err != nil {
-			logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时创建 Minio 桶失败! "))
+			logger.Error(errors.WithStack(err), fmt.Sprintf("新建账套时创建 Minio 桶失败! "))
 			return err
 		}
 	} else {
-		logger.Waring(errorx.Empty(), fmt.Sprintf("新建账套时创建 Minio 桶已存在! "))
+		logger.Waring(nil, fmt.Sprintf("新建账套时创建 Minio 桶已存在! "))
 	}
 
 	logger.Info(fmt.Sprintf("新建账套时创建 Minio 桶(%s)成功! ", name))
@@ -277,7 +276,7 @@ func createBucket(name string) error {
 func deleteBucket(name string) {
 	exists, err := client.MinioClient.BucketExists(context.TODO(), name)
 	if err != nil {
-		logger.Error(errorx.MustWrap(err), fmt.Sprintf("新建账套时查询 Minio 桶失败! "))
+		logger.Error(errors.WithStack(err), fmt.Sprintf("新建账套时查询 Minio 桶失败! "))
 		return
 	}
 	if exists {

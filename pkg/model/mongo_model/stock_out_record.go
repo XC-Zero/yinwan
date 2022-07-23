@@ -133,7 +133,7 @@ func (m *StockOutRecord) BeforeInsert(ctx context.Context) error {
 				continue
 			}
 			query := tx.Model(&model).Select(surplusColumnName).Where("rec_id = ?", contentList[i].RelatedBatchID)
-			err := tx.WithContext(ctx).UpdateColumn(surplusColumnName, gorm.Expr(" ? + ?", query, contentList[i].Num)).
+			err := tx.WithContext(ctx).UpdateColumn(surplusColumnName, gorm.Expr(" ? - ?", query, contentList[i].Num)).
 				Where("rec_id = ?", contentList[i].RelatedBatchID).Error
 			if err != nil {
 				return err
@@ -148,7 +148,7 @@ func (m *StockOutRecord) BeforeInsert(ctx context.Context) error {
 	return nil
 }
 
-// BeforeUpdate todo !!!! 前后对比!!!
+// BeforeUpdate
 //	 todo 前端禁止! 修改时不允许新增!!!! 不允许修改批次号!!! 除了数量啥也不能改!!!! 可以删!!!
 func (m *StockOutRecord) BeforeUpdate(ctx context.Context) error {
 	var redStockRecord = *m
@@ -196,7 +196,8 @@ func (m *StockOutRecord) BeforeUpdate(ctx context.Context) error {
 	}
 	remark := fmt.Sprintf("此为系统根据 [修改] 编号为: [%d] 所创建的(红字)出库单", *m.RecID)
 	redStockRecord.Remark = &remark
-
+	redStockRecord.StockOutRecordOwnerID = 0
+	redStockRecord.StockOutRecordOwnerName = "系统"
 	_, err = bk.MongoDBClient.Collection(m.TableName()).InsertOne(ctx, redStockRecord)
 	if err != nil {
 		return err
@@ -224,10 +225,12 @@ func (m *StockOutRecord) BeforeRemove(ctx context.Context) error {
 
 	remark := fmt.Sprintf("此为系统根据 [删除] 编号为: [%d] 所创建的(红字)出库单", *m.RecID)
 	m.Remark = &remark
+	m.StockOutRecordOwnerID = 0
+	m.StockOutRecordOwnerName = "系统"
 	_, err := bk.MongoDBClient.Collection(m.TableName()).InsertOne(ctx, m)
 	if err != nil {
 		return err
 	}
-	// 撤销删除,换为新增红字
+	// 撤销删除,换为新增红字 TODO 真的会取消吗??
 	return myMongo.CancelError
 }
