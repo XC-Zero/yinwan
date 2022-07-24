@@ -1,19 +1,36 @@
 package _const
 
-import (
-	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
-	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
-)
-
 type InvoiceType string
 
+var InvoiceTypeList = []map[string]interface{}{
+	{
+		"invoice_type": PURCHASE_INVOICE,
+		"label":        PURCHASE_INVOICE.Display(),
+	}, {
+		"invoice_type": TRANSACTION_INVOICE,
+		"label":        TRANSACTION_INVOICE.Display(),
+	}, {
+		"invoice_type": RETURN_INVOICE,
+		"label":        RETURN_INVOICE.Display(),
+	}, {
+		"invoice_type": PAYABLE_INVOICE,
+		"label":        PAYABLE_INVOICE.Display(),
+	}, {
+		"invoice_type": RECIVEABLE_INVOICE,
+		"label":        RECIVEABLE_INVOICE.Display(),
+	}, {
+		"invoice_type": ASSEMBLE_INVOICE,
+		"label":        ASSEMBLE_INVOICE.Display(),
+	},
+}
+
 var (
-	PURCHASE_INVOICE    = InvoiceType(mongo_model.Purchase{}.TableName())
-	TRANSACTION_INVOICE = InvoiceType(mongo_model.Transaction{}.TableName())
-	RETURN_INVOICE      = InvoiceType(mongo_model.Return{}.TableName())
-	PAYABLE_INVOICE     = InvoiceType(mysql_model.Payable{}.TableName())
-	RECIVEABLE_INVOICE  = InvoiceType(mysql_model.Receivable{}.TableName())
-	ASSEMBLE_INVOICE    = InvoiceType(mongo_model.Assemble{}.TableName())
+	PURCHASE_INVOICE    = InvoiceType("purchases")
+	TRANSACTION_INVOICE = InvoiceType("transactions")
+	RETURN_INVOICE      = InvoiceType("returns")
+	PAYABLE_INVOICE     = InvoiceType("payables")
+	RECIVEABLE_INVOICE  = InvoiceType("reciveables")
+	ASSEMBLE_INVOICE    = InvoiceType("assembles")
 	//PURCHASE_INVOICE    = mongo_model.Purchase{}.TableName()
 	//PURCHASE_INVOICE    = mongo_model.Purchase{}.TableName()
 )

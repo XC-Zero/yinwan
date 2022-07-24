@@ -44,5 +44,8 @@ func TransMysqlOperatorSymbol(symbol OperatorSymbol, column string, value interf
 	//case LESS_THAN_EQUAL:
 	//
 	//}
+	if value == bson.TypeNull {
+		value = nil
+	}
 	return bson.E{Key: column, Value: bson.M{string(symbol): value}}
 }

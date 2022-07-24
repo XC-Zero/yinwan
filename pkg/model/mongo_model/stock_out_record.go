@@ -20,8 +20,8 @@ import (
 type StockOutRecord struct {
 	BasicModel              `bson:"inline"`
 	BookNameInfo            `bson:"-"`
-	StockOutRecordOwnerID   int                  `json:"stock_out_record_owner_id" form:"stock_out_record_owner_id" bson:"stock_out_record_owner_id"`
-	StockOutRecordOwnerName string               `json:"stock_out_record_owner_name" form:"stock_out_record_owner_name" bson:"stock_out_record_owner_name"`
+	StockOutRecordOwnerID   *int                 `json:"stock_out_record_owner_id,omitempty" form:"stock_out_record_owner_id,omitempty" bson:"stock_out_record_owner_id,omitempty"`
+	StockOutRecordOwnerName *string              `json:"stock_out_record_owner_name,omitempty" form:"stock_out_record_owner_name,omitempty" bson:"stock_out_record_owner_name,omitempty"`
 	StockOutRecordType      string               `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
 	StockOutWarehouseID     *int                 `json:"stock_out_warehouse_id,omitempty" form:"stock_out_warehouse_id,omitempty" bson:"stock_out_warehouse_id"`
 	StockOutWarehouseName   *string              `json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
@@ -195,9 +195,10 @@ func (m *StockOutRecord) BeforeUpdate(ctx context.Context) error {
 		redStockRecord.StockOutRecordContent = append(redStockRecord.StockOutRecordContent, tmp)
 	}
 	remark := fmt.Sprintf("此为系统根据 [修改] 编号为: [%d] 所创建的(红字)出库单", *m.RecID)
+	id, name := 0, "系统"
 	redStockRecord.Remark = &remark
-	redStockRecord.StockOutRecordOwnerID = 0
-	redStockRecord.StockOutRecordOwnerName = "系统"
+	redStockRecord.StockOutRecordOwnerID = &id
+	redStockRecord.StockOutRecordOwnerName = &name
 	_, err = bk.MongoDBClient.Collection(m.TableName()).InsertOne(ctx, redStockRecord)
 	if err != nil {
 		return err
@@ -224,9 +225,10 @@ func (m *StockOutRecord) BeforeRemove(ctx context.Context) error {
 	}
 
 	remark := fmt.Sprintf("此为系统根据 [删除] 编号为: [%d] 所创建的(红字)出库单", *m.RecID)
+	id, name := 0, "系统"
 	m.Remark = &remark
-	m.StockOutRecordOwnerID = 0
-	m.StockOutRecordOwnerName = "系统"
+	m.StockOutRecordOwnerID = &id
+	m.StockOutRecordOwnerName = &name
 	_, err := bk.MongoDBClient.Collection(m.TableName()).InsertOne(ctx, m)
 	if err != nil {
 		return err

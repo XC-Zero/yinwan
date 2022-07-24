@@ -39,8 +39,8 @@ type stockRecordContent struct {
 
 // 关联相关单据
 type relatedInvoice struct {
-	InvoiceTye _const.InvoiceType `json:"invoice_tye" form:"invoice_tye" bson:"invoice_tye" cn:"单据类型"`
-	InvoiceID  int                `json:"invoice_id" form:"invoice_id" bson:"invoice_id" cn:"单据编号"`
+	InvoiceType _const.InvoiceType `json:"invoice_type" form:"invoice_tye" bson:"invoice_tye" cn:"单据类型"`
+	InvoiceID   int                `json:"invoice_id" form:"invoice_id" bson:"invoice_id" cn:"单据编号"`
 }
 
 //func (s *stockRecordContent) TransferByContentType() interface{} {

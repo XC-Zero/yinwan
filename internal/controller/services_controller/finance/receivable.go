@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
+	"log"
 	"strconv"
 )
 
@@ -41,7 +42,8 @@ func SelectReceivable(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-
+	date := ctx.PostForm("receivable_date")
+	log.Println("receivable_date is ", date)
 	conditions := []common.MysqlCondition{
 		{
 			Symbol:      mysql.EQUAL,
@@ -56,7 +58,7 @@ func SelectReceivable(ctx *gin.Context) {
 		{
 			Symbol:      mysql.GREATER_THEN_EQUAL,
 			ColumnName:  "receivable_date",
-			ColumnValue: ctx.PostForm("receivable_date"),
+			ColumnValue: date,
 		},
 		{
 			Symbol:      mysql.LESS_THAN_EQUAL,

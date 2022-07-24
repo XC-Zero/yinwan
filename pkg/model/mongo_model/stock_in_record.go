@@ -155,7 +155,7 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 					Remark:                      &remark,
 				}
 			} else {
-				continue
+				return errors.New("未选择入库物品类型!")
 			}
 			err := tx.WithContext(context.WithValue(context.Background(), relateID, content.RecID)).
 				Create(&model).Error

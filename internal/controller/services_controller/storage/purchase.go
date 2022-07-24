@@ -3,12 +3,13 @@ package storage
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"log"
 	"strconv"
 	"time"
 )
@@ -19,10 +20,14 @@ func CreatePurchase(ctx *gin.Context) {
 		return
 	}
 	var auto common.Auto
-	ctx.ShouldBindBodyWith(&auto, binding.JSON)
-	var purchase mongo_model.Purchase
-	err := ctx.ShouldBindBodyWith(&purchase, binding.JSON)
+	err := ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	if err != nil {
+		log.Println(errors.WithStack(err))
+	}
+	var purchase mongo_model.Purchase
+	err = ctx.ShouldBindBodyWith(&purchase, binding.JSON)
+	if err != nil {
+		log.Println(errors.WithStack(err))
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
@@ -31,7 +36,7 @@ func CreatePurchase(ctx *gin.Context) {
 	purchase.BookName = n
 	purchase.BookNameID = bk.StorageName
 	op := common.CreateMongoDBTemplateOptions{
-		DB:         client.MongoDBClient,
+		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		TableModel: purchase,
 	}
@@ -48,7 +53,7 @@ func SelectPurchase(ctx *gin.Context) {
 		{
 			my_mongo.EQUAL,
 			"rec_id",
-			ctx.PostForm("stock_in_record_id"),
+			ctx.PostForm("purchase_id"),
 		},
 		{
 			my_mongo.EQUAL,
@@ -62,13 +67,18 @@ func SelectPurchase(ctx *gin.Context) {
 		},
 		{
 			my_mongo.EQUAL,
-			"stock_in_warehouse_id",
-			ctx.PostForm("stock_in_warehouse_id"),
+			"purchase_owner_id",
+			ctx.PostForm("purchase_owner_id"),
 		},
 		{
-			my_mongo.EQUAL,
-			"stock_in_record_owner_id",
-			ctx.PostForm("stock_in_record_owner_id"),
+			my_mongo.LIKE,
+			"purchase_owner_name",
+			ctx.PostForm("purchase_owner_name"),
+		},
+		{
+			my_mongo.LIKE,
+			"purchase_name",
+			ctx.PostForm("purchase_name"),
 		},
 	}
 	options := common.SelectMongoDBTemplateOptions{

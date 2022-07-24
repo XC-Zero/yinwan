@@ -54,7 +54,7 @@ func SelectStockOut(ctx *gin.Context) {
 		{
 			my_mongo.EQUAL,
 			"rec_id",
-			ctx.PostForm("stock_in_record_id"),
+			ctx.PostForm("stock_out_record_id"),
 		},
 		{
 			my_mongo.NOT_EQUAL,
@@ -128,12 +128,18 @@ func DeleteStockOut(ctx *gin.Context) {
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      recID,
 		TableModel: stockOutRecord,
-		PreFunc:    nil,
 	})
 	return
 }
 
+// SelectStockOutType 查询出库类型
 func SelectStockOutType(ctx *gin.Context) {
 	common.SelectSuccessTemplate(ctx, int64(len(_const.StockOutTypeList)), _const.StockInTypeList)
+	return
+}
+
+// SelectInvoiceType 查询单据类型
+func SelectInvoiceType(ctx *gin.Context) {
+	common.SelectSuccessTemplate(ctx, int64(len(_const.InvoiceTypeList)), _const.InvoiceTypeList)
 	return
 }

@@ -107,6 +107,8 @@ func Starter() {
 			storage.POST("/update_stock_out", storage3.UpdateStockOut)
 			storage.POST("/delete_stock_out", storage3.DeleteStockOut)
 			storage.POST("/select_stock_out_type", storage3.SelectStockOutType)
+			storage.POST("/select_invoice_type", storage3.SelectInvoiceType)
+
 		}
 		// 仓库
 		{

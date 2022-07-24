@@ -55,7 +55,7 @@ func SelectStockIn(ctx *gin.Context) {
 			ctx.PostForm("stock_in_record_id"),
 		},
 		{
-			my_mongo.NOT_EQUAL,
+			my_mongo.EQUAL,
 			"deleted_at",
 			bsontype.Null,
 		},
@@ -110,7 +110,7 @@ func DeleteStockIn(ctx *gin.Context) {
 	if bk == nil {
 		return
 	}
-	var stockOutRecord mongo_model.StockInRecord
+	var stockInRecord mongo_model.StockInRecord
 	recID, err := strconv.Atoi(ctx.PostForm("stock_in_record_id"))
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -120,7 +120,7 @@ func DeleteStockIn(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      recID,
-		TableModel: stockOutRecord,
+		TableModel: stockInRecord,
 	})
 	return
 }

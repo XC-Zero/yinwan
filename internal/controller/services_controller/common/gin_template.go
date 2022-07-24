@@ -2,7 +2,6 @@ package common
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -343,15 +342,9 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	}
 	filter := bson.D{}
 	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
-	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: gorm.DeletedAt(sql.NullTime{
-		Valid: true,
-		Time:  time.Now(),
-	})}}})
-	if err != nil {
-		return
-	}
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: time.Now()}}})
 
-	if err != nil {
+	if err != nil && err != myMongo.CancelError {
 		logger.Error(errors.WithStack(err), "Mongo 软删除失败! 表:"+en)
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return
