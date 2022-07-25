@@ -6,6 +6,7 @@ import (
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
@@ -196,6 +197,7 @@ func (p *Purchase) BeforeUpdate(ctx context.Context) error {
 
 // BeforeRemove 采购同步删除应付
 func (p *Purchase) BeforeRemove(ctx context.Context) error {
+
 	flag, ok := ctx.Value("auto").(bool)
 	if !ok || (ok && !flag) {
 		return nil
@@ -208,10 +210,11 @@ func (p *Purchase) BeforeRemove(ctx context.Context) error {
 	if p.RecID == nil || bk.StorageName == "" {
 		return errors.New("缺少主键！")
 	}
+
 	err := bk.MysqlClient.WithContext(ctx).Delete(&mysql_model.Payable{}).Where("purchase_id = ?", p.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "同步删除应收记录失败!")
 		return err
 	}
-	return nil
+	return mongo.CancelError
 }

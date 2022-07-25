@@ -130,8 +130,9 @@ var (
 	MysqlClient    *gorm.DB
 	MinioClient    *minio.Client
 	InfluxDBClient *influxdb2.Client
-	MongoDBClient  *qmgo.Database
-	KafkaClient    *sarama.Client
+	MongoDBClient  *qmgo.Client
+
+	KafkaClient *sarama.Client
 )
 
 // InitSystemStorage 初始化系统配置
@@ -146,7 +147,7 @@ func InitSystemStorage(config config.StorageConfig) {
 	if err != nil {
 		panic(err)
 	}
-	mgClient, err := InitMongoDB(config.MongoDBConfig)
+	mgClient, err := InitMongoClient(config.MongoDBConfig)
 	if err != nil {
 		panic(err)
 	}

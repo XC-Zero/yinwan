@@ -217,7 +217,8 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	logger.Info(fmt.Sprintf(" filter is %+v", filter))
 	c, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	err := tx.Find(c, filter).Sort(orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
+	// - 是降序 ,+ 是升序
+	err := tx.Find(c, filter).Sort("-" + orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
 
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
@@ -342,7 +343,7 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	}
 	filter := bson.D{}
 	filter = append(filter, myMongo.TransMysqlOperatorSymbol(myMongo.EQUAL, "rec_id", op.RecID))
-	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{Key: "$set", Value: bson.E{Key: "delete_at", Value: time.Now()}}})
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{Key: "$set", Value: bson.E{Key: "deleted_at", Value: time.Now()}}})
 
 	if err != nil && err != myMongo.CancelError {
 		logger.Error(errors.WithStack(err), "Mongo 软删除失败! 表:"+en)
@@ -354,12 +355,11 @@ func DeleteOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		err := client.DeleteFromIndex(v, &op.RecID, op.Context)
 		if err != nil {
 			logger.Error(errors.WithStack(err), "Mongo 同步删除es 失败! 表:"+en)
-
 			InternalDataBaseErrorTemplate(ctx, DATABASE_DELETE_ERROR, data)
 			return
 		}
 	}
-	mes := fmt.Sprintf("更新%s信息成功！", data.TableCnName())
+	mes := fmt.Sprintf("删除%s信息成功！", data.TableCnName())
 	logger.Info(mes)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return

@@ -44,22 +44,19 @@ type Transaction struct {
 	TransactionContent      []transactionContent `json:"transaction_content" form:"transaction_content" bson:"transaction_content" cn:"销售详情"`
 	TransactionAmount       string               `json:"transaction_amount" form:"transaction_amount" bson:"transaction_amount" cn:"销售金额"`
 	TransactionActualAmount string               `json:"transaction_actual_amount" form:"transaction_actual_amount" bson:"transaction_actual_amount" cn:"实际收款金额"`
-	CustomerID              *int                 `json:"customer_id" form:"customer_id" bson:"customer_id" `
-	CustomerName            *string              `json:"customer_name,omitempty" form:"customer_name,omitempty" json:"customer_name"`
+	CustomerID              *int                 `json:"customer_id" form:"customer_id" bson:"customer_id" cn:"客户编号"`
+	CustomerName            *string              `json:"customer_name,omitempty" form:"customer_name,omitempty" json:"customer_name" cn:"客户姓名"`
 	TransactionOwnerID      *int                 `json:"transaction_owner_id,omitempty" form:"transaction_owner_id" bson:"transaction_owner_id" cn:"销售管理员ID"`
 	TransactionOwnerName    *string              `json:"transaction_owner_name,omitempty" form:"transaction_owner_name" bson:"transaction_owner_name" cn:"销售管理员姓名"`
 	TransactionTime         *string              `json:"transaction_time,omitempty" form:"transaction_time" bson:"transaction_time" cn:"交易时间"`
-	ReceiveID               *int                 `json:"receive_id,omitempty" form:"receive_id" bson:"receive_id" cn:"应收记录"`
+	ReceiveID               *int                 `json:"receive_id,omitempty" form:"receive_id" bson:"receive_id" cn:"关联应收记录"`
 	Remark                  *string              `json:"remark,omitempty" form:"remark" bson:"remark" cn:"备注"`
 }
 
 type transactionContent struct {
-	CommodityID         int     `bson:"commodity_id" json:"commodity_id" form:"commodity_id" cn:"货品ID"`
-	CommodityName       string  `bson:"commodity_name" json:"commodity_name" form:"commodity_name"`
-	CommodityNum        int     `bson:"commodity_num" json:"commodity_num" form:"commodity_num" cn:""`
-	CommodityUnitPrice  string  `bson:"commodity_unit_price" json:"commodity_unit_price" form:"commodity_unit_price" cn:"货品单价"`
-	CommodityTotalPrice string  `bson:"commodity_total_price" json:"commodity_total_price" form:"commodity_total_price" cn:"货品总价"`
-	Remark              *string `json:"remark,omitempty" form:"remark" bson:"remark" cn:"备注"`
+	stockRecordContent
+	TransactionPrice      string `json:"transaction_price" form:"transaction_price" bson:"transaction_price" cn:"售价"`
+	TransactionTotalPrice string `json:"transaction_total_price" form:"transaction_total_price" bson:"transaction_total_price" cn:"售价合计"`
 }
 
 func (t Transaction) Mapping() map[string]interface{} {

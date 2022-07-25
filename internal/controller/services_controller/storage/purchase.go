@@ -35,6 +35,7 @@ func CreatePurchase(ctx *gin.Context) {
 	purchase.RecID = &recID
 	purchase.BookName = n
 	purchase.BookNameID = bk.StorageName
+	purchase.CreatedAt = time.Now().String()
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
@@ -102,6 +103,8 @@ func UpdatePurchase(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	now := time.Now().String()
+	temp.UpdatedAt = &now
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),

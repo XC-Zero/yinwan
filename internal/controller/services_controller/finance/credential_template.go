@@ -3,9 +3,8 @@ package finance
 import (
 	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
-	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
-	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
+	"github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"strconv"
@@ -15,6 +14,11 @@ import (
 // todo !!! 凭证模板
 
 func CreateCredentialTemplate(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
 	var credentialTemplate mongo_model.CredentialTemplate
 	err := ctx.ShouldBindBodyWith(&credentialTemplate, binding.JSON)
 	if err != nil || credentialTemplate.RecID == nil {
@@ -23,45 +27,57 @@ func CreateCredentialTemplate(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	credentialTemplate.RecID = &recID
-	credentialTemplate.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
+	credentialTemplate.CreatedAt = time.Now().String()
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
-		DB:         client.MongoDBClient,
-		Context:    context.TODO(),
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: mongo_model.CredentialTemplate{},
 		NotSyncES:  true,
 	})
 }
 func SelectCredentialTemplate(ctx *gin.Context) {
+	bk, _ := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 
-	conditions := []common.MysqlCondition{
+	conditions := []common.MongoCondition{
 		{
-			Symbol:      mysql.EQUAL,
+			Symbol:      mongo.EQUAL,
 			ColumnName:  "rec_id",
 			ColumnValue: ctx.PostForm("credential_template_id"),
 		},
 		{
-			Symbol:      mysql.NULL,
+			Symbol:      mongo.NOT_EQUAL,
 			ColumnName:  "deleted_at",
 			ColumnValue: " ",
 		},
 	}
 
-	common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{
-		DB:         client.MysqlClient,
+	common.SelectMongoDBTableContentWithCountTemplate(ctx, common.SelectMongoDBTemplateOptions{
+		DB:         bk.MongoDBClient,
 		TableModel: mongo_model.CredentialTemplate{},
 	}, conditions...)
 
 }
 func UpdateCredentialTemplate(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+
 	var credentialTemplate mongo_model.CredentialTemplate
 	err := ctx.ShouldBindBodyWith(&credentialTemplate, binding.JSON)
 	if err != nil || credentialTemplate.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+	now := time.Now().String()
+	credentialTemplate.UpdatedAt = &now
+
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB:         client.MongoDBClient,
-		Context:    context.TODO(),
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: credentialTemplate,
 		RecID:      *credentialTemplate.RecID,
 		NotSyncES:  true,
@@ -70,6 +86,10 @@ func UpdateCredentialTemplate(ctx *gin.Context) {
 
 }
 func DeleteCredentialTemplate(ctx *gin.Context) {
+	bk, n := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
 	var credentialTemplate mongo_model.CredentialTemplate
 	recID, err := strconv.Atoi(ctx.PostForm("credential_template_id"))
 	if err != nil || recID == 0 {
@@ -78,8 +98,8 @@ func DeleteCredentialTemplate(ctx *gin.Context) {
 	}
 	credentialTemplate.RecID = &recID
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
-		DB:         client.MongoDBClient,
-		Context:    context.TODO(),
+		DB:         bk.MongoDBClient,
+		Context:    context.WithValue(context.Background(), "book_name", n),
 		TableModel: credentialTemplate,
 		RecID:      recID,
 		NotSyncES:  true,

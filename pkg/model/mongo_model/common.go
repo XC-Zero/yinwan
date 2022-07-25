@@ -33,7 +33,7 @@ type stockRecordContent struct {
 	Num            int                     `json:"num" form:"num" bson:"num" cn:"产品或原材料编号"`
 	Price          string                  `json:"price" form:"price" bson:"price" cn:"产品或原材料单价"`
 	TotalPrice     string                  `json:"total_price" form:"total_price" bson:"total_price" cn:"产品或原材料总价"`
-	RelatedBatchID int                     `json:"related_batch_id" form:"related_batch_id" bson:"related_batch_id" cn:"产品或原材料批次编号"`
+	RelatedBatchID *int                    `json:"related_batch_id,omitempty" form:"related_batch_id,omitempty" bson:"related_batch_id,omitempty" cn:"产品或原材料批次编号"`
 	ContentType    _const.StockContentType `json:"content_type" form:"content_type" bson:"content_type" cn:"产品/原材料"`
 }
 
