@@ -18,6 +18,8 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"github.com/qiniu/qmgo"
+	"github.com/qiniu/qmgo/hook"
+	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm"
 	"log"
@@ -52,6 +54,7 @@ type Auto struct {
 }
 
 func (auto Auto) WithContext(ctx context.Context) context.Context {
+	logger.Info("auto is " + strconv.FormatBool(auto.Auto))
 	return context.WithValue(ctx, "auto", auto.Auto)
 }
 
@@ -257,7 +260,12 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		RequestParamErrorTemplate(ctx, REQUEST_PARM_ERROR)
 		return
 	}
-	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data)
+	_, ok := data.(hook.BeforeInsertHook)
+	logger.Info(fmt.Sprintf("data type is %T,dataPtr data is %T", data, data))
+	logger.Info(fmt.Sprintf("this assert to before insert is %t\n", ok))
+	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data, options.InsertOneOptions{
+		InsertHook: data,
+	})
 
 	if err != nil && err != myMongo.CancelError {
 		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
@@ -273,7 +281,14 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 			return
 		}
 	}
-	id := reflect.ValueOf(data).Field(0).FieldByName("RecID").Interface().(*int)
+	var id *int
+	idv := reflect.ValueOf(data)
+	switch reflect.TypeOf(data).Kind() {
+	case reflect.Ptr:
+		id = idv.Elem().Field(0).FieldByName("RecID").Interface().(*int)
+	default:
+		id = idv.Field(0).FieldByName("RecID").Interface().(*int)
+	}
 	mes := fmt.Sprintf("新建%s成功,编号为%d", data.TableCnName(), id)
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg(mes))
 	return
@@ -293,6 +308,9 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		logger.Waring(errors.New("This struct is empty! "), "这里尝试更新,但空结构体~")
 		ctx.JSON(_const.OK, errs.CreateSuccessMsg(fmt.Sprintf("更新%s信息成功！", data.TableCnName())))
 		return
+	}
+	if objT.Kind() == reflect.Ptr {
+		objV = objV.Elem()
 	}
 	omitMap := tools.StringSliceToMap(op.OmitList)
 	for i := 0; i < objT.NumField(); i++ {
@@ -314,7 +332,9 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 		}
 
 	}
-	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{"$set", update}})
+	err := op.DB.Collection(op.TableModel.TableName()).UpdateOne(op.Context, filter, bson.D{{"$set", update}}, options.UpdateOptions{
+		UpdateHook: data,
+	})
 	if err != nil && err != myMongo.CancelError {
 		InternalDataBaseErrorTemplate(ctx, DATABASE_UPDATE_ERROR, data)
 		return

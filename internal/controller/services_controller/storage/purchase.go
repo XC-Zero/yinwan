@@ -24,6 +24,7 @@ func CreatePurchase(ctx *gin.Context) {
 	if err != nil {
 		log.Println(errors.WithStack(err))
 	}
+
 	var purchase mongo_model.Purchase
 	err = ctx.ShouldBindBodyWith(&purchase, binding.JSON)
 	if err != nil {
@@ -39,7 +40,7 @@ func CreatePurchase(ctx *gin.Context) {
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
-		TableModel: purchase,
+		TableModel: &purchase,
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
 	return
@@ -109,7 +110,7 @@ func UpdatePurchase(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		RecID:      *temp.RecID,
-		TableModel: temp,
+		TableModel: &temp,
 	})
 	return
 

@@ -119,14 +119,14 @@ func (m *StockOutRecord) BeforeInsert(ctx context.Context) error {
 				surplusColumnName = "material_batch_surplus_number"
 				model = mysql_model.MaterialBatch{
 					BasicModel: mysql_model.BasicModel{
-						RecID: &contentList[i].RelatedBatchID,
+						RecID: contentList[i].RelatedBatchID,
 					},
 				}
 			} else if contentList[i].ContentType == _const.COMMODITY {
 				surplusColumnName = "commodity_batch_surplus_number"
 				model = mysql_model.CommodityBatch{
 					BasicModel: mysql_model.BasicModel{
-						RecID: &contentList[i].RelatedBatchID,
+						RecID: contentList[i].RelatedBatchID,
 					},
 				}
 			} else {

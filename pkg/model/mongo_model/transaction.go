@@ -177,11 +177,6 @@ func (t *Transaction) BeforeInsert(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		err := client.PutIntoIndex(t)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 

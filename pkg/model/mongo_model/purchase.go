@@ -2,6 +2,7 @@ package mongo_model
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
@@ -129,6 +130,7 @@ func (p Purchase) TableName() string {
 // BeforeInsert 同步创建应收
 func (p *Purchase) BeforeInsert(ctx context.Context) error {
 	flag, ok := ctx.Value("auto").(bool)
+	logger.Info(fmt.Sprintf("flag is %t ,ok is %t", flag, ok))
 	if !ok || (ok && !flag) {
 		return nil
 	}
