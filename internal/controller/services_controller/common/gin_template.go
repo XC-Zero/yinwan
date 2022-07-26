@@ -18,7 +18,6 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
 	"github.com/qiniu/qmgo"
-	"github.com/qiniu/qmgo/hook"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm"
@@ -198,7 +197,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	}
 	var orderColumn string
 	if orderColumn == "" {
-		orderColumn = "rec_id"
+		orderColumn = "-rec_id"
 	}
 	if op.DB == nil {
 		logger.Error(errors.New("mongo client is nil"), "表名为:"+op.TableModel.TableName())
@@ -221,7 +220,7 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 	c, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	// - 是降序 ,+ 是升序
-	err := tx.Find(c, filter).Sort("-" + orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
+	err := tx.Find(c, filter).Sort(orderColumn).Limit(int64(limit)).Skip(int64(offset)).All(&list)
 
 	if err != nil {
 		logger.Error(errors.WithStack(err), fmt.Sprintf("Mongo查询时错误!表名为: %s ", op.TableModel.TableName()))
@@ -245,12 +244,12 @@ func SelectMongoDBTableContentWithCountTemplate(ctx *gin.Context, op SelectMongo
 			logger.Error(errors.WithStack(err), "Mongo执行Hook函数错误!表名为: "+op.TableModel.TableName())
 		}
 	}
-
 	SelectSuccessTemplate(ctx, count, res)
 	return
 }
 
 // CreateOneMongoDBRecordTemplate MongoDB 创建模板
+//	此处的 data 需为指针,不然没法触发 mongo hook
 func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOptions) {
 	var data = op.TableModel
 	if op.PreFunc != nil {
@@ -260,9 +259,6 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		RequestParamErrorTemplate(ctx, REQUEST_PARM_ERROR)
 		return
 	}
-	_, ok := data.(hook.BeforeInsertHook)
-	logger.Info(fmt.Sprintf("data type is %T,dataPtr data is %T", data, data))
-	logger.Info(fmt.Sprintf("this assert to before insert is %t\n", ok))
 	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data, options.InsertOneOptions{
 		InsertHook: data,
 	})
@@ -491,4 +487,16 @@ func HarvestClientFromContext(ctx context.Context) (*client.BookName, string) {
 		return nil, ""
 	}
 	return &bk, bk.BookName
+}
+
+func reverseSlice(data interface{}) interface{} {
+	list, ok := data.([]interface{})
+	if !ok {
+		return data
+	}
+	dataList := make([]interface{}, 0, len(list))
+	for i := len(list) - 1; i >= 0; i-- {
+		dataList = append(dataList, list[i])
+	}
+	return dataList
 }

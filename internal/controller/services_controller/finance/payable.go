@@ -72,8 +72,9 @@ func SelectPayable(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
-		TableModel: mysql_model.Payable{},
+		DB:            bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		TableModel:    mysql_model.Payable{},
+		OrderByColumn: "rec_id desc",
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)
 	return
