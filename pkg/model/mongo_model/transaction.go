@@ -41,6 +41,7 @@ func (p PayType) DisPlay() string {
 type Transaction struct {
 	BasicModel              `bson:"inline"`
 	BookNameInfo            `bson:"-"`
+	TransactionName         *string              `json:"transaction_name,omitempty" form:"transaction_name,omitempty" bson:"transaction_name,omitempty"`
 	TransactionContent      []transactionContent `json:"transaction_content" form:"transaction_content" bson:"transaction_content" cn:"销售详情"`
 	TransactionAmount       string               `json:"transaction_amount" form:"transaction_amount" bson:"transaction_amount" cn:"销售金额"`
 	TransactionActualAmount string               `json:"transaction_actual_amount" form:"transaction_actual_amount" bson:"transaction_actual_amount" cn:"实际收款金额"`

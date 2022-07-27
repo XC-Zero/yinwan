@@ -46,6 +46,31 @@ func SelectTransaction(ctx *gin.Context) {
 	}
 	conditions := []common.MongoCondition{
 		{
+			my_mongo.EQUAL,
+			"rec_id",
+			ctx.PostForm("transaction_id"),
+		},
+		{
+			my_mongo.LIKE,
+			"transaction_name",
+			ctx.PostForm("transaction_name"),
+		},
+		{
+			my_mongo.EQUAL,
+			"transaction_owner_id",
+			ctx.PostForm("transaction_owner_id"),
+		},
+		{
+			my_mongo.GREATER_THEN_EQUAL,
+			"transaction_time",
+			ctx.PostForm("transaction_time"),
+		},
+		{
+			my_mongo.LESS_THAN_EQUAL,
+			"transaction_time",
+			ctx.PostForm("transaction_time2"),
+		},
+		{
 			my_mongo.NOT_EQUAL,
 			"deleted_at",
 			bsontype.Null,
