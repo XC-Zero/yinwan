@@ -31,7 +31,7 @@ func CreateCredentialTemplate(ctx *gin.Context) {
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: mongo_model.CredentialTemplate{},
+		TableModel: &credentialTemplate,
 		NotSyncES:  true,
 	})
 }
@@ -78,7 +78,7 @@ func UpdateCredentialTemplate(ctx *gin.Context) {
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: credentialTemplate,
+		TableModel: &credentialTemplate,
 		RecID:      *credentialTemplate.RecID,
 		NotSyncES:  true,
 	})
@@ -100,7 +100,7 @@ func DeleteCredentialTemplate(ctx *gin.Context) {
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: credentialTemplate,
+		TableModel: &credentialTemplate,
 		RecID:      recID,
 		NotSyncES:  true,
 	})

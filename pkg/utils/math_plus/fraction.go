@@ -139,12 +139,17 @@ func NewFromFloatByDecimal(n, d float64) Fraction {
 }
 
 // NewFromString 从字符串创建,字符串中分子分母需为整数
+//	支持 int/int  int float
 func NewFromString(str string) (Fraction, error) {
 	fraction := Fraction{}
 	arr := strings.Split(str, "/")
 	if len(arr) == 1 {
 		n, err := strconv.Atoi(str)
 		if err != nil {
+			v, err := strconv.ParseFloat(str, 64)
+			if err == nil {
+				return FloatToFraction(v)
+			}
 			return Fraction{0, 1}, err
 		}
 		return Fraction{int64(n), 1}, nil

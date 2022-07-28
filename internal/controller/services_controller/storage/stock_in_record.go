@@ -38,7 +38,7 @@ func CreateStockIn(ctx *gin.Context) {
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
-		TableModel: temp,
+		TableModel: &temp,
 	})
 	return
 }
@@ -100,7 +100,7 @@ func UpdateStockIn(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      *temp.RecID,
-		TableModel: temp,
+		TableModel: &temp,
 	})
 
 	return
@@ -120,7 +120,7 @@ func DeleteStockIn(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 		RecID:      recID,
-		TableModel: stockInRecord,
+		TableModel: &stockInRecord,
 	})
 	return
 }

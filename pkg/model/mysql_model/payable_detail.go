@@ -1,6 +1,7 @@
 package mysql_model
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
@@ -16,7 +17,7 @@ type PayableDetail struct {
 	PayableDate         *string `gorm:"type:varchar(50)" json:"payable_date,omitempty" form:"payable_date,omitempty" cn:"付款时间"`
 	PayableContent      *string `gorm:"type:varchar(200)" json:"payable_content,omitempty" form:"payable_content,omitempty" cn:"付款内容摘要"`
 	PayableAmount       *string `gorm:"type:varchar(50)" json:"payable_amount,omitempty" form:"payable_amount,omitempty" cn:"付款金额"`
-	PayableOperatorID   *string `gorm:"type:varchar(50)" json:"payable_operator_id,omitempty" form:"payable_operator_id,omitempty" cn:"操作人编号"`
+	PayableOperatorID   *int    `json:"payable_operator_id,omitempty" form:"payable_operator_id,omitempty" cn:"操作人编号"`
 	PayableOperatorName *string `gorm:"type:varchar(50)" json:"payable_operator_name,omitempty" form:"payable_operator_name,omitempty" cn:"操作人名称"`
 	PayablePicUrlList   *string `gorm:"type:mediumtext" form:"payable_pic_url_list,omitempty" json:"payable_pic_url_list,omitempty" cn:"相关单据图片"`
 	Remark              *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark" cn:"备注"`
@@ -29,7 +30,7 @@ func (p PayableDetail) TableName() string {
 	return "payable_details"
 }
 
-// todo 修改实际付款，剩余付款，付款状态
+// AfterCreate todo 修改实际付款，剩余付款，付款状态
 func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
@@ -43,15 +44,14 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	payable.RecID = p.PayableID
 	var amountList []string
 	err := bk.MysqlClient.WithContext(tx.Statement.Context).
-		Raw("select ? from ?  where ? = ? and ? = ?",
-			"payable_amount", p.TableName(),
-			"deleted_at", "is null",
-			"payable_id", p.PayableID,
+		Raw("select payable_amount from payable_details where deleted_at is null and payable_id = ?",
+			p.PayableID,
 		).Scan(&amountList).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "查询应付记录详情失败!")
 		return err
 	}
+	logger.Info(fmt.Sprintf("amountList is %+v", amountList))
 	num := math_plus.Zero
 	for _, amount := range amountList {
 		fraction, err := math_plus.NewFromString(amount)
@@ -61,9 +61,16 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 		}
 		num = num.Add(fraction)
 	}
+	if p.PayableAmount != nil {
+		f, err := math_plus.NewFromString(*p.PayableAmount)
+		if err != nil {
+			return err
+		}
+		num = num.Add(f)
+	}
 	actualAmount := num.String()
 	//查询数据库中payable的值
-	err = bk.MysqlClient.WithContext(tx.Statement.Context).Select(&payable).Where("rec_id = ?", payable.RecID).Error
+	err = bk.MysqlClient.WithContext(tx.Statement.Context).Where("rec_id = ?", payable.RecID).Find(&payable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "应付记录查询失败!")
 		return err
@@ -88,7 +95,7 @@ func (p *PayableDetail) AfterCreate(tx *gorm.DB) error {
 	case actualAmount < *payable.PayableTotalAmount:
 		payable.PayableStatus = &partialPaid
 	}
-	err = bk.MysqlClient.WithContext(tx.Statement.Context).Updates(&payable).Where("rec_id = ?", payable.RecID).Error
+	err = bk.MysqlClient.WithContext(tx.Statement.Context).Where("rec_id = ?", payable.RecID).Updates(&payable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付记录失败!")
 		return err

@@ -7,7 +7,7 @@ import (
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"strconv"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"time"
 )
 
@@ -26,12 +26,12 @@ func CreateCredential(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	credential.RecID = &recID
-	credential.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
+	credential.CreatedAt = time.Now().String()
 	credential.BookName = n
 	credential.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		TableModel: credential,
+		TableModel: &credential,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 	})
 	return
@@ -45,9 +45,19 @@ func SelectCredential(ctx *gin.Context) {
 	}
 	conditions := []common.MongoCondition{
 		{
-			my_mongo.LESS_THAN_EQUAL,
+			my_mongo.EQUAL,
+			"rec_id",
+			ctx.PostForm("credential_id"),
+		},
+		{
+			my_mongo.LIKE,
+			"credential_name",
+			ctx.PostForm("credential_name"),
+		},
+		{
+			my_mongo.EQUAL,
 			"deleted_at",
-			nil,
+			bsontype.Null,
 		},
 	}
 
@@ -61,7 +71,6 @@ func SelectCredential(ctx *gin.Context) {
 
 // UpdateCredential 更新凭证
 func UpdateCredential(ctx *gin.Context) {
-
 	bk, n := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
@@ -75,7 +84,7 @@ func UpdateCredential(ctx *gin.Context) {
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		RecID:      *credential.RecID,
-		TableModel: credential,
+		TableModel: &credential,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 	})
 	return
@@ -97,7 +106,7 @@ func DeleteCredential(ctx *gin.Context) {
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		RecID:      *credential.RecID,
-		TableModel: credential,
+		TableModel: &credential,
 		Context:    context.WithValue(context.Background(), "book_name", n),
 	})
 	return

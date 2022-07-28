@@ -17,7 +17,7 @@ type ReceivableDetail struct {
 	ReceivableDate         *string `gorm:"type:varchar(50)" json:"receivable_date,omitempty" form:"receivable_date,omitempty" cn:"收款日期"`
 	ReceivableContent      *string `gorm:"type:varchar(200)" json:"receivable_content,omitempty" form:"receivable_content,omitempty" cn:"收款款内容摘要"`
 	ReceivableAmount       *string `gorm:"type:varchar(50)" json:"receivable_amount,omitempty" form:"receivable_amount,omitempty" cn:"收款金额"`
-	ReceivableOperatorID   *string `gorm:"type:varchar(50)" json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty" cn:"操作人编号"`
+	ReceivableOperatorID   *int    `json:"receivable_operator_id,omitempty" form:"receivable_operator_id,omitempty" cn:"操作人编号"`
 	ReceivableOperatorName *string `gorm:"type:varchar(50)" json:"receivable_operator_name,omitempty" form:"receivable_operator_name,omitempty" cn:"操作人名称"`
 	ReceivablePicUrlList   *string `gorm:"type:mediumtext" form:"receivable_pic_url_list,omitempty" json:"receivable_pic_url_list,omitempty" cn:"相关单据图片"`
 	Remark                 *string `gorm:"type:varchar(200)" json:"remark,omitempty"  form:"remark" cn:"备注"`
@@ -43,17 +43,15 @@ func (p *ReceivableDetail) AfterCreate(tx *gorm.DB) error {
 	receivable.RecID = p.ReceivableID
 	var amountList []string
 	err := bk.MysqlClient.WithContext(tx.Statement.Context).
-		Raw("select ? from ?  where ? = ? and ? = ?",
-			"receivable_amount", p.TableName(),
-			"deleted_at", "is null",
-			"receivable_id", p.ReceivableID,
+		Raw("select receivable_amount from receivable_details where deleted_at is null and receivable_id = ?",
+			p.ReceivableID,
 		).Scan(&amountList).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "查询应付记录详情失败!")
 		return err
 	}
 
-	err = bk.MysqlClient.WithContext(tx.Statement.Context).Select(&receivable).Where("rec_id = ?", receivable.RecID).Error
+	err = bk.MysqlClient.WithContext(tx.Statement.Context).Where("rec_id = ?", receivable.RecID).Find(&receivable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "应付记录查询失败!")
 		return err
@@ -73,6 +71,15 @@ func (p *ReceivableDetail) AfterCreate(tx *gorm.DB) error {
 		}
 		num = num.Add(fraction)
 	}
+
+	if p.ReceivableAmount != nil {
+		f, err := math_plus.NewFromString(*p.ReceivableAmount)
+		if err != nil {
+			return err
+		}
+		num = num.Add(f)
+	}
+
 	actualAmount := num.String()
 
 	unrec := _const.Unfinished
@@ -91,7 +98,7 @@ func (p *ReceivableDetail) AfterCreate(tx *gorm.DB) error {
 		receivable.ReceivableStatus = &par
 	}
 	receivable.ReceivableActualAmount = &actualAmount
-	err = bk.MysqlClient.WithContext(tx.Statement.Context).Updates(&receivable).Where("rec_id = ?", receivable.RecID).Error
+	err = bk.MysqlClient.WithContext(tx.Statement.Context).Where("rec_id = ?", receivable.RecID).Updates(&receivable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应收记录失败!")
 		return err

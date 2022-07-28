@@ -8,7 +8,7 @@ import (
 type Credential struct {
 	BasicModel               `bson:"inline"`
 	BookNameInfo             `bson:"-"`
-	CredentialLabel          string            `json:"credential_label" form:"credential_label" bson:"credential_label" cn:"凭证标题"`
+	CredentialName           *string           `json:"credential_name,omitempty" form:"credential_name,omitempty" bson:"credential_name,omitempty" cn:"凭证标题"`
 	CredentialOwnerID        int               `json:"credential_owner_id" form:"credential_owner_id" bson:"credential_owner_id" cn:"凭证责任人编号"`
 	CredentialOwnerName      string            `json:"credential_owner_name" form:"credential_owner_name" bson:"credential_owner_name" cn:"凭证责任人名称"`
 	CredentialEvents         []CredentialEvent `json:"credential_events" form:"credential_events" bson:"credential_events" cn:"凭证分录"`

@@ -98,19 +98,19 @@ func UpdatePurchase(ctx *gin.Context) {
 	}
 	var auto common.Auto
 	ctx.ShouldBindBodyWith(&auto, binding.JSON)
-	temp := mongo_model.Purchase{}
-	err := ctx.ShouldBindBodyWith(&temp, binding.JSON)
-	if err != nil || temp.RecID == nil {
+	purchase := mongo_model.Purchase{}
+	err := ctx.ShouldBindBodyWith(&purchase, binding.JSON)
+	if err != nil || purchase.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	now := time.Now().String()
-	temp.UpdatedAt = &now
+	purchase.UpdatedAt = &now
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
-		RecID:      *temp.RecID,
-		TableModel: &temp,
+		RecID:      *purchase.RecID,
+		TableModel: &purchase,
 	})
 	return
 
@@ -135,7 +135,7 @@ func DeletePurchase(ctx *gin.Context) {
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
 		RecID:      recID,
-		TableModel: stockOutRecord,
+		TableModel: &stockOutRecord,
 	})
 	return
 }
