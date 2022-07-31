@@ -1,7 +1,6 @@
 package finance
 
 import (
-	"context"
 	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -16,7 +15,7 @@ import (
 )
 
 func CreatePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -28,7 +27,7 @@ func CreatePayable(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&temp).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "绑定模型失败!")
@@ -40,7 +39,7 @@ func CreatePayable(ctx *gin.Context) {
 }
 
 func SelectPayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -72,7 +71,7 @@ func SelectPayable(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:            bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		DB:            bk.MysqlClient.WithContext(ctx),
 		TableModel:    mysql_model.Payable{},
 		OrderByColumn: "rec_id desc",
 	}
@@ -81,7 +80,7 @@ func SelectPayable(ctx *gin.Context) {
 }
 
 func UpdatePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -93,7 +92,7 @@ func UpdatePayable(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付记录失败!")
@@ -105,7 +104,7 @@ func UpdatePayable(ctx *gin.Context) {
 }
 
 func DeletePayable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -116,7 +115,7 @@ func DeletePayable(ctx *gin.Context) {
 		return
 	}
 	payable.RecID = &recID
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&payable).Where("rec_id = ? ", recID).Error
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -128,7 +127,7 @@ func DeletePayable(ctx *gin.Context) {
 }
 
 func CreatePayableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -140,7 +139,7 @@ func CreatePayableDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&temp).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "绑定模型失败!")
@@ -152,7 +151,7 @@ func CreatePayableDetail(ctx *gin.Context) {
 }
 
 func UpdatePayableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -164,7 +163,7 @@ func UpdatePayableDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应付详情记录失败!")
@@ -176,7 +175,7 @@ func UpdatePayableDetail(ctx *gin.Context) {
 }
 
 func DeletePayableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -187,7 +186,7 @@ func DeletePayableDetail(ctx *gin.Context) {
 		return
 	}
 	payableDetail.RecID = &recID
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&payableDetail).Where("rec_id = ? ", recID).Error
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -199,7 +198,7 @@ func DeletePayableDetail(ctx *gin.Context) {
 }
 
 func SelectPayableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -226,7 +225,7 @@ func SelectPayableDetail(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.PayableDetail{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)

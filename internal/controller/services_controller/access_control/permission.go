@@ -16,7 +16,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"io/ioutil"
-	"log"
 )
 
 // Login
@@ -60,13 +59,35 @@ func ForgetPassword(ctx *gin.Context) {
 		ctx.JSON(_const.FORBIDDEN_ERROR, errs.CreateWebErrorMsg("禁止访问！"))
 		return
 	}
-	log.Println(secretKey)
 	email, err := encode.DecryptByAes(secretKey)
 	if err != nil {
 		ctx.JSON(_const.FORBIDDEN_ERROR, errs.CreateWebErrorMsg("禁止访问！"))
 		return
 	}
 	if string(email) == staffEmail && staffEmail != "" && staffPass != "" {
+		UpdatePassword(ctx)
+	}
+
+}
+
+// UpdatePassword 修改密码
+func UpdatePassword(ctx *gin.Context) {
+	staffEmail := ctx.PostForm("staff_email")
+	staffPass := ctx.PostForm("staff_password")
+	staffOldPass := ctx.PostForm("staff_old_password")
+	if staffOldPass != "" {
+		temp := &mysql_model.Staff{}
+		err := client.MysqlClient.Model(&mysql_model.Staff{}).Where("staff_email = ?", staffEmail).Find(&temp).Error
+		if err != nil {
+			ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("找不到该用户失败")))
+			return
+		}
+		if temp.StaffPassword != staffOldPass {
+			ctx.JSON(_const.INTERNAL_ERROR, gin.H(errs.CreateWebErrorMsg("原始密码不对哦!!")))
+			return
+		}
+	}
+	if staffEmail != "" && staffPass != "" {
 		err := client.MysqlClient.Model(&mysql_model.Staff{}).
 			Where("staff_email = ?", staffEmail).
 			Update("staff_password", staffPass).

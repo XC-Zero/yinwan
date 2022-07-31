@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
@@ -18,7 +17,7 @@ import (
 // CreateStockOut
 //	出库
 func CreateStockOut(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -32,11 +31,11 @@ func CreateStockOut(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	temp.RecID = &recID
-	temp.BookName = n
+	temp.BookName = bk.BookName
 	temp.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: &temp,
 	})
 	return
@@ -45,7 +44,7 @@ func CreateStockOut(ctx *gin.Context) {
 
 // SelectStockOut 查询出库
 func SelectStockOut(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -88,7 +87,7 @@ func SelectStockOut(ctx *gin.Context) {
 
 // UpdateStockOut 更新出库
 func UpdateStockOut(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -103,7 +102,7 @@ func UpdateStockOut(ctx *gin.Context) {
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		RecID:      *temp.RecID,
 		TableModel: &temp,
 	})
@@ -112,7 +111,7 @@ func UpdateStockOut(ctx *gin.Context) {
 
 // DeleteStockOut 删除出库
 func DeleteStockOut(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -125,7 +124,7 @@ func DeleteStockOut(ctx *gin.Context) {
 	}
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		RecID:      recID,
 		TableModel: &stockOutRecord,
 	})

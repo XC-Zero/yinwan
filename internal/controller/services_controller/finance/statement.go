@@ -9,7 +9,7 @@ import (
 
 // CreateFixedAssetStatement 生成固定资产报表
 func CreateFixedAssetStatement(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -17,7 +17,7 @@ func CreateFixedAssetStatement(ctx *gin.Context) {
 
 // CreateCashFlowStatement 生成现金流量表
 func CreateCashFlowStatement(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -25,7 +25,7 @@ func CreateCashFlowStatement(ctx *gin.Context) {
 
 // CreateBalanceStatement 生成资产负债表
 func CreateBalanceStatement(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -33,7 +33,7 @@ func CreateBalanceStatement(ctx *gin.Context) {
 
 // CreateIncomeStatement 生成现金流量表
 func CreateIncomeStatement(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}

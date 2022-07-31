@@ -4,6 +4,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/utils/encode"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,7 +14,7 @@ const EXPIRE_TIME = time.Second * 3
 const SPLIT_SYMBOL = "|||||"
 
 func GenerateToken(staffEmail string) (string, error) {
-	str := staffEmail + SPLIT_SYMBOL + time.Now().String()
+	str := staffEmail + SPLIT_SYMBOL + strconv.Itoa(int(time.Now().Unix()))
 	log.Printf(str)
 	tokenStr, err := encode.EncryptByAes(str)
 	if err != nil {

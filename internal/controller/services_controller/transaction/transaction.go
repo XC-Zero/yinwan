@@ -10,11 +10,12 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"strconv"
 	"time"
 )
 
 func CreateTransaction(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -29,18 +30,18 @@ func CreateTransaction(ctx *gin.Context) {
 	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	recID := int(time.Now().Unix())
 	transaction.RecID = &recID
-	transaction.BookName = n
+	transaction.BookName = bk.BookName
 	transaction.BookNameID = bk.StorageName
-	transaction.CreatedAt = time.Now().String()
+	transaction.CreatedAt = strconv.Itoa(int(time.Now().Unix()))
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context:    auto.WithContext(ctx),
 		TableModel: transaction,
 	})
 	return
 }
 func SelectTransaction(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -86,7 +87,7 @@ func SelectTransaction(ctx *gin.Context) {
 
 // UpdateTransaction TODO 考虑是否自动级联更新?
 func UpdateTransaction(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -97,13 +98,14 @@ func UpdateTransaction(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	now := time.Now().String()
+	now := strconv.Itoa(int(time.Now().Unix()))
 	transaction.UpdatedAt = &now
 	var auto common.Auto
-	//ctx.ShouldBindBodyWith(&auto, binding.JSON) TODO 考虑是否自动级联更新?
+	//TODO 考虑是否自动级联更新?
+	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context:    auto.WithContext(ctx),
 		TableModel: transaction,
 		RecID:      *transaction.RecID,
 	})
@@ -111,23 +113,22 @@ func UpdateTransaction(ctx *gin.Context) {
 }
 
 func DeleteTransaction(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
 
-	var auto common.Auto
-	ctx.ShouldBindBodyWith(&auto, binding.JSON)
 	var transaction mongo_model.Transaction
-	err := ctx.ShouldBindBodyWith(&transaction, binding.JSON)
-	if err != nil || transaction.RecID == nil {
+	recID, err := strconv.Atoi(ctx.PostForm("transaction_id"))
+	transaction.RecID = &recID
+	if err != nil || transaction.RecID == nil || recID == 0 {
 		logger.Error(errors.WithStack(err), "")
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:      bk.MongoDBClient,
-		Context: auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context: context.WithValue(ctx, "auto", ctx.PostForm("auto")),
 
 		TableModel: transaction,
 		RecID:      *transaction.RecID,

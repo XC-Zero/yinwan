@@ -6,7 +6,7 @@ import (
 
 // CreateAssemble TODO 组装拆卸
 func CreateAssemble(ctx *gin.Context) {
-	//bk, n := common.HarvestClientFromGinContext(ctx)
+	//bk:= common.HarvestClientFromGinContext(ctx)
 	//var assemble mongo_model.Assemble
 	//ctx.ShouldBindBodyWith(&assemble, binding.JSON)
 }
@@ -24,7 +24,7 @@ func DeleteAssemble(ctx *gin.Context) {
 }
 
 func CreateAssembleTemplate(ctx *gin.Context) {
-	//bk, n := common.HarvestClientFromGinContext(ctx)
+	//bk:= common.HarvestClientFromGinContext(ctx)
 	//var assemble mongo_model.AssembleTemplate
 	//ctx.ShouldBindBodyWith(&assemble, binding.JSON)
 }

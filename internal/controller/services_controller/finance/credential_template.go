@@ -1,7 +1,6 @@
 package finance
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/mongo"
@@ -14,7 +13,7 @@ import (
 // todo !!! 凭证模板
 
 func CreateCredentialTemplate(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -27,16 +26,16 @@ func CreateCredentialTemplate(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	credentialTemplate.RecID = &recID
-	credentialTemplate.CreatedAt = time.Now().String()
+	credentialTemplate.CreatedAt = strconv.Itoa(int(time.Now().Unix()))
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: &credentialTemplate,
 		NotSyncES:  true,
 	})
 }
 func SelectCredentialTemplate(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -61,7 +60,7 @@ func SelectCredentialTemplate(ctx *gin.Context) {
 
 }
 func UpdateCredentialTemplate(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -72,12 +71,12 @@ func UpdateCredentialTemplate(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	now := time.Now().String()
+	now := strconv.Itoa(int(time.Now().Unix()))
 	credentialTemplate.UpdatedAt = &now
 
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: &credentialTemplate,
 		RecID:      *credentialTemplate.RecID,
 		NotSyncES:  true,
@@ -86,7 +85,7 @@ func UpdateCredentialTemplate(ctx *gin.Context) {
 
 }
 func DeleteCredentialTemplate(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -99,7 +98,7 @@ func DeleteCredentialTemplate(ctx *gin.Context) {
 	credentialTemplate.RecID = &recID
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: &credentialTemplate,
 		RecID:      recID,
 		NotSyncES:  true,

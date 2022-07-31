@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -18,7 +17,7 @@ import (
 
 // CreateMaterial 创建原材料
 func CreateMaterial(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -30,7 +29,7 @@ func CreateMaterial(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&material).Error
+	err = bk.MysqlClient.WithContext(ctx).Create(&material).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "创建原材料失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, material)
@@ -43,7 +42,7 @@ func CreateMaterial(ctx *gin.Context) {
 
 // SelectMaterial 原材料
 func SelectMaterial(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -70,7 +69,7 @@ func SelectMaterial(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Material{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -79,7 +78,7 @@ func SelectMaterial(ctx *gin.Context) {
 }
 
 func UpdateMaterial(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -90,7 +89,7 @@ func UpdateMaterial(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&material).Where("rec_id", *material.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新原材料失败!")
@@ -103,7 +102,7 @@ func UpdateMaterial(ctx *gin.Context) {
 
 // DeleteMaterial 删除原材料
 func DeleteMaterial(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -117,7 +116,7 @@ func DeleteMaterial(ctx *gin.Context) {
 	material := mysql_model.Material{BasicModel: mysql_model.BasicModel{
 		RecID: &id,
 	}}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&material).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
@@ -131,7 +130,7 @@ func DeleteMaterial(ctx *gin.Context) {
 // CreateMaterialBatch  创建原材料批次
 //	(预留的,正常不应该有的,正常都应该走入库)
 func CreateMaterialBatch(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -143,7 +142,7 @@ func CreateMaterialBatch(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&materialBatch).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
@@ -156,7 +155,7 @@ func CreateMaterialBatch(ctx *gin.Context) {
 
 // SelectMaterialDetail 原材料批次信息
 func SelectMaterialDetail(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -188,7 +187,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.MaterialBatch{},
 	}
 
@@ -199,7 +198,7 @@ func SelectMaterialDetail(ctx *gin.Context) {
 
 // DeleteMaterialDetail 删除原材料批次信息
 func DeleteMaterialDetail(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -210,7 +209,7 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 	}
 	var materialBatch mysql_model.MaterialBatch
 	materialBatch.RecID = &recID
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&materialBatch).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除批次失败!")
@@ -223,7 +222,7 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 
 // SelectMaterialHistoryCost 详情页历史均价
 func SelectMaterialHistoryCost(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -245,7 +244,7 @@ func SelectMaterialHistoryCost(ctx *gin.Context) {
 		},
 	}
 	res := common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{
-		DB:            bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:            bk.MysqlClient.WithContext(ctx),
 		OrderByColumn: "created_at",
 		TableModel:    mysql_model.MaterialHistoryCost{},
 		NotReturn:     true,

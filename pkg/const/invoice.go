@@ -22,6 +22,10 @@ var InvoiceTypeList = []map[string]interface{}{
 		"invoice_type": ASSEMBLE_INVOICE,
 		"label":        ASSEMBLE_INVOICE.Display(),
 	},
+	{
+		"invoice_type": CREDENTIAL_INVIOCE,
+		"label":        CREDENTIAL_INVIOCE.Display(),
+	},
 }
 
 var (
@@ -31,6 +35,7 @@ var (
 	PAYABLE_INVOICE     = InvoiceType("payables")
 	RECIVEABLE_INVOICE  = InvoiceType("reciveables")
 	ASSEMBLE_INVOICE    = InvoiceType("assembles")
+	CREDENTIAL_INVIOCE  = InvoiceType("credential")
 	//PURCHASE_INVOICE    = mongo_model.Purchase{}.TableName()
 	//PURCHASE_INVOICE    = mongo_model.Purchase{}.TableName()
 )
@@ -49,6 +54,8 @@ func (i InvoiceType) Display() string {
 		return "应收"
 	case ASSEMBLE_INVOICE:
 		return "组装拆卸"
+	case CREDENTIAL_INVIOCE:
+		return "财务凭证"
 	default:
 		return "其他"
 	}
@@ -68,6 +75,8 @@ func TransToInvoiceType(tableName string) InvoiceType {
 		return RECIVEABLE_INVOICE
 	case "assembles":
 		return ASSEMBLE_INVOICE
+	case "credential":
+		return CREDENTIAL_INVIOCE
 	default:
 		return "其他"
 	}

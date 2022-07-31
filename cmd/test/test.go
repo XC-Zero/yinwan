@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"github.com/XC-Zero/yinwan/internal/controller/services_controller/system"
-	"log"
-	"math/rand"
-	"time"
+	"github.com/XC-Zero/yinwan/internal/config"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller"
+	"github.com/XC-Zero/yinwan/pkg/client"
 )
 
 func main() {

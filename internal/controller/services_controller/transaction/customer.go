@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
@@ -15,7 +14,7 @@ import (
 )
 
 func CreateCustomer(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -26,7 +25,7 @@ func CreateCustomer(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&customer).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, customer)
@@ -36,7 +35,7 @@ func CreateCustomer(ctx *gin.Context) {
 	return
 }
 func SelectCustomer(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -63,7 +62,7 @@ func SelectCustomer(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Customer{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -71,7 +70,7 @@ func SelectCustomer(ctx *gin.Context) {
 }
 
 func UpdateCustomer(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -81,7 +80,7 @@ func UpdateCustomer(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&customer).Where("rec_id", *customer.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, customer)
@@ -91,7 +90,7 @@ func UpdateCustomer(ctx *gin.Context) {
 	return
 }
 func DeleteCustomer(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -106,7 +105,7 @@ func DeleteCustomer(ctx *gin.Context) {
 	}}
 
 	err = bk.MysqlClient.WithContext(
-		context.WithValue(context.Background(), "book_name", bookName)).Delete(&customer).Error
+		ctx).Delete(&customer).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除客户失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, customer)

@@ -37,8 +37,8 @@ type stockRecordContent struct {
 	ContentType    _const.StockContentType `json:"content_type" form:"content_type" bson:"content_type" cn:"产品/原材料"`
 }
 
-// 关联相关单据
-type relatedInvoice struct {
+// RelatedInvoice 关联相关单据
+type RelatedInvoice struct {
 	InvoiceType _const.InvoiceType `json:"invoice_type" form:"invoice_tye" bson:"invoice_tye" cn:"单据类型"`
 	InvoiceID   int                `json:"invoice_id" form:"invoice_id" bson:"invoice_id" cn:"单据编号"`
 }

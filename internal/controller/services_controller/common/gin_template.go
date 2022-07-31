@@ -307,6 +307,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 	}
 	if objT.Kind() == reflect.Ptr {
 		objV = objV.Elem()
+		objT = objT.Elem()
 	}
 	omitMap := tools.StringSliceToMap(op.OmitList)
 	for i := 0; i < objT.NumField(); i++ {
@@ -320,7 +321,7 @@ func UpdateOneMongoDBRecordByIDTemplate(ctx *gin.Context, op MongoDBTemplateOpti
 				continue
 			}
 			if v == "updated_at" {
-				update = append(update, bson.E{Key: v, Value: time.Now().String()})
+				update = append(update, bson.E{Key: v, Value: time.Now().Unix()})
 				continue
 			}
 			update = append(update, bson.E{Key: v, Value: nowValue.Interface()})
@@ -449,33 +450,36 @@ func HarvestEmailFromHeader(ctx *gin.Context) string {
 }
 
 // HarvestClientFromGinContext 从请求体里读取账套信息
-func HarvestClientFromGinContext(ctx *gin.Context) (*client.BookName, string) {
+func HarvestClientFromGinContext(ctx *gin.Context) *client.BookName {
 
 	var bookNameJson bookNameRequest
 	var bookName string
-
+	// 如果是 FORM 请求
 	if ctx.ContentType() == FORM {
 		err := ctx.Request.ParseForm()
 		if err != nil {
 			logger.Error(errors.WithStack(err), "")
 			RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-			return nil, ""
+			return nil
 		}
 		bookName = ctx.Request.Form.Get("book_name")
+		ctx.Set("book_name", bookName)
 	} else {
+		// 这样可以多次绑定!
 		err := ctx.ShouldBindBodyWith(&bookNameJson, binding.JSON)
 		if err != nil {
 			logger.Error(errors.WithStack(err), "")
 			RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-			return nil, ""
+			return nil
 		}
 		bookName = bookNameJson.BookName
+		ctx.Set("book_name", bookName)
 	}
 	if book, ok := client.ReadBookMap(bookName); ok {
-		return &book, bookName
+		return &book
 	} else {
 		RequestParamErrorTemplate(ctx, BOOK_NAME_LACK_ERROR)
-		return nil, ""
+		return nil
 	}
 }
 

@@ -185,50 +185,48 @@ func (t *Transaction) BeforeInsert(ctx context.Context) error {
 
 // BeforeUpdate TODO !
 func (t *Transaction) BeforeUpdate(ctx context.Context) error {
-	bookName := ctx.Value("book_name").(string)
-	bk, ok := client.ReadBookMap(bookName)
-	if !ok {
-		return errors.New("There is no book name!")
-	}
-	if t.RecID == nil || bk.StorageName == "" {
-		return errors.New("缺少主键！")
-	}
-	t.BookNameID = bk.StorageName
-	t.BookName = bk.BookName
-	var receivable = mysql_model.Receivable{
-		BookNameInfo: mysql_model.BookNameInfo{
-			BookNameID: bk.StorageName,
-			BookName:   bk.BookName,
-		},
-		CustomerID:            t.CustomerID,
-		CustomerName:          t.CustomerName,
-		ReceivableTotalAmount: &t.TransactionActualAmount,
-		TransactionID:         t.RecID,
-		Remark:                t.Remark,
-	}
-	err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-
-		var receivables []mysql_model.Receivable
-		err := tx.Model(receivable).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
-		if err != nil {
-			return err
+	flag, ok := ctx.Value("auto").(bool)
+	if ok && flag {
+		bookName := ctx.Value("book_name").(string)
+		bk, ok := client.ReadBookMap(bookName)
+		if !ok {
+			return errors.New("There is no book name!")
 		}
+		if t.RecID == nil || bk.StorageName == "" {
+			return errors.New("缺少主键！")
+		}
+		t.BookNameID = bk.StorageName
+		t.BookName = bk.BookName
+		var receivable = mysql_model.Receivable{
+			BookNameInfo: mysql_model.BookNameInfo{
+				BookNameID: bk.StorageName,
+				BookName:   bk.BookName,
+			},
+			CustomerID:            t.CustomerID,
+			CustomerName:          t.CustomerName,
+			ReceivableTotalAmount: &t.TransactionActualAmount,
+			TransactionID:         t.RecID,
+			Remark:                t.Remark,
+		}
+		err := bk.MysqlClient.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
-		flag, ok := ctx.Value("auto").(bool)
-		if ok && flag {
+			var receivables []mysql_model.Receivable
+			err := tx.Model(receivable).Where("transaction_id = ?", t.RecID).Find(&receivables).Error
+			if err != nil {
+				return err
+			}
 			if len(receivables) != 0 {
 				err = tx.Updates(&receivable).Where("transaction_id = ?", t.RecID).Error
 				if err != nil {
 					return err
 				}
 			}
+			t.ReceiveID = receivable.RecID
+			return nil
+		})
+		if err != nil {
+			return err
 		}
-
-		t.ReceiveID = receivable.RecID
-		return nil
-	})
-	if err != nil {
-		return err
 	}
 	return nil
 }

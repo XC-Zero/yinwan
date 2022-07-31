@@ -24,6 +24,7 @@ func Starter() {
 	router.POST("/wx_binding_staff", access_control.WxBindingStaff)
 	router.POST("/remove_binding_staff", access_control.RemoveBindingStaff)
 	router.POST("/forget_password", access_control.ForgetPassword)
+
 	router.POST("/send_to_staff_email", staff3.SendStaffValidateEmail)
 	router.POST("/validate_staff_email", staff3.ValidateStaffEmail)
 	// 使用组路由，并添加中间件用于判断token
@@ -32,11 +33,13 @@ func Starter() {
 	staff := services.Group("/staff")
 	{
 		{
+			staff.POST("/update_staff", staff3.UpdateStaff)
 			staff.POST("/create_staff", staff3.CreateStaff)
 			staff.POST("/select_staff", staff3.SelectStaff)
-			staff.POST("/update_staff", staff3.UpdateStaff)
+			staff.POST("/update_password", access_control.UpdatePassword)
 			staff.POST("/delete_staff", staff3.DeleteStaff)
 			staff.POST("/update_my_info", staff3.UpdatePersonalInfo)
+
 		}
 		{
 			staff.POST("/create_department", staff3.CreateDepartment)
@@ -134,6 +137,7 @@ func Starter() {
 			finance.POST("/create_credential", finance3.CreateCredential)
 			finance.POST("/update_credential", finance3.UpdateCredential)
 			finance.POST("/delete_credential", finance3.DeleteCredential)
+			finance.POST("/generate_credential", finance3.GenerateCredential)
 		}
 
 		// 凭证模板

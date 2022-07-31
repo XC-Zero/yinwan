@@ -10,6 +10,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	myMongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ type StockOutRecord struct {
 	StockOutWarehouseName   *string              `json:"stock_out_warehouse_name,omitempty" form:"stock_out_warehouse_name,omitempty" bson:"stock_out_warehouse_name"`
 	StockOutDetailPosition  *string              `json:"stock_out_detail_position,omitempty" form:"stock_out_detail_position" bson:"stock_out_detail_position"`
 	StockOutRecordContent   []stockRecordContent `json:"stock_out_record_content" form:"stock_out_record_content" bson:"stock_out_record_content"`
-	RelateInvoice           []relatedInvoice     `json:"relate_invoice" form:"relate_invoice" bson:"relate_invoice"`
+	RelateInvoice           []RelatedInvoice     `json:"relate_invoice" form:"relate_invoice" bson:"relate_invoice"`
 	Remark                  *string              `json:"remark,omitempty" form:"remark" bson:"remark"`
 }
 
@@ -235,4 +236,8 @@ func (m *StockOutRecord) BeforeRemove(ctx context.Context) error {
 	}
 	// 撤销删除,换为新增红字 TODO 真的会取消吗??
 	return myMongo.CancelError
+}
+
+func (m StockOutRecord) ToCredential(ctx *gin.Context) {
+
 }

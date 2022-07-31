@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
@@ -18,7 +17,7 @@ import (
 // CreateStockIn 创建入库单
 // 入库会同步触发新增原材料批次信息
 func CreateStockIn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -32,18 +31,18 @@ func CreateStockIn(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	temp.RecID = &recID
-	temp.BookName = n
+	temp.BookName = bk.BookName
 	temp.BookNameID = bk.StorageName
 	temp.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: &temp,
 	})
 	return
 }
 func SelectStockIn(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -84,7 +83,7 @@ func SelectStockIn(ctx *gin.Context) {
 
 }
 func UpdateStockIn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -98,7 +97,7 @@ func UpdateStockIn(ctx *gin.Context) {
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		RecID:      *temp.RecID,
 		TableModel: &temp,
 	})
@@ -106,7 +105,7 @@ func UpdateStockIn(ctx *gin.Context) {
 	return
 }
 func DeleteStockIn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -118,7 +117,7 @@ func DeleteStockIn(ctx *gin.Context) {
 	}
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		RecID:      recID,
 		TableModel: &stockInRecord,
 	})

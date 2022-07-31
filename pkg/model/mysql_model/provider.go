@@ -33,7 +33,6 @@ func (p Provider) TableCnName() string {
 
 func (p Provider) TableName() string {
 	return "providers"
-
 }
 
 func (p Provider) Mapping() map[string]interface{} {
@@ -95,6 +94,7 @@ func (p Provider) Mapping() map[string]interface{} {
 	}
 	return m
 }
+
 func (p Provider) ToESDoc() map[string]interface{} {
 	var address string
 	if p.ProviderAddress != nil {
@@ -116,6 +116,7 @@ func (p Provider) ToESDoc() map[string]interface{} {
 		"book_name_id":                p.BookNameID,
 	}
 }
+
 func (p *Provider) AfterCreate(tx *gorm.DB) error {
 	bookName := tx.Statement.Context.Value("book_name").(string)
 	bk, ok := client.ReadBookMap(bookName)
@@ -147,6 +148,7 @@ func (p *Provider) AfterUpdate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
 func (p *Provider) AfterDelete(tx *gorm.DB) error {
 
 	err := client.DeleteFromIndex(p, p.RecID, tx.Statement.Context)

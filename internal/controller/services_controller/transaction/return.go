@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
@@ -12,7 +11,7 @@ import (
 )
 
 func CreateReturn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -25,18 +24,18 @@ func CreateReturn(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	ret.RecID = &recID
-	ret.BookName = n
+	ret.BookName = bk.BookName
 	ret.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: ret,
 	})
 	return
 }
 
 func UpdateReturn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -48,7 +47,7 @@ func UpdateReturn(ctx *gin.Context) {
 	}
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: ret,
 		RecID:      *ret.RecID,
 	})
@@ -56,7 +55,7 @@ func UpdateReturn(ctx *gin.Context) {
 }
 
 func SelectReturn(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -81,7 +80,7 @@ func SelectReturn(ctx *gin.Context) {
 }
 
 func DeleteReturn(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -94,7 +93,7 @@ func DeleteReturn(ctx *gin.Context) {
 	ret.RecID = &recID
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    context.WithValue(context.Background(), "book_name", n),
+		Context:    ctx,
 		TableModel: ret,
 		RecID:      recID,
 	})

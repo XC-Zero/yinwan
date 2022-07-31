@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/model/mongo_model"
 	my_mongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
@@ -15,7 +14,7 @@ import (
 )
 
 func CreatePurchase(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -34,19 +33,19 @@ func CreatePurchase(ctx *gin.Context) {
 	}
 	recID := int(time.Now().Unix())
 	purchase.RecID = &recID
-	purchase.BookName = n
+	purchase.BookName = bk.BookName
 	purchase.BookNameID = bk.StorageName
-	purchase.CreatedAt = time.Now().String()
+	purchase.CreatedAt = strconv.Itoa(int(time.Now().Unix()))
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context:    auto.WithContext(ctx),
 		TableModel: &purchase,
 	}
 	common.CreateOneMongoDBRecordTemplate(ctx, op)
 	return
 }
 func SelectPurchase(ctx *gin.Context) {
-	bk, _ := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -92,7 +91,7 @@ func SelectPurchase(ctx *gin.Context) {
 
 }
 func UpdatePurchase(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -104,11 +103,11 @@ func UpdatePurchase(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	now := time.Now().String()
+	now := strconv.Itoa(int(time.Now().Unix()))
 	purchase.UpdatedAt = &now
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context:    auto.WithContext(ctx),
 		RecID:      *purchase.RecID,
 		TableModel: &purchase,
 	})
@@ -116,7 +115,7 @@ func UpdatePurchase(ctx *gin.Context) {
 
 }
 func DeletePurchase(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -133,7 +132,7 @@ func DeletePurchase(ctx *gin.Context) {
 	stockOutRecord.RecID = &recID
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		Context:    auto.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		Context:    auto.WithContext(ctx),
 		RecID:      recID,
 		TableModel: &stockOutRecord,
 	})

@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
@@ -16,7 +15,7 @@ import (
 
 // CreateCommodity 创建产品
 func CreateCommodity(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -28,7 +27,7 @@ func CreateCommodity(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&commodity).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
@@ -42,7 +41,7 @@ func CreateCommodity(ctx *gin.Context) {
 
 // SelectCommodity 产品
 func SelectCommodity(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -69,7 +68,7 @@ func SelectCommodity(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Commodity{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -78,7 +77,7 @@ func SelectCommodity(ctx *gin.Context) {
 }
 
 func UpdateCommodity(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -89,7 +88,7 @@ func UpdateCommodity(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&commodity).Where("rec_id", *commodity.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新产品失败!")
@@ -102,7 +101,7 @@ func UpdateCommodity(ctx *gin.Context) {
 
 // DeleteCommodity 删除产品
 func DeleteCommodity(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -116,7 +115,7 @@ func DeleteCommodity(ctx *gin.Context) {
 	commodity := mysql_model.Commodity{BasicModel: mysql_model.BasicModel{
 		RecID: &id,
 	}}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&commodity).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
@@ -130,7 +129,7 @@ func DeleteCommodity(ctx *gin.Context) {
 // CreateCommodityBatch  创建产品批次
 //	(预留的,正常不应该有的,正常都应该走入库)
 func CreateCommodityBatch(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -142,7 +141,7 @@ func CreateCommodityBatch(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&commodityBatch).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, commodityBatch)
@@ -154,7 +153,7 @@ func CreateCommodityBatch(ctx *gin.Context) {
 
 // SelectCommodityDetail 产品批次信息
 func SelectCommodityDetail(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -186,7 +185,7 @@ func SelectCommodityDetail(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.CommodityBatch{},
 	}
 
@@ -196,7 +195,7 @@ func SelectCommodityDetail(ctx *gin.Context) {
 }
 
 func UpdateCommodityDetail(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -207,7 +206,7 @@ func UpdateCommodityDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Updates(&commodityDetail).Where("rec_id = ?", commodityDetail.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Updates(&commodityDetail).Where("rec_id = ?", commodityDetail.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodityDetail)
@@ -219,7 +218,7 @@ func UpdateCommodityDetail(ctx *gin.Context) {
 
 // DeleteCommodityDetail 删除产品批次信息
 func DeleteCommodityDetail(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -232,7 +231,7 @@ func DeleteCommodityDetail(ctx *gin.Context) {
 
 	commodityDetail := mysql_model.CommodityBatch{BasicModel: mysql_model.BasicModel{RecID: &recID}}
 	err = bk.MysqlClient.
-		WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+		WithContext(ctx).
 		Delete(&commodityDetail).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除产品批次信息失败!")

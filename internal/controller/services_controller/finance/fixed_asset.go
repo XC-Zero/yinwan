@@ -10,13 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"strconv"
 )
 
 // CreateFixedAsset 创建固定资产
 func CreateFixedAsset(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -27,7 +26,7 @@ func CreateFixedAsset(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).Create(&fixedAsset).Error
+	err = bk.MysqlClient.WithContext(ctx).Create(&fixedAsset).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "创建固定资产失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, fixedAsset)
@@ -38,7 +37,7 @@ func CreateFixedAsset(ctx *gin.Context) {
 }
 
 func SelectFixedAsset(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -64,7 +63,7 @@ func SelectFixedAsset(ctx *gin.Context) {
 			ColumnValue: " ",
 		}}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.FixedAsset{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -73,7 +72,7 @@ func SelectFixedAsset(ctx *gin.Context) {
 
 // UpdateFixedAsset 更新固定资产
 func UpdateFixedAsset(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -83,7 +82,7 @@ func UpdateFixedAsset(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&fixedAsset).Where("rec_id = ?", fixedAsset.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新固定资产失败!")
@@ -96,7 +95,7 @@ func UpdateFixedAsset(ctx *gin.Context) {
 
 // DeleteFixedAsset 删除固定资产
 func DeleteFixedAsset(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -109,7 +108,7 @@ func DeleteFixedAsset(ctx *gin.Context) {
 	}
 	asset := mysql_model.FixedAsset{}
 	asset.RecID = &id
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&asset).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除固定资产失败!")

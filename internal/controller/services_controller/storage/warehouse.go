@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
@@ -15,7 +14,7 @@ import (
 )
 
 func CreateWarehouse(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -26,7 +25,7 @@ func CreateWarehouse(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&warehouse).Error
+	err = bk.MysqlClient.WithContext(ctx).Create(&warehouse).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, warehouse)
@@ -37,7 +36,7 @@ func CreateWarehouse(ctx *gin.Context) {
 }
 
 func SelectWarehouse(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -64,7 +63,7 @@ func SelectWarehouse(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Warehouse{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -72,7 +71,7 @@ func SelectWarehouse(ctx *gin.Context) {
 
 }
 func UpdateWarehouse(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -83,7 +82,7 @@ func UpdateWarehouse(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&warehouse).Where("rec_id", *warehouse.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
@@ -96,7 +95,7 @@ func UpdateWarehouse(ctx *gin.Context) {
 }
 
 func DeleteWarehouse(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -112,7 +111,7 @@ func DeleteWarehouse(ctx *gin.Context) {
 	}}
 
 	err = bk.MysqlClient.WithContext(
-		context.WithValue(context.Background(), "book_name", bookName)).Delete(&warehouse).Error
+		ctx).Delete(&warehouse).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除仓库失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, warehouse)

@@ -2,15 +2,19 @@ package mongo_model
 
 import (
 	"fmt"
+	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
+	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	myMongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -25,8 +29,66 @@ type StockInRecord struct {
 	StockInDetailPosition  *string              `json:"stock_in_detail_position,omitempty" form:"stock_in_detail_position" bson:"stock_in_detail_position"`
 	StockInRecordType      string               `json:"stock_in_record_type" form:"stock_in_record_type" bson:"stock_in_record_type" `
 	StockInRecordContent   []stockRecordContent `json:"stock_in_record_content" form:"stock_in_record_content" bson:"stock_in_record_content" `
-	RelateInvoice          []relatedInvoice     `json:"relate_invoice" form:"relate_invoice" bson:"relate_invoice"`
+	RelateInvoice          []RelatedInvoice     `json:"relate_invoice" form:"relate_invoice" bson:"relate_invoice"`
 	Remark                 *string              `json:"remark,omitempty" form:"remark" bson:"remark"`
+}
+
+func (s *StockInRecord) ToCredential(ctx *gin.Context) {
+	book := common.HarvestClientFromGinContext(ctx)
+	if book == nil {
+		return
+	}
+	content := s.StockInRecordContent
+	sprintf := fmt.Sprintf("系统根据入库记录 [单号]:%d 生成", s.RecID)
+	recID := int(time.Now().Unix())
+	events := make([]CredentialEvent, 0, len(content)*2)
+	name := "入库单凭证"
+	var cre = Credential{
+		BasicModel: BasicModel{
+			RecID:     &recID,
+			CreatedAt: strconv.Itoa(int(time.Now().Unix())),
+		},
+		BookNameInfo:        s.BookNameInfo,
+		CredentialName:      &name,
+		CredentialOwnerID:   0,
+		CredentialOwnerName: "系统",
+		Remark:              &sprintf,
+	}
+	for _, c := range content {
+		events = append(events,
+			CredentialEvent{
+				Abstract:       fmt.Sprintf("入库-%s", c.Name),
+				Classify:       fmt.Sprintf("借: %s-%s", c.ContentType.Display(), c.Name),
+				DetailClassify: "",
+				LoanAmount:     c.TotalPrice,
+				DebitAmount:    "",
+			},
+			CredentialEvent{
+				Abstract:       fmt.Sprintf("入库-%s", c.Name),
+				Classify:       fmt.Sprintf("贷: %s-%s", c.ContentType.Display(), c.Name),
+				DetailClassify: "",
+				LoanAmount:     "",
+				DebitAmount:    c.TotalPrice,
+			})
+	}
+	cre.CredentialEvents = events
+	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
+		DB:         book.MongoDBClient,
+		Context:    ctx,
+		TableModel: cre,
+		NotSyncES:  false,
+	})
+	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
+		DB:         book.MongoDBClient,
+		Context:    ctx,
+		TableModel: s,
+		NotSyncES:  true,
+	})
+
+	ctx.JSON(_const.OK, errs.CreateSuccessMsg("生成凭证成功!", map[string]int{
+		"credential_id": recID,
+	}))
+
 }
 
 func (s StockInRecord) ToESDoc() map[string]interface{} {

@@ -2,6 +2,9 @@ package mysql_model
 
 import (
 	"encoding/json"
+	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -26,6 +29,20 @@ type TimeOnlyModel struct {
 type BookNameInfo struct {
 	BookNameID string `gorm:"-" sql:"-" json:"book_name_id" `
 	BookName   string `gorm:"-" sql:"-" json:"book_name" `
+}
+
+// RelatedInvoice 关联相关单据
+type RelatedInvoice struct {
+	InvoiceType _const.InvoiceType `json:"invoice_type" form:"invoice_tye" bson:"invoice_tye" cn:"单据类型"`
+	InvoiceID   int                `json:"invoice_id" form:"invoice_id" bson:"invoice_id" cn:"单据编号"`
+}
+
+func MarshalRelatedInvoiceArray(r []RelatedInvoice) []byte {
+	marshal, err := json.Marshal(r)
+	if err != nil {
+		logger.Error(errors.WithStack(err), "RelatedInvoice convert to json string failed!")
+	}
+	return marshal
 }
 
 type Analyzer string

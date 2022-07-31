@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
@@ -15,7 +14,7 @@ import (
 )
 
 func CreateProvider(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -26,7 +25,7 @@ func CreateProvider(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).Create(&provider).Error
+	err = bk.MysqlClient.WithContext(ctx).Create(&provider).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, provider)
 		return
@@ -36,7 +35,7 @@ func CreateProvider(ctx *gin.Context) {
 	return
 }
 func SelectProvider(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -63,14 +62,14 @@ func SelectProvider(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Provider{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
 	return
 }
 func UpdateProvider(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -80,7 +79,7 @@ func UpdateProvider(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", bookName)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&provider).Where("rec_id", *provider.RecID).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, provider)
@@ -90,7 +89,7 @@ func UpdateProvider(ctx *gin.Context) {
 	return
 }
 func DeleteProvider(ctx *gin.Context) {
-	bk, bookName := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -105,7 +104,7 @@ func DeleteProvider(ctx *gin.Context) {
 	}}
 
 	err = bk.MysqlClient.WithContext(
-		context.WithValue(context.Background(), "book_name", bookName)).Delete(&provider).Error
+		ctx).Delete(&provider).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除供应商失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_DELETE_ERROR, provider)

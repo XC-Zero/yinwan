@@ -1,7 +1,6 @@
 package finance
 
 import (
-	"context"
 	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
@@ -17,7 +16,7 @@ import (
 )
 
 func CreateReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -27,7 +26,7 @@ func CreateReceivable(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).Create(&receivable).Error
+	err = bk.MysqlClient.WithContext(ctx).Create(&receivable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "创建应收记录失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, receivable)
@@ -38,7 +37,7 @@ func CreateReceivable(ctx *gin.Context) {
 }
 
 func SelectReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -71,7 +70,7 @@ func SelectReceivable(ctx *gin.Context) {
 			ColumnValue: " ",
 		}}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.Receivable{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, conditions...)
@@ -80,7 +79,7 @@ func SelectReceivable(ctx *gin.Context) {
 }
 
 func UpdateReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -92,7 +91,7 @@ func UpdateReceivable(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&receivable).Where("rec_id = ?", receivable.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应收记录失败!")
@@ -104,7 +103,7 @@ func UpdateReceivable(ctx *gin.Context) {
 }
 
 func DeleteReceivable(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -115,7 +114,7 @@ func DeleteReceivable(ctx *gin.Context) {
 		return
 	}
 	receivable.RecID = &recID
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&receivable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "删除应收记录失败!")
@@ -127,7 +126,7 @@ func DeleteReceivable(ctx *gin.Context) {
 }
 
 func CreateReceivableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -139,7 +138,7 @@ func CreateReceivableDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Create(&temp).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "绑定模型失败!")
@@ -151,7 +150,7 @@ func CreateReceivableDetail(ctx *gin.Context) {
 }
 
 func UpdateReceivableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -163,7 +162,7 @@ func UpdateReceivableDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应收详情记录失败!")
@@ -175,7 +174,7 @@ func UpdateReceivableDetail(ctx *gin.Context) {
 }
 
 func DeleteReceivableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -186,7 +185,7 @@ func DeleteReceivableDetail(ctx *gin.Context) {
 		return
 	}
 	ReceivableDetail.RecID = &recID
-	err = bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)).
+	err = bk.MysqlClient.WithContext(ctx).
 		Delete(&ReceivableDetail).Where("rec_id = ? ", recID).Error
 	if err != nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -198,7 +197,7 @@ func DeleteReceivableDetail(ctx *gin.Context) {
 }
 
 func SelectReceivableDetail(ctx *gin.Context) {
-	bk, n := common.HarvestClientFromGinContext(ctx)
+	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
@@ -225,7 +224,7 @@ func SelectReceivableDetail(ctx *gin.Context) {
 		},
 	}
 	op := common.SelectMysqlTemplateOptions{
-		DB:         bk.MysqlClient.WithContext(context.WithValue(context.Background(), "book_name", n)),
+		DB:         bk.MysqlClient.WithContext(ctx),
 		TableModel: mysql_model.ReceivableDetail{},
 	}
 	common.SelectMysqlTableContentWithCountTemplate(ctx, op, condition...)
