@@ -117,10 +117,9 @@ func (c Credential) ToESDoc() map[string]interface{} {
 
 // CredentialEvent 凭证条目
 type CredentialEvent struct {
-	// 借
-	IncreaseEvent EventItem `json:"increase_event" bson:"increase_event"`
-	// 贷
-	DecreaseEvent EventItem `json:"decrease_event" bson:"decrease_event"`
+	Abstract string `json:"abstract" cn:"摘要"`
+	Classify string `json:"classify" cn:"科目"`
+	Loan     string `json:"loan" cn:"贷款金额"`
 }
 
 // EventItem 具体条目

@@ -1,6 +1,6 @@
-FROM golang:alpine3.13
+FROM golang:alpine
 
-ADD yiwan /go/src/yinwan
+#ADD yiwan /yinwan
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -10,7 +10,7 @@ ENV GO111MODULE=on \
 
 EXPOSE 3776
 
-WORKDIR /go/src
-
+WORKDIR /yinwan
+COPY D:\go\yinwan\cmd\build\yinwan ./app
 
 CMD ["./yinwan"]
