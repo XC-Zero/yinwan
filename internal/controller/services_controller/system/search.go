@@ -168,6 +168,27 @@ func SelectCustomer(ctx *gin.Context) {
 	return
 }
 
+func SelectCredential(ctx *gin.Context) {
+	searchContent := ctx.PostForm("search_content")
+	query := elastic.NewMultiMatchQuery(searchContent,
+		"rec_id^1000",
+		"customer_name.keyword^500",
+		"customer_name^15",
+		"customer_social_credit_code^500",
+		"remark^10",
+		"customer_contact^8",
+		"customer_alias^5")
+
+	op := common.SelectESTemplateOptions{
+		TableModel:  &m.Credential{},
+		Query:       query,
+		ResHookFunc: nil,
+	}
+	common.SelectESTableContentWithCountTemplate(ctx, op)
+	return
+}
+
+// SelectTransaction TODO !!!!
 func SelectTransaction(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
@@ -208,12 +229,13 @@ func SelectReturn(ctx *gin.Context) {
 	return
 }
 
+// SelectPurchase TODO !!!
 func SelectPurchase(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
 		"customer_name.keyword^500",
-		"customer_name^15",
+		"provider_name^15",
 		"customer_social_credit_code^500",
 		"remark^10",
 		"customer_contact^8",

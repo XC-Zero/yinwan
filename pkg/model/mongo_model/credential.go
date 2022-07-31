@@ -3,6 +3,7 @@ package mongo_model
 import (
 	"fmt"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 )
 
 // Credential 财务凭证
@@ -49,9 +50,6 @@ func (c Credential) Mapping() map[string]interface{} {
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"stock_in_record_type": mapping{
-					"type": "keyword",
-				},
 				"remark": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
@@ -89,31 +87,14 @@ func (c Credential) ToESDoc() map[string]interface{} {
 	if c.CredentialCheckerName != nil {
 		checker = *c.CredentialCheckerName
 	}
-	var credentialContent string
-	//for _, event := range c.CredentialEvents {
-	//	credentialContent += fmt.Sprintf(
-	//		"贷: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
-	//		event.DecreaseEvent.EventItemType,
-	//		event.DecreaseEvent.EventItemObject,
-	//		event.DecreaseEvent.EventItemAmount)
-	//
-	//	credentialContent += fmt.Sprintf(
-	//		"借: 变动类型 :%s 变动对象: %s 变动金额:%s \n",
-	//		event.IncreaseEvent.EventItemType,
-	//		event.IncreaseEvent.EventItemObject,
-	//		event.IncreaseEvent.EventItemAmount)
-	//
-	//}
-
 	return map[string]interface{}{
 		"rec_id":             c.RecID,
 		"created_at":         c.CreatedAt,
 		"remark":             c.Remark,
 		"related_person":     fmt.Sprintf("制单人:%s  会计:%s  出纳:%s  复核:%s ", maker, account, cashier, checker),
-		"credential_content": credentialContent,
-		//"stock_in_owner":             m.StockInRecordOwnerName,
-		"book_name":    c.BookName,
-		"book_name_id": c.BookNameID,
+		"credential_content": convert.StructSliceToTagString(c.CredentialEvents, "cn"),
+		"book_name":          c.BookName,
+		"book_name_id":       c.BookNameID,
 	}
 }
 

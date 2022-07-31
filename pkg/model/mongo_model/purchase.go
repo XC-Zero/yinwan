@@ -1,11 +1,11 @@
 package mongo_model
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	"github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/pkg/errors"
@@ -100,18 +100,12 @@ func (p Purchase) Mapping() map[string]interface{} {
 }
 
 func (p Purchase) ToESDoc() map[string]interface{} {
-	var str string
-	bytes, err := json.Marshal(p.PurchaseContent)
-	str = string(bytes)
-	if err != nil {
-		str = ""
-	}
 
 	return map[string]interface{}{
 		"rec_id":              p.RecID,
 		"created_at":          p.CreatedAt,
 		"remark":              p.Remark,
-		"purchase_content":    str,
+		"purchase_content":    convert.StructToTagString(p.PurchaseContent, "cn"),
 		"provider_name":       p.ProviderName,
 		"purchase_owner_name": p.PurchaseOwnerName,
 		"book_name":           p.BookName,
