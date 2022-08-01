@@ -21,6 +21,7 @@ import (
 type StockOutRecord struct {
 	BasicModel              `bson:"inline"`
 	BookNameInfo            `bson:"-"`
+	StockOutRecordName      *string              `json:"stock_out_record_name,omitempty" form:"stock_out_record_name,omitempty" bson:"stock_out_record_name,omitempty"`
 	StockOutRecordOwnerID   *int                 `json:"stock_out_record_owner_id,omitempty" form:"stock_out_record_owner_id,omitempty" bson:"stock_out_record_owner_id,omitempty"`
 	StockOutRecordOwnerName *string              `json:"stock_out_record_owner_name,omitempty" form:"stock_out_record_owner_name,omitempty" bson:"stock_out_record_owner_name,omitempty"`
 	StockOutRecordType      string               `json:"stock_out_record_type" form:"stock_out_record_type" bson:"stock_out_record_type"`
@@ -42,6 +43,7 @@ func (m StockOutRecord) ToESDoc() map[string]interface{} {
 		"stock_out_owner":       m.StockOutRecordOwnerName,
 		"book_name":             m.BookName,
 		"book_name_id":          m.BookNameID,
+		"stock_out_record_name": m.StockOutRecordName,
 	}
 }
 
@@ -60,6 +62,11 @@ func (m StockOutRecord) Mapping() map[string]interface{} {
 			"properties": mapping{
 				"rec_id": mapping{
 					"type": "keyword",
+				},
+				"stock_out_record_name": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
 				},
 				"stock_out_content": mapping{
 					"type":            "text",

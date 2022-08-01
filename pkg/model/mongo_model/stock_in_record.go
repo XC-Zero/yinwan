@@ -23,6 +23,7 @@ import (
 type StockInRecord struct {
 	BasicModel             `bson:"inline"`
 	BookNameInfo           `bson:"-"`
+	StockInRecordName      *string              `json:"stock_in_record_name,omitempty" form:"stock_in_record_name,omitempty" bson:"stock_in_record_name,omitempty"`
 	StockInRecordOwnerID   *int                 `json:"stock_in_record_owner_id,omitempty"  form:"stock_in_record_owner_id" bson:"stock_in_record_owner_id" `
 	StockInRecordOwnerName *string              `json:"stock_in_record_owner_name,omitempty" form:"stock_in_record_owner_name" bson:"stock_in_record_owner_name" `
 	StockInWarehouseID     *int                 `json:"stock_in_warehouse_id,omitempty" form:"stock_in_warehouse_id,omitempty" bson:"stock_in_warehouse_id"`
@@ -102,6 +103,7 @@ func (s StockInRecord) ToESDoc() map[string]interface{} {
 		"stock_in_owner":       s.StockInRecordOwnerName,
 		"book_name":            s.BookName,
 		"book_name_id":         s.BookNameID,
+		"stock_in_record_name": s.StockInRecordName,
 	}
 }
 
@@ -118,6 +120,11 @@ func (s StockInRecord) Mapping() map[string]interface{} {
 			"properties": mapping{
 				"rec_id": mapping{
 					"type": "keyword",
+				},
+				"stock_in_record_name": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
 				},
 				"stock_in_content": mapping{
 					"type":            "text",

@@ -40,6 +40,11 @@ func (c Credential) Mapping() map[string]interface{} {
 				"rec_id": mapping{
 					"type": "keyword",
 				},
+				"credential_name": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
 				"related_person": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
@@ -91,6 +96,7 @@ func (c Credential) ToESDoc() map[string]interface{} {
 		"rec_id":             c.RecID,
 		"created_at":         c.CreatedAt,
 		"remark":             c.Remark,
+		"credential_name":    c.CredentialName,
 		"related_person":     fmt.Sprintf("制单人:%s  会计:%s  出纳:%s  复核:%s ", maker, account, cashier, checker),
 		"credential_content": convert.StructSliceToTagString(c.CredentialEvents, "cn"),
 		"book_name":          c.BookName,

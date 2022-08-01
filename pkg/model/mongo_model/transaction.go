@@ -5,6 +5,7 @@ import (
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
+	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -68,6 +69,11 @@ func (t Transaction) Mapping() map[string]interface{} {
 				"rec_id": mapping{
 					"type": "keyword",
 				},
+				"transaction_name": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
 				"transaction_content": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
@@ -118,9 +124,10 @@ func (t Transaction) ToESDoc() map[string]interface{} {
 		"receive_id":             t.ReceiveID,
 		"transaction_amount":     t.TransactionAmount,
 		"transaction_owner_name": t.TransactionOwnerName,
-		"transaction_content":    t.TransactionContent,
+		"transaction_content":    convert.StructSliceToTagString(t.TransactionContent, string(_const.CN)),
 		"book_name":              t.BookName,
 		"book_name_id":           t.BookNameID,
+		"transaction_name":       t.TransactionName,
 	}
 }
 
