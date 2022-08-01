@@ -37,7 +37,7 @@ func CreateCredential(ctx *gin.Context) {
 	credential.BookNameID = bk.StorageName
 	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		TableModel: &credential,
+		TableModel: credential,
 		Context:    ctx,
 	})
 	return
@@ -103,7 +103,7 @@ func UpdateCredential(ctx *gin.Context) {
 	common.UpdateOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		RecID:      *credential.RecID,
-		TableModel: &credential,
+		TableModel: credential,
 		Context:    ctx,
 	})
 	return
@@ -125,7 +125,7 @@ func DeleteCredential(ctx *gin.Context) {
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		RecID:      *credential.RecID,
-		TableModel: &credential,
+		TableModel: credential,
 		Context:    ctx,
 	})
 	return

@@ -1,11 +1,13 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
 	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	"github.com/XC-Zero/yinwan/pkg/utils/mysql"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -239,5 +241,73 @@ func DeleteCommodityDetail(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(_const.OK, errs.CreateSuccessMsg("删除产品批次成功!"))
+	return
+}
+
+// SelectCommodityHistoryCost 详情页历史均价
+func SelectCommodityHistoryCost(ctx *gin.Context) {
+	bk := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+	commodityID := ctx.PostForm("commodity_id")
+	if commodityID == "" {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
+		return
+	}
+	conditions := []common.MysqlCondition{
+		{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "commodity_id",
+			ColumnValue: commodityID,
+		},
+		{
+			Symbol:      mysql.NULL,
+			ColumnName:  "deleted_at",
+			ColumnValue: " ",
+		},
+	}
+	res := common.SelectMysqlTableContentWithCountTemplate(ctx, common.SelectMysqlTemplateOptions{
+		DB:            bk.MysqlClient.WithContext(ctx),
+		OrderByColumn: "created_at",
+		TableModel:    mysql_model.CommodityHistoricalCost{},
+		NotReturn:     true,
+		NotPaginate:   true,
+	}, conditions...)
+	if res == nil {
+		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_SELECT_ERROR, mysql_model.CommodityHistoricalCost{})
+		return
+	}
+	costs := res.([]mysql_model.CommodityHistoricalCost)
+	var count int64 = 0
+	var errorList []error
+	var totalPrice = math_plus.NewFromFloatByDecimal(0.0, 1)
+	var dataList = make([]mysql_model.CommodityHistoricalCost, 0, 15)
+	for i := range costs {
+		n, err := math_plus.NewFromString(costs[i].Price)
+		if err != nil {
+			errorList = append(errorList, errors.WithStack(err))
+			continue
+		}
+		one := int64(costs[i].Num)
+		totalPrice = totalPrice.Add(n.MulInt64(one))
+		count += one
+		if len(dataList) < 15 {
+			dataList = append(dataList, costs[i])
+		}
+	}
+	m, _ := math_plus.New(count, 1)
+	var avg float64
+	if count != 0 {
+		avg = totalPrice.Div(m).Float64()
+	} else {
+		avg = 0
+	}
+
+	ctx.JSON(_const.OK, gin.H{
+		"count":         count,
+		"average_price": fmt.Sprintf("%.2f", avg),
+		"list":          dataList,
+	})
 	return
 }

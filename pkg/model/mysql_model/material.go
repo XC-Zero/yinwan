@@ -150,6 +150,7 @@ type tempScan struct {
 }
 
 // AfterCreate 同步创建历史成本
+// 事务里不能嵌套事务,否则内层事务将会把外层事务重复执行x遍
 func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 
 	id := tx.Statement.Context.Value("material_id")
@@ -161,65 +162,64 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 	var cost = MaterialHistoryCost{
 		MaterialID:             rec,
 		Num:                    m.MaterialBatchNumber,
-		Price:                  m.MaterialBatchTotalPrice,
+		Price:                  m.MaterialBatchUnitPrice,
 		RelatedMaterialBatchID: *m.RecID,
 	}
 
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		var res MaterialHistoryCost
-		err2 := tx.Where("related_material_batch_id = ?", *m.RecID).Find(&res).Error
+	//err := tx.Transaction(func(tx *gorm.DB) error {
+	var res MaterialHistoryCost
+	err2 := tx.Model(cost).Where("related_material_batch_id = ?", *m.RecID).Find(&res).Error
+	if err2 != nil {
+		log.Println(errors.WithStack(err2))
+		return err2
+	}
+	log.Printf("%+v", res)
+	if res.RecID == nil {
+		err2 := tx.Model(cost).Create(&cost).Error
 		if err2 != nil {
-			log.Println(errors.WithStack(err2))
+			log.Println("@@@@ Create ERROR is ", errors.WithStack(err2))
 			return err2
 		}
-		if res.RecID == nil {
-			err2 := tx.Model(cost).Create(&cost).Error
-			if err2 != nil {
-				log.Println("@@@@ Create ERROR is ", errors.WithStack(err2))
-				return err2
-			}
-		} else {
-			err2 := tx.Updates(&cost).Where("rec_id", *res.RecID).Error
-			if err2 != nil {
-				log.Println("@@@@ Updates ERROR is ", errors.WithStack(err2))
-				return err2
-			}
+	} else {
+		err2 := tx.Updates(&cost).Where("rec_id", *res.RecID).Error
+		if err2 != nil {
+			log.Println("@@@@ Updates ERROR is ", errors.WithStack(err2))
+			return err2
 		}
-		var tempScan tempScan
+	}
+	var tempScan tempScan
 
-		err2 = tx.Model(MaterialBatch{}).Where("material_id = ? and deleted_at is null ", rec).Select(
-			"sum(material_batch_surplus_number) as surplus," +
-				"sum(material_batch_total_price) as total_price," +
-				"sum(material_batch_number) as total_number ").Scan(&tempScan).Error
-		if err2 != nil {
-			log.Println("[ERROR] Statics ERROR is ", errors.WithStack(err2))
-			return err2
-		}
-		var averagePrice string
-		if tempScan.TotalNumber == 0 {
+	err2 = tx.Model(MaterialBatch{}).Where("material_id = ? and deleted_at is null ", rec).Select(
+		"sum(material_batch_surplus_number) as surplus," +
+			"sum(material_batch_total_price) as total_price," +
+			"sum(material_batch_number) as total_number ").Scan(&tempScan).Error
+	if err2 != nil {
+		log.Println("[ERROR] Statics ERROR is ", errors.WithStack(err2))
+		return err2
+	}
+	var averagePrice string
+	if tempScan.TotalNumber == 0 {
+		averagePrice = "0"
+	} else {
+		fraction, err := math_plus.New(tempScan.TotalPrice, tempScan.TotalNumber)
+		if err != nil {
 			averagePrice = "0"
-		} else {
-			fraction, err := math_plus.New(tempScan.TotalPrice, tempScan.TotalNumber)
-			if err != nil {
-				averagePrice = "0"
-			}
-			averagePrice = fmt.Sprintf("%.2f", fraction.Float64())
 		}
-
-		err2 = tx.Raw("update materials set average_unit_price = ? , "+
-			"material_present_count = ? where rec_id = ? ",
-			averagePrice, tempScan.Surplus, rec).Error
-		if err2 != nil {
-			log.Println(errors.WithStack(err2))
-			return err2
-		}
-		return nil
-	},
-	)
-	if err != nil {
-		return err
+		averagePrice = fmt.Sprintf("%.2f", fraction.Float64())
+	}
+	err2 = tx.Model(Material{}).Where("rec_id = ?", rec).
+		UpdateColumn("average_unit_price", averagePrice).
+		UpdateColumn("material_present_count", tempScan.Surplus).Error
+	if err2 != nil {
+		log.Println(errors.WithStack(err2))
+		return err2
 	}
 	return nil
+	//})
+	//if err != nil {
+	//	return err
+	//}
+	//return nil
 }
 
 func (m MaterialBatch) AfterUpdate(tx *gorm.DB) error {

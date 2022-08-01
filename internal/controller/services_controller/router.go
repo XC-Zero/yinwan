@@ -61,7 +61,10 @@ func Starter() {
 
 		// 原材料详情
 		{
+			storage.POST("/create_material_detail", storage3.CreateMaterialBatch)
 			storage.POST("/select_material_detail", storage3.SelectMaterialDetail)
+			storage.POST("/update_material_detail", storage3.UpdateMaterialDetail)
+			storage.POST("/delete_material_detail", storage3.DeleteMaterialDetail)
 			storage.POST("/select_material_history_cost", storage3.SelectMaterialHistoryCost)
 		}
 
@@ -78,7 +81,7 @@ func Starter() {
 			storage.POST("/select_commodity_detail", storage3.SelectCommodityDetail)
 			storage.POST("/update_commodity_detail", storage3.UpdateCommodityDetail)
 			storage.POST("/delete_commodity_detail", storage3.DeleteCommodityDetail)
-
+			storage.POST("/select_commodity_history_cost", storage3.SelectCommodityHistoryCost)
 		}
 		// 供应商
 		{

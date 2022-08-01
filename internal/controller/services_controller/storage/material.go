@@ -220,6 +220,10 @@ func DeleteMaterialDetail(ctx *gin.Context) {
 	return
 }
 
+func UpdateMaterialDetail(ctx *gin.Context) {
+
+}
+
 // SelectMaterialHistoryCost 详情页历史均价
 func SelectMaterialHistoryCost(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)

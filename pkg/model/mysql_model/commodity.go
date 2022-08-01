@@ -1,10 +1,14 @@
 package mysql_model
 
 import (
+	"fmt"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	"github.com/XC-Zero/yinwan/pkg/utils/es_tool"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
+	"github.com/XC-Zero/yinwan/pkg/utils/math_plus"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"log"
 )
 
 // Commodity 产品
@@ -129,9 +133,10 @@ func (c Commodity) AfterDelete(tx *gorm.DB) error {
 // CommodityHistoricalCost 历史成本表
 type CommodityHistoricalCost struct {
 	BasicModel
-	CommodityID   int    `gorm:"type:int;index;" json:"commodity_id" form:"commodity_id"`
-	CommodityName string `gorm:"type:varchar(200)" json:"commodity_name" form:"commodity_name"`
-	CommodityCost string `gorm:"type:varchar(20)" json:"commodity_cost" form:"commodity_cost"`
+	CommodityID             int    `gorm:"type:int;not null;index" json:"commodity_id" form:"commodity_id"`
+	Price                   string `gorm:"type:varchar(20)" json:"price" form:"price"`
+	Num                     int    `json:"num" form:"num"`
+	RelatedCommodityBatchID int    `gorm:"type:int;not null;index" json:"related_commodity_batch_id" form:"related_commodity_batch_id"`
 }
 
 func (c CommodityHistoricalCost) TableCnName() string {
@@ -166,4 +171,84 @@ func (c CommodityBatch) TableCnName() string {
 
 func (c CommodityBatch) TableName() string {
 	return "commodity_batches"
+}
+
+// AfterCreate 同步创建历史成本
+func (c CommodityBatch) AfterCreate(tx *gorm.DB) error {
+
+	id := tx.Statement.Context.Value("commodity_id")
+	rec, ok := id.(int)
+	if id == nil || !ok {
+		logger.Error(errors.New("Context have not commodity_id"), "")
+		return nil
+	}
+	var cost = CommodityHistoricalCost{
+		CommodityID:             rec,
+		Num:                     c.CommodityBatchNumber,
+		Price:                   c.CommodityBatchUnitPrice,
+		RelatedCommodityBatchID: *c.RecID,
+	}
+
+	//err := tx.Transaction(func(tx *gorm.DB) error {
+	var res CommodityHistoricalCost
+	err2 := tx.Where("related_commodity_batch_id = ?", *c.RecID).Find(&res).Error
+	if err2 != nil {
+		log.Println(errors.WithStack(err2))
+		return err2
+	}
+	if res.RecID == nil {
+		err2 := tx.Model(cost).Create(&cost).Error
+		if err2 != nil {
+			log.Println("@@@@ Create ERROR is ", errors.WithStack(err2))
+			return err2
+		}
+	} else {
+		err2 := tx.Updates(&cost).Where("rec_id", *res.RecID).Error
+		if err2 != nil {
+			log.Println("@@@@ Updates ERROR is ", errors.WithStack(err2))
+			return err2
+		}
+	}
+	var tempScan tempScan
+
+	err2 = tx.Model(CommodityBatch{}).Where("commodity_id = ? and deleted_at is null ", rec).Select(
+		"sum(commodity_batch_surplus_number) as surplus," +
+			"sum(commodity_batch_total_price) as total_price," +
+			"sum(commodity_batch_number) as total_number ").Scan(&tempScan).Error
+	if err2 != nil {
+		log.Println("[ERROR] Statics ERROR is ", errors.WithStack(err2))
+		return err2
+	}
+	var averagePrice string
+	if tempScan.TotalNumber == 0 {
+		averagePrice = "0"
+	} else {
+		fraction, err := math_plus.New(tempScan.TotalPrice, tempScan.TotalNumber)
+		if err != nil {
+			averagePrice = "0"
+		}
+		averagePrice = fmt.Sprintf("%.2f", fraction.Float64())
+	}
+
+	err2 = tx.Raw("update commodities set average_unit_price = ? , "+
+		"commodity_present_count = ? where rec_id = ? ",
+		averagePrice, tempScan.Surplus, rec).Error
+	if err2 != nil {
+		log.Println(errors.WithStack(err2))
+		return err2
+	}
+	return nil
+	//},
+	//)
+	//if err != nil {
+	//	return err
+	//}
+	//return nil
+}
+
+func (c CommodityBatch) AfterUpdate(tx *gorm.DB) error {
+	return c.AfterCreate(tx)
+}
+func (c CommodityBatch) AfterDelete(tx *gorm.DB) error {
+	return c.AfterCreate(tx)
 }

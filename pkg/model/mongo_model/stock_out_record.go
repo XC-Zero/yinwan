@@ -37,7 +37,7 @@ func (m StockOutRecord) ToESDoc() map[string]interface{} {
 		"rec_id":                m.RecID,
 		"created_at":            m.CreatedAt,
 		"remark":                m.Remark,
-		"stock_out_content":     convert.StructToTagString(m.StockOutRecordContent, string(_const.CN)),
+		"stock_out_content":     convert.StructSliceToTagString(m.StockOutRecordContent, string(_const.CN)),
 		"stock_out_record_type": m.StockOutRecordType,
 		"stock_out_owner":       m.StockOutRecordOwnerName,
 		"book_name":             m.BookName,

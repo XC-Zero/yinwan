@@ -259,10 +259,7 @@ func CreateOneMongoDBRecordTemplate(ctx *gin.Context, op CreateMongoDBTemplateOp
 		RequestParamErrorTemplate(ctx, REQUEST_PARM_ERROR)
 		return
 	}
-	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data, options.InsertOneOptions{
-		InsertHook: data,
-	})
-
+	_, err := op.DB.Collection(op.TableModel.TableName()).InsertOne(op.Context, data)
 	if err != nil && err != myMongo.CancelError {
 		logger.Error(errors.WithStack(err), "Mongo 数据插入失败! 表:"+op.TableModel.TableName())
 		InternalDataBaseErrorTemplate(ctx, DATABASE_INSERT_ERROR, op.TableModel)

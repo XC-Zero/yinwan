@@ -5,15 +5,16 @@ import (
 	"github.com/XC-Zero/yinwan/internal/controller/services_controller/common"
 	"github.com/XC-Zero/yinwan/pkg/client"
 	_const "github.com/XC-Zero/yinwan/pkg/const"
-	_interface "github.com/XC-Zero/yinwan/pkg/interface"
 	"github.com/XC-Zero/yinwan/pkg/model/mysql_model"
 	"github.com/XC-Zero/yinwan/pkg/utils/convert"
 	"github.com/XC-Zero/yinwan/pkg/utils/errs"
+	"github.com/XC-Zero/yinwan/pkg/utils/logger"
 	myMongo "github.com/XC-Zero/yinwan/pkg/utils/mongo"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"log"
 	"strconv"
 	"time"
 )
@@ -174,11 +175,10 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 		var remark = fmt.Sprintf("根据入库单[编号]:%d 自动创建", *s.RecID)
 		for i := 0; i < len(contentList); i++ {
 			content := contentList[i]
-			var model _interface.ChineseTabler
-			var relateID string
+
 			if content.ContentType == _const.MATERIAL {
-				relateID = "material_id"
-				model = mysql_model.MaterialBatch{
+				relateID := "material_id"
+				model := mysql_model.MaterialBatch{
 					BasicModel: mysql_model.BasicModel{
 						CreatedAt: time.Now(),
 					},
@@ -196,9 +196,16 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 					StockInTime:                &now,
 					Remark:                     &remark,
 				}
+				log.Printf("model type is %T", model)
+				err := tx.WithContext(context.WithValue(context.Background(), relateID, content.RecID)).
+					Create(&model).Error
+
+				if err != nil {
+					return err
+				}
 			} else if content.ContentType == _const.COMMODITY {
-				relateID = "commodity_id"
-				model = mysql_model.CommodityBatch{
+				relateID := "commodity_id"
+				model := mysql_model.CommodityBatch{
 					BasicModel: mysql_model.BasicModel{
 						CreatedAt: time.Now(),
 					},
@@ -216,19 +223,23 @@ func (s *StockInRecord) BeforeInsert(ctx context.Context) error {
 					StockInTime:                 &now,
 					Remark:                      &remark,
 				}
+				log.Printf("model type is %T", model)
+				err := tx.WithContext(context.WithValue(context.Background(), relateID, content.RecID)).
+					Create(&model).Error
+
+				if err != nil {
+					return err
+				}
+
 			} else {
 				return errors.New("未选择入库物品类型!")
 			}
-			err := tx.WithContext(context.WithValue(context.Background(), relateID, content.RecID)).
-				Create(&model).Error
 
-			if err != nil {
-				return err
-			}
 		}
 		return nil
 	})
 	if err != nil {
+		logger.Error(errors.WithStack(err), "?????")
 		return err
 	}
 	return nil
