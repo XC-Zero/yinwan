@@ -35,7 +35,7 @@ func CreatePurchase(ctx *gin.Context) {
 	purchase.RecID = &recID
 	purchase.BookName = bk.BookName
 	purchase.BookNameID = bk.StorageName
-	purchase.CreatedAt = strconv.Itoa(int(time.Now().Unix()))
+	purchase.CreatedAt = strconv.Itoa(recID)
 	op := common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    auto.WithContext(ctx),

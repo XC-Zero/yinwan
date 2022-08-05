@@ -126,3 +126,17 @@ func GenerateCommodityStatistics(ctx *gin.Context) {
 	return
 
 }
+
+func GeneratePayableStatistics(ctx *gin.Context) {
+	bk := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+}
+
+func GenerateReceivableStatistics(ctx *gin.Context) {
+	bk := common.HarvestClientFromGinContext(ctx)
+	if bk == nil {
+		return
+	}
+}
