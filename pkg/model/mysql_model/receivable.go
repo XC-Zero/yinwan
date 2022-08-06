@@ -41,7 +41,7 @@ func (p Receivable) Mapping() map[string]interface{} {
 				"rec_id": mapping{
 					"type": "keyword",
 				},
-				"receivable_enterprise": mapping{
+				"customer_name": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
@@ -52,17 +52,17 @@ func (p Receivable) Mapping() map[string]interface{} {
 						},
 					},
 				},
-				"receivable_enterprise_address": mapping{
+				"receivable_total_amount": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"receivable_contact": mapping{
+				"credential_id": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"receivable_amount": mapping{
+				"transaction_id": mapping{
 					"type": "keyword",
 				},
 				"remark": mapping{
@@ -86,11 +86,14 @@ func (p Receivable) Mapping() map[string]interface{} {
 }
 func (p Receivable) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
-		"rec_id":       p.RecID,
-		"remark":       p.Remark,
-		"book_name":    p.BookName,
-		"book_name_id": p.BookNameID,
-		//"payable_enterprise":p
+		"rec_id":                  p.RecID,
+		"remark":                  p.Remark,
+		"book_name":               p.BookName,
+		"book_name_id":            p.BookNameID,
+		"transaction_id":          p.TransactionID,
+		"credential_id":           p.CredentialID,
+		"customer_name":           p.CustomerName,
+		"receivable_total_amount": p.ReceivableTotalAmount,
 	}
 }
 func (p *Receivable) AfterCreate(tx *gorm.DB) error {

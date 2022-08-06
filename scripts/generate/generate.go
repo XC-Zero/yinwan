@@ -16,6 +16,5 @@ func main() {
 	//	panic(err)
 	//}
 	DropESIndex()
-	//GenerateESIndex()
 	GenerateESIndex()
 }

@@ -9,12 +9,12 @@ import (
 type Assemble struct {
 	BasicModel         `bson:"inline"`
 	BookNameInfo       `bson:"-"`
-	AssembleName       *string              `form:"assemble_name,omitempty" json:"assemble_name,omitempty" bson:"assemble_name,omitempty"`
-	AssembleOwnerID    *int                 `form:"assemble_owner_id,omitempty" json:"assemble_owner_id,omitempty" bson:"assemble_owner_id,omitempty"`
-	AssembleOwnerName  *string              `form:"assemble_owner_name,omitempty" json:"assemble_owner_name,omitempty" bson:"assemble_owner_name,omitempty"`
-	AssembleTemplateID int                  `form:"assemble_template_id" json:"assemble_template_id" bson:"assemble_template_id"`
-	AssembleContent    []stockRecordContent `form:"assemble_content" json:"assemble_content" bson:"assemble_content"`
-	Remark             *string              `form:"remark,omitempty" json:"remark,omitempty" bson:"remark,omitempty"`
+	AssembleName       *string              `form:"assemble_name,omitempty" json:"assemble_name,omitempty" bson:"assemble_name,omitempty" cn:"组装单名称"`
+	AssembleOwnerID    *int                 `form:"assemble_owner_id,omitempty" json:"assemble_owner_id,omitempty" bson:"assemble_owner_id,omitempty" cn:"组装负责人编号"`
+	AssembleOwnerName  *string              `form:"assemble_owner_name,omitempty" json:"assemble_owner_name,omitempty" bson:"assemble_owner_name,omitempty" cn:"组装负责人名称"`
+	AssembleTemplateID int                  `form:"assemble_template_id" json:"assemble_template_id" bson:"assemble_template_id" cn:"组装拆卸模板编号"`
+	AssembleContent    []stockRecordContent `form:"assemble_content" json:"assemble_content" bson:"assemble_content" cn:"组装单内容"`
+	Remark             *string              `form:"remark,omitempty" json:"remark,omitempty" bson:"remark,omitempty" cn:"备注"`
 }
 
 func (a Assemble) Mapping() map[string]interface{} {
@@ -71,7 +71,7 @@ func (a Assemble) ToESDoc() map[string]interface{} {
 		"rec_id":              a.RecID,
 		"created_at":          a.CreatedAt,
 		"remark":              a.Remark,
-		"assemble_content":    convert.StructToTagString(a.AssembleContent, "cn"),
+		"assemble_content":    convert.StructSliceToTagString(a.AssembleContent, "cn"),
 		"assemble_owner_name": a.AssembleOwnerName,
 		"assemble_name":       a.AssembleName,
 		"book_name":           a.BookName,

@@ -26,7 +26,7 @@ type BookNameInfo struct {
 	BookName   string `gorm:"-" sql:"-" json:"book_name" cn:"账套名称"`
 }
 
-// 出入库通用
+// 出入库/组装拆卸通用
 type stockRecordContent struct {
 	RecID          int                     `json:"rec_id" form:"rec_id" bson:"rec_id" cn:"产品或原材料编号"`
 	Name           string                  `json:"name" form:"name" bson:"name" cn:"产品或原材料名称"`

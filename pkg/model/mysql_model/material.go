@@ -173,7 +173,6 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 		log.Println(errors.WithStack(err2))
 		return err2
 	}
-	log.Printf("%+v", res)
 	if res.RecID == nil {
 		err2 := tx.Model(cost).Create(&cost).Error
 		if err2 != nil {

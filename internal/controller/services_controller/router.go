@@ -278,7 +278,9 @@ func Starter() {
 			system.POST("/select_fixed_asset", system2.SelectFixedAsset)
 			system.POST("/select_provider", system2.SelectProvider)
 			system.POST("/select_customer", system2.SelectCustomer)
-
+			system.POST("/select_credential", system2.SelectCredential)
+			system.POST("/select_transaction", system2.SelectTransaction)
+			system.POST("/select_purchase", system2.SelectPurchase)
 		}
 		system.POST("/select_module", system2.SelectModule)
 		system.POST("/save_pic", system2.SavePic)

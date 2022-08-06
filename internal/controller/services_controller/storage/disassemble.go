@@ -10,7 +10,7 @@ import (
 // CreateDisassemble TODO 组装拆卸
 func CreateDisassemble(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)
-	var assemble mongo_model.Assemble
+	var assemble mongo_model.Disassemble
 	err := ctx.ShouldBindBodyWith(&assemble, binding.JSON)
 	if err != nil {
 		return

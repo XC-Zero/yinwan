@@ -16,13 +16,14 @@ type Commodity struct {
 	BasicModel
 	BookNameInfo
 	CommodityName             string  `gorm:"type:varchar(200)" json:"commodity_name" cn:"产品名称"`
-	CommodityTypeID           *int    `form:"commodity_type_id" json:"commodity_type_id,omitempty" cn:"产品类型ID"`
-	CommodityType             *string `gorm:"type:varchar(50)" json:"commodity_type,omitempty" cn:"产品类型"`
-	CommodityStyle            *string `gorm:"type:varchar(50)" json:"commodity_style,omitempty" cn:"产品规格"`
+	CommodityTypeID           int     `gorm:"type:int;not null;index" json:"commodity_type_id,omitempty" form:"commodity_type_id"  cn:"产品类型ID"`
+	CommodityTypeName         string  `gorm:"type:varchar(200)" json:"commodity_type_name,omitempty" form:"commodity_type_name,omitempty" bson:"commodity_type_name,omitempty"`
+	CommodityStyle            string  `gorm:"type:varchar(50)" json:"commodity_style,omitempty" cn:"产品规格"`
 	CommodityOwnerID          int     `gorm:"type:int" json:"commodity_owner_id" cn:"产品负责人ID"`
 	CommodityOwnerName        string  `gorm:"type:varchar(50)" json:"commodity_owner_name" cn:"产品负责人"`
 	CommodityAverageCostPrice string  `gorm:"type:varchar(50)" form:"commodity_average_cost_price" json:"commodity_average_cost_price" cn:"平均成本价"`
 	CommodityPrice            string  `gorm:"type:varchar(50)" form:"commodity_price" json:"commodity_price" cn:"产品定价"`
+	CommodityPresentCount     int     `json:"commodity_present_count" form:"commodity_present_count" bson:"commodity_present_count" cn:"当前余量"`
 	CommodityPicUrl           *string `gorm:"type:varchar(500)" json:"commodity_pic_url,omitempty" cn:"产品展示图"`
 	Remark                    *string `gorm:"type:varchar(200)" json:"remark,omitempty" cn:"产品备注"`
 }

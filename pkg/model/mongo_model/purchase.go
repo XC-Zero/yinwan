@@ -53,6 +53,11 @@ func (p Purchase) Mapping() map[string]interface{} {
 				"rec_id": mapping{
 					"type": "keyword",
 				},
+				"purchase_name": mapping{
+					"type":            "text",
+					"analyzer":        IK_SMART,
+					"search_analyzer": IK_SMART,
+				},
 				"purchase_content": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
@@ -100,10 +105,11 @@ func (p Purchase) ToESDoc() map[string]interface{} {
 		"rec_id":              p.RecID,
 		"created_at":          p.CreatedAt,
 		"remark":              p.Remark,
-		"purchase_content":    convert.StructToTagString(p.PurchaseContent, "cn"),
+		"purchase_content":    convert.StructSliceToTagString(p.PurchaseContent, "cn"),
 		"provider_name":       p.ProviderName,
 		"purchase_owner_name": p.PurchaseOwnerName,
 		"book_name":           p.BookName,
+		"purchase_name":       p.PurchaseName,
 		"book_name_id":        p.BookNameID,
 	}
 }

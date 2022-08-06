@@ -93,35 +93,51 @@ func GenerateCommodityStatistics(ctx *gin.Context) {
 	var temp []struct {
 		CommodityName        string `json:"commodity_name"`
 		RecID                int    `json:"rec_id"`
-		MaterialPresentCount int    `json:"material_present_count"`
+		MaterialPresentCount int    `json:"commodity_present_count"`
 	}
 	n := ctx.PostForm("limit")
 	if n == "" {
 		n = "5"
 	}
 	err := bk.MysqlClient.Raw(`
-		select material_name, rec_id, material_present_count
-			from materials
+		select commodity_name, rec_id, commodity_present_count
+			from commodities
 			where deleted_at is null
-			  and material_present_count > 0
-			order by material_present_count
+			  and commodity_present_count > 0
+			order by commodity_present_count
 			limit ? `, n).Scan(&temp).Error
 	if err != nil {
-		logger.Error(errors.WithStack(err), "查询前"+n+"原材料失败!")
+		logger.Error(errors.WithStack(err), "查询前"+n+"产品失败!")
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("生成报表失败!"))
 		return
 	}
 	var count int64
 	err = bk.MysqlClient.Raw(`
-		select sum(material_present_count)
-			from materials
-			where material_present_count > 0
+		select sum(commodity_present_count)
+			from commodities
+			where commodity_present_count > 0
 			and deleted_at is null `).Scan(&count).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "查询前原材料总数!")
 		ctx.JSON(_const.INTERNAL_ERROR, errs.CreateWebErrorMsg("生成报表失败!"))
 		return
 	}
+	var surplus int
+	for _, s := range temp {
+		surplus += s.MaterialPresentCount
+	}
+	if count > int64(surplus) {
+		temp = append(temp, struct {
+			CommodityName        string `json:"commodity_name"`
+			RecID                int    `json:"rec_id"`
+			MaterialPresentCount int    `json:"commodity_present_count"`
+		}{
+			CommodityName:        "其他",
+			RecID:                0,
+			MaterialPresentCount: int(count) - surplus,
+		})
+	}
+
 	common.SelectSuccessTemplate(ctx, count, temp)
 	return
 

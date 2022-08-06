@@ -133,7 +133,7 @@ func DeleteStockOut(ctx *gin.Context) {
 
 // SelectStockOutType 查询出库类型
 func SelectStockOutType(ctx *gin.Context) {
-	common.SelectSuccessTemplate(ctx, int64(len(_const.StockOutTypeList)), _const.StockInTypeList)
+	common.SelectSuccessTemplate(ctx, int64(len(_const.StockOutTypeList)), _const.StockOutTypeList)
 	return
 }
 

@@ -19,7 +19,7 @@ func CreateTypeTree(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Create(typeTree).Error
+	err = client.MysqlClient.Model(mysql_model.TypeTree{}).Create(&typeTree).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_INSERT_ERROR, typeTree)
 		return
@@ -46,11 +46,12 @@ func SelectTypeTree(ctx *gin.Context) {
 			ColumnName:  "parent_type_id",
 			ColumnValue: " ",
 		}
-	}
-	parentCondition = common.MysqlCondition{
-		Symbol:      mysql.EQUAL,
-		ColumnName:  "parent_type_id",
-		ColumnValue: parentTypeId,
+	} else {
+		parentCondition = common.MysqlCondition{
+			Symbol:      mysql.EQUAL,
+			ColumnName:  "parent_type_id",
+			ColumnValue: parentTypeId,
+		}
 	}
 	cds := []common.MysqlCondition{
 		parentCondition,

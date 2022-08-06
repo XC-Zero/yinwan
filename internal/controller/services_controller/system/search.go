@@ -8,6 +8,11 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
+var commonFields = []string{
+	"rec_id^1000",
+	"remark^2",
+	"book_name^3"}
+
 func SelectMaterial(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 
@@ -59,8 +64,9 @@ func SelectReceivable(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
-		"receivable_amount^1000",
 		"remark^2",
+		"book_name^3",
+		"receivable_amount^1000",
 		"receivable_enterprise_address^3",
 		"receivable_contact^5",
 		"receivable_enterprise^10")
@@ -77,9 +83,10 @@ func SelectReceivable(ctx *gin.Context) {
 func SelectFixedAsset(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
-		"rec_id^1000",
 		"fixed_asset_name.keyword^500",
+		"rec_id^1000",
 		"remark^2",
+		"book_name^3",
 		"fixed_asset_name^3",
 		"fixed_asset_amount^5")
 
@@ -98,6 +105,7 @@ func SelectStockInRecord(ctx *gin.Context) {
 		"rec_id^1000",
 		"stock_in_owner.keyword^500",
 		"remark^2",
+		"book_name^3",
 		"stock_in_owner^3",
 		"stock_in_content^5")
 
@@ -116,6 +124,7 @@ func SelectStockOutRecord(ctx *gin.Context) {
 		"rec_id^1000",
 		"stock_out_owner.keyword^500",
 		"remark^2",
+		"book_name^3",
 		"stock_out_owner^3",
 		"stock_out_content^5")
 
@@ -136,6 +145,7 @@ func SelectProvider(ctx *gin.Context) {
 		"provider_name^15",
 		"provider_social_credit_code^500",
 		"remark^10",
+		"book_name^3",
 		"provider_contact^8",
 		"provider_alias^5")
 
@@ -152,10 +162,11 @@ func SelectCustomer(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
+		"remark^2",
+		"book_name^3",
 		"customer_name.keyword^500",
 		"customer_name^15",
 		"customer_social_credit_code^500",
-		"remark^10",
 		"customer_contact^8",
 		"customer_alias^5")
 
@@ -172,12 +183,12 @@ func SelectCredential(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
-		"customer_name.keyword^500",
-		"customer_name^15",
-		"customer_social_credit_code^500",
+		"credential_name^15",
+		"credential_content^10",
+		"related_person^15",
 		"remark^10",
-		"customer_contact^8",
-		"customer_alias^5")
+		"book_name^3",
+	)
 
 	op := common.SelectESTemplateOptions{
 		TableModel:  &m.Credential{},
@@ -193,12 +204,14 @@ func SelectTransaction(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
-		"customer_name.keyword^500",
-		"customer_name^15",
-		"customer_social_credit_code^500",
-		"remark^10",
-		"customer_contact^8",
-		"customer_alias^5")
+		"remark^2",
+		"book_name^3",
+		"transaction_name^15",
+		"transaction_content^5",
+		"transaction_owner_name^8",
+		"transaction_owner_name.keyword^15",
+		"transaction_amount^55",
+		"receive_id^1000")
 
 	op := common.SelectESTemplateOptions{
 		TableModel:  &m.Transaction{},
@@ -234,12 +247,12 @@ func SelectPurchase(ctx *gin.Context) {
 	searchContent := ctx.PostForm("search_content")
 	query := elastic.NewMultiMatchQuery(searchContent,
 		"rec_id^1000",
-		"customer_name.keyword^500",
-		"provider_name^15",
-		"customer_social_credit_code^500",
-		"remark^10",
-		"customer_contact^8",
-		"customer_alias^5")
+		"remark^2",
+		"book_name^3",
+		"purchase_name^15",
+		"purchase_content^8",
+		"purchase_owner_name^8",
+		"provider_name^15")
 
 	op := common.SelectESTemplateOptions{
 		TableModel:  &m.Purchase{},

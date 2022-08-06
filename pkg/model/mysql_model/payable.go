@@ -35,9 +35,14 @@ func (p Payable) TableName() string {
 }
 func (p Payable) ToESDoc() map[string]interface{} {
 	return map[string]interface{}{
-		"rec_id": p.RecID,
-		"remark": p.Remark,
-		//"payable_enterprise":p
+		"rec_id":               p.RecID,
+		"remark":               p.Remark,
+		"book_name":            p.BookName,
+		"book_name_id":         p.BookNameID,
+		"purchase_id":          p.PurchaseID,
+		"credential_id":        p.CredentialID,
+		"provider_name":        p.ProviderName,
+		"payable_total_amount": p.PayableTotalAmount,
 	}
 }
 func (p Payable) Mapping() map[string]interface{} {
@@ -48,7 +53,7 @@ func (p Payable) Mapping() map[string]interface{} {
 				"rec_id": mapping{
 					"type": "keyword",
 				},
-				"payable_enterprise": mapping{
+				"provider_name": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
@@ -59,17 +64,17 @@ func (p Payable) Mapping() map[string]interface{} {
 						},
 					},
 				},
-				"payable_enterprise_address": mapping{
+				"payable_total_amount": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"payable_contact": mapping{
+				"credential_id": mapping{
 					"type":            "text",
 					"analyzer":        IK_SMART,
 					"search_analyzer": IK_SMART,
 				},
-				"payable_amount": mapping{
+				"purchase_id": mapping{
 					"type": "keyword",
 				},
 				"remark": mapping{

@@ -9,12 +9,12 @@ import (
 type Disassemble struct {
 	BasicModel           `bson:"inline"`
 	BookNameInfo         `bson:"-"`
-	DisassembleName      *string              `form:"disassemble_name,omitempty" json:"disassemble_name,omitempty" bson:"disassemble_name,omitempty"`
-	DisassembleOwnerID   *int                 `form:"disassemble_owner_id,omitempty" json:"disassemble_owner_id,omitempty" bson:"disassemble_owner_id,omitempty"`
-	DisassembleOwnerName *string              `form:"disassemble_owner_name,omitempty" json:"disassemble_owner_name,omitempty" bson:"disassemble_owner_name,omitempty"`
-	AssembleTemplateID   int                  `form:"assemble_template_id" json:"assemble_template_id" bson:"assemble_template_id"`
-	DisassembleContent   []stockRecordContent `form:"disassemble_content" json:"disassemble_content" bson:"disassemble_content"`
-	Remark               *string              `form:"remark,omitempty" json:"remark,omitempty" bson:"remark,omitempty"`
+	DisassembleName      *string              `form:"disassemble_name,omitempty" json:"disassemble_name,omitempty" bson:"disassemble_name,omitempty" cn:"拆卸单名称"`
+	DisassembleOwnerID   *int                 `form:"disassemble_owner_id,omitempty" json:"disassemble_owner_id,omitempty" bson:"disassemble_owner_id,omitempty" cn:"拆卸单负责人编号"`
+	DisassembleOwnerName *string              `form:"disassemble_owner_name,omitempty" json:"disassemble_owner_name,omitempty" bson:"disassemble_owner_name,omitempty" cn:"拆卸单负责人名称"`
+	AssembleTemplateID   int                  `form:"assemble_template_id" json:"assemble_template_id" bson:"assemble_template_id" cn:"组装拆卸模板编号"`
+	DisassembleContent   []stockRecordContent `form:"disassemble_content" json:"disassemble_content" bson:"disassemble_content" cn:"拆卸单内容"`
+	Remark               *string              `form:"remark,omitempty" json:"remark,omitempty" bson:"remark,omitempty" cn:"备注"`
 }
 
 func (d Disassemble) Mapping() map[string]interface{} {
@@ -71,7 +71,7 @@ func (d Disassemble) ToESDoc() map[string]interface{} {
 		"rec_id":                 d.RecID,
 		"created_at":             d.CreatedAt,
 		"remark":                 d.Remark,
-		"disassemble_content":    convert.StructToTagString(d.DisassembleContent, "cn"),
+		"disassemble_content":    convert.StructSliceToTagString(d.DisassembleContent, "cn"),
 		"disassemble_owner_name": d.DisassembleOwnerName,
 		"disassemble_name":       d.DisassembleName,
 		"book_name":              d.BookName,

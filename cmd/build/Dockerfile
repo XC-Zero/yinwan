@@ -1,16 +1,11 @@
-FROM golang:alpine
-
-#ADD yiwan /yinwan
-
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64 \
-    GOPROXY="https://goproxy.cn,direct"
-
-EXPOSE 3776
+FROM golang:alpine AS builder
+LABEL stage=gobuilder
 
 WORKDIR /yinwan
-COPY D:\go\yinwan\cmd\build\yinwan ./app
+
+COPY ./yinwan .
 
 CMD ["./yinwan"]
+
+
+
