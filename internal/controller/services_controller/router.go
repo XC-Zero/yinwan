@@ -51,6 +51,26 @@ func Starter() {
 
 	storage := services.Group("/storage")
 	{
+
+		{
+			storage.POST("/create_assemble", storage3.CreateAssemble)
+			storage.POST("/select_assemble", storage3.SelectAssemble)
+			storage.POST("/update_assemble", storage3.UpdateAssemble)
+			storage.POST("/delete_assemble", storage3.DeleteAssemble)
+		}
+		{
+			storage.POST("/create_disassemble", storage3.CreateDisassemble)
+			storage.POST("/select_disassemble", storage3.SelectDisassemble)
+			storage.POST("/update_disassemble", storage3.UpdateDisassemble)
+			storage.POST("/delete_disassemble", storage3.DeleteDisassemble)
+		}
+		{
+			storage.POST("/create_assemble_template", storage3.CreateAssembleTemplate)
+			storage.POST("/select_assemble_template", storage3.SelectAssembleTemplate)
+			storage.POST("/update_assemble_template", storage3.UpdateAssembleTemplate)
+			storage.POST("/delete_assemble_template", storage3.DeleteAssembleTemplate)
+		}
+
 		// 原材料
 		{
 			storage.POST("/create_material", storage3.CreateMaterial)
@@ -142,7 +162,6 @@ func Starter() {
 			finance.POST("/delete_credential", finance3.DeleteCredential)
 			finance.POST("/generate_credential", finance3.GenerateCredential)
 		}
-
 		// 凭证模板
 		{
 			finance.POST("/select_credential_template", finance3.SelectCredentialTemplate)
@@ -150,6 +169,15 @@ func Starter() {
 			finance.POST("/update_credential_template", finance3.UpdateCredentialTemplate)
 			finance.POST("/delete_credential_template", finance3.DeleteCredentialTemplate)
 		}
+		// 报表
+		{
+			finance.POST("/generate_commodity_statistics", finance3.GenerateCommodityStatistics)
+			finance.POST("/generate_material_statistics", finance3.GenerateMaterialStatistics)
+			finance.POST("/generate_receivable_statistics", finance3.GenerateReceivableStatistics)
+			finance.POST("/generate_payable_statistics", finance3.GeneratePayableStatistics)
+
+		}
+
 		// 固定资产
 		{
 			finance.POST("/select_fixed_asset", finance3.SelectFixedAsset)
@@ -157,6 +185,7 @@ func Starter() {
 			finance.POST("/update_fixed_asset", finance3.UpdateFixedAsset)
 			finance.POST("/delete_fixed_asset", finance3.DeleteFixedAsset)
 		}
+
 		// 应收
 		{
 			finance.POST("/create_receivable", finance3.CreateReceivable)

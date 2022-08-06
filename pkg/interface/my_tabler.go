@@ -18,7 +18,3 @@ type EsTabler interface {
 	// ToESDoc 转为 ES 的一条记录
 	ToESDoc() map[string]interface{}
 }
-
-type MongoContent interface {
-	ToString() string
-}

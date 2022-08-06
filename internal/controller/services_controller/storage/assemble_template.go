@@ -11,12 +11,15 @@ import (
 	"time"
 )
 
-// CreateAssemble TODO 组装拆卸
-func CreateAssemble(ctx *gin.Context) {
+func CreateAssembleTemplate(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)
-	var assemble mongo_model.Assemble
+	if bk == nil {
+		return
+	}
+	var assemble mongo_model.AssembleTemplate
 	err := ctx.ShouldBindBodyWith(&assemble, binding.JSON)
 	if err != nil {
+		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
 
@@ -25,23 +28,21 @@ func CreateAssemble(ctx *gin.Context) {
 	assemble.BookName = bk.BookName
 	assemble.BookNameID = bk.StorageName
 	assemble.CreatedAt = strconv.Itoa(recID)
-
-	op := common.CreateMongoDBTemplateOptions{
+	common.CreateOneMongoDBRecordTemplate(ctx, common.CreateMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    ctx,
-		TableModel: assemble,
-	}
-
-	common.CreateOneMongoDBRecordTemplate(ctx, op)
+		TableModel: &assemble,
+		NotSyncES:  true,
+	})
 	return
 }
 
-func UpdateAssemble(ctx *gin.Context) {
+func UpdateAssembleTemplate(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	var assemble mongo_model.Assemble
+	var assemble mongo_model.AssembleTemplate
 	err := ctx.ShouldBindBodyWith(&assemble, binding.JSON)
 	if err != nil || assemble.RecID == nil {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
@@ -54,10 +55,11 @@ func UpdateAssemble(ctx *gin.Context) {
 		Context:    ctx,
 		TableModel: assemble,
 		RecID:      *assemble.RecID,
+		NotSyncES:  true,
 	})
 }
 
-func SelectAssemble(ctx *gin.Context) {
+func SelectAssembleTemplate(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
@@ -66,12 +68,12 @@ func SelectAssemble(ctx *gin.Context) {
 		{
 			my_mongo.EQUAL,
 			"rec_id",
-			ctx.PostForm("assemble_id"),
+			ctx.PostForm("assemble_template_id"),
 		},
 		{
 			my_mongo.LIKE,
-			"assemble_name",
-			ctx.PostForm("assemble_name"),
+			"assemble_template_name",
+			ctx.PostForm("assemble_template_name"),
 		},
 		{
 			my_mongo.EQUAL,
@@ -81,25 +83,28 @@ func SelectAssemble(ctx *gin.Context) {
 	}
 	common.SelectMongoDBTableContentWithCountTemplate(ctx, common.SelectMongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
-		TableModel: &mongo_model.Assemble{},
+		TableModel: &mongo_model.AssembleTemplate{},
 	}, conditions...)
 	return
 }
 
-func DeleteAssemble(ctx *gin.Context) {
+func DeleteAssembleTemplate(ctx *gin.Context) {
 	bk := common.HarvestClientFromGinContext(ctx)
 	if bk == nil {
 		return
 	}
-	id, err := strconv.Atoi(ctx.PostForm("assemble_id"))
+
+	id, err := strconv.Atoi(ctx.PostForm("assemble_template_id"))
 	if err != nil || id == 0 {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
+
 	common.DeleteOneMongoDBRecordByIDTemplate(ctx, common.MongoDBTemplateOptions{
 		DB:         bk.MongoDBClient,
 		Context:    ctx,
-		TableModel: &mongo_model.Assemble{},
+		TableModel: &mongo_model.AssembleTemplate{},
 		RecID:      id,
+		NotSyncES:  true,
 	})
 }

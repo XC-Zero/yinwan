@@ -45,11 +45,6 @@ type purchaseContent struct {
 	Remark             *string `bson:"remark" json:"remark,omitempty" form:"remark,omitempty" cn:"备注"`
 }
 
-// ToString todo !!!
-func (p purchaseContent) ToString() string {
-	return ""
-}
-
 func (p Purchase) Mapping() map[string]interface{} {
 	ma := mapping{
 		"settings": mapping{},
