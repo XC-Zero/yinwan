@@ -79,8 +79,8 @@ func UpdateProvider(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&provider).Where("rec_id", *provider.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id", *provider.RecID).
+		Updates(&provider).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, provider)
 		return

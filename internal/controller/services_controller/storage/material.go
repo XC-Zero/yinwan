@@ -89,8 +89,8 @@ func UpdateMaterial(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&material).Where("rec_id", *material.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id", *material.RecID).
+		Updates(&material).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新原材料失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, material)

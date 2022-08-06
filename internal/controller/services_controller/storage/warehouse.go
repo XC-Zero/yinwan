@@ -82,8 +82,8 @@ func UpdateWarehouse(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&warehouse).Where("rec_id", *warehouse.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id", *warehouse.RecID).
+		Updates(&warehouse).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, warehouse)

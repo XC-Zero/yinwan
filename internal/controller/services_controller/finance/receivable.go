@@ -91,8 +91,8 @@ func UpdateReceivable(ctx *gin.Context) {
 		return
 	}
 
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&receivable).Where("rec_id = ?", receivable.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id = ?", receivable.RecID).
+		Updates(&receivable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应收记录失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, receivable)
@@ -162,8 +162,8 @@ func UpdateReceivableDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&temp).Where("rec_id = ?", temp.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id = ?", temp.RecID).
+		Updates(&temp).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新应收详情记录失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, temp)

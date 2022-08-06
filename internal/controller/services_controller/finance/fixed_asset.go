@@ -82,8 +82,8 @@ func UpdateFixedAsset(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&fixedAsset).Where("rec_id = ?", fixedAsset.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id = ?", fixedAsset.RecID).
+		Updates(&fixedAsset).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新固定资产失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, fixedAsset)

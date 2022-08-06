@@ -184,7 +184,7 @@ func (p *Purchase) BeforeUpdate(ctx context.Context) error {
 		Remark:     p.Remark,
 	}
 
-	err := bk.MysqlClient.WithContext(ctx).Updates(&payable).Where("purchase_id = ?", p.RecID).Error
+	err := bk.MysqlClient.WithContext(ctx).Where("purchase_id = ?", p.RecID).Updates(&payable).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "同步更新应收记录失败!")
 		return err

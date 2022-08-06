@@ -83,7 +83,7 @@ func UpdateTypeTree(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = client.MysqlClient.Updates(&typeTree).Where("rec_id = ?", typeTree.RecID).Error
+	err = client.MysqlClient.Where("rec_id = ?", typeTree.RecID).Updates(&typeTree).Error
 	if err != nil {
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, typeTree)
 		return

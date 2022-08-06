@@ -180,7 +180,7 @@ func (m MaterialBatch) AfterCreate(tx *gorm.DB) error {
 			return err2
 		}
 	} else {
-		err2 := tx.Updates(&cost).Where("rec_id", *res.RecID).Error
+		err2 := tx.Where("rec_id", *res.RecID).Updates(&cost).Error
 		if err2 != nil {
 			log.Println("@@@@ Updates ERROR is ", errors.WithStack(err2))
 			return err2

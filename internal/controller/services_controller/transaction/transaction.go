@@ -72,7 +72,7 @@ func SelectTransaction(ctx *gin.Context) {
 			ctx.PostForm("transaction_time2"),
 		},
 		{
-			my_mongo.NOT_EQUAL,
+			my_mongo.EQUAL,
 			"deleted_at",
 			bsontype.Null,
 		},

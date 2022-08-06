@@ -280,7 +280,8 @@ func (t *Transaction) BeforeDelete(ctx context.Context) error {
 				TransactionID:         t.RecID,
 				Remark:                t.Remark,
 			}
-			err = bk.MysqlClient.WithContext(ctx).Updates(&receivable).Where("transaction_id = ?", t.RecID).Error
+			err = bk.MysqlClient.WithContext(ctx).Where("transaction_id = ?", t.RecID).
+				Updates(&receivable).Error
 			if err != nil {
 				return err
 			}

@@ -90,8 +90,8 @@ func UpdateCommodity(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).
-		Updates(&commodity).Where("rec_id", *commodity.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id", *commodity.RecID).
+		Updates(&commodity).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "更新产品失败!")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodity)
@@ -208,7 +208,7 @@ func UpdateCommodityDetail(ctx *gin.Context) {
 		common.RequestParamErrorTemplate(ctx, common.REQUEST_PARM_ERROR)
 		return
 	}
-	err = bk.MysqlClient.WithContext(ctx).Updates(&commodityDetail).Where("rec_id = ?", commodityDetail.RecID).Error
+	err = bk.MysqlClient.WithContext(ctx).Where("rec_id = ?", commodityDetail.RecID).Updates(&commodityDetail).Error
 	if err != nil {
 		logger.Error(errors.WithStack(err), "")
 		common.InternalDataBaseErrorTemplate(ctx, common.DATABASE_UPDATE_ERROR, commodityDetail)
